@@ -38,6 +38,32 @@ namespace FNAEngine2D
             return (int)Math.Round(value, 0, MidpointRounding.AwayFromZero);
         }
 
+        // <summary>
+        /// Restricts a value to be within a specified range.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">
+        /// The minimum value. If <c>value</c> is less than <c>min</c>, <c>min</c>
+        /// will be returned.
+        /// </param>
+        /// <param name="max">
+        /// The maximum value. If <c>value</c> is greater than <c>max</c>, <c>max</c>
+        /// will be returned.
+        /// </param>
+        /// <returns>The clamped value.</returns>
+        public static float Clamp(float value, float min, float max)
+        {
+            // First we check to see if we're greater than the max.
+            if (value > max)
+                return max;
+
+            // Then we check to see if we're less than the min.
+            if (value < min)
+                return min;
+
+            // There's no check to see if min > max.
+            return value;
+        }
 
     }
 }
