@@ -69,7 +69,7 @@
     </Compile>
     <Compile Include="TextRender.cs" />
     <Compile Include="TextureRender.cs" />
-    <Compile Include="Vector2Helper.cs" />
+    <Compile Include="VectorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FNA-XNA-Wrapper">

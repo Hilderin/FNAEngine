@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D
 {
-    public static class Vector2Helper
+    public static class VectorHelper
     {
         /// <summary>
         /// Permet de trouver le centre
@@ -23,6 +23,16 @@ namespace FNAEngine2D
         public static Vector2 Center(int width, int height, int objectWidth, int objectHeight)
         {
             return new Vector2((width / 2) - (objectWidth / 2), (height / 2) - (objectHeight / 2));
+        }
+
+
+        /// <summary>
+        /// Permet de faire une rotation sur un point d'origine
+        /// </summary>
+        public static Vector2 Rotate(Vector2 toRotate, Vector2 origin, float radians)
+        {
+            //On fait le - car sinon, la rotation va partir dans l'autre sens...
+            return Vector2.Transform(toRotate - origin, Matrix.CreateRotationZ(-radians)) + origin;
         }
     }
 }

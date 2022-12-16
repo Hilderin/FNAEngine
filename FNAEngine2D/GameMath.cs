@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,22 +12,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Converti un rad en degree
         /// </summary>
-        public static double ConvertRadToDeg(double radians)
+        public static float RadToDeg(float radians)
         {
-            double degrees = (180 / Math.PI) * radians;
+            float degrees = (180 / MathHelper.Pi) * radians;
             while (degrees > 360)
                 degrees -= 360;
             while (degrees < -360)
                 degrees += 360;
-            return (degrees);
+            return degrees;
         }
 
         /// <summary>
         /// Converti un degree en rad
         /// </summary>
-        public static double ConvertDegToRad(double angle)
+        public static float DegToRad(float angle)
         {
-            return (Math.PI / 180) * angle;
+            return (MathHelper.Pi / 180) * angle;
         }
 
         /// <summary>
@@ -36,6 +37,7 @@ namespace FNAEngine2D
         {
             return (int)Math.Round(value, 0, MidpointRounding.AwayFromZero);
         }
+
 
     }
 }

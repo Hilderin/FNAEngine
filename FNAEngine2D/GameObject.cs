@@ -146,6 +146,22 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Center en X
+        /// </summary>
+        public int CenterX
+        {
+            get { return this.Bounds.X + (this.Bounds.Width / 2); }
+        }
+
+        /// <summary>
+        /// Center en Y
+        /// </summary>
+        public int CenterY
+        {
+            get { return this.Bounds.Y + (this.Bounds.Height / 2); }
+        }
+
 
         /// <summary>
         /// Scale
