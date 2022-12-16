@@ -15,6 +15,9 @@ namespace FNAEngine2D
         MovingColliderOnRight,
         MovingColliderOnTop,
         MovingColliderOnBottom,
+        MovingColliderOver,
+        MovingColliderIn,
+        Indetermined,
         None
     }
 
