@@ -24,7 +24,7 @@ namespace FNAEngine2D
         /// </summary>
         public FPSRender(string fileName, int fontSize, Color color)
         {
-            _textRender = this.Add(new TextRender(String.Empty, fileName, fontSize, new Point(0, 0), color));
+            _textRender = this.Add(new TextRender(String.Empty, fileName, fontSize, Vector2.Zero, color));
         }
 
         /// <summary>

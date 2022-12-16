@@ -70,7 +70,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fileName, int fontSize, Point location, Color color)
+        public TextRender(string text, string fileName, int fontSize, Vector2 location, Color color)
         {
             _fileName = fileName;
             _fontSize = fontSize;

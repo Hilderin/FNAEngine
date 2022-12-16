@@ -62,7 +62,7 @@ namespace FNAEngine2D
             if (_fontManager == null)
                 throw new InvalidOperationException("GetFont called before initialize.");
 
-            return _fontManager.GetFont(ContentManager.ContentFolder + filename, fontSize);
+            return _fontManager.GetFont(ContentHelper.ContentFolder + filename, fontSize);
         }
     }
 }

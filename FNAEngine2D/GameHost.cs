@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using Velentr.Font;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace FNAEngine2D
 {
@@ -24,20 +25,6 @@ namespace FNAEngine2D
         /// </summary>
         private static InternalGameHost _internalGameHost;
 
-
-        ///// <summary>
-        ///// Liste des objets à renderer
-        ///// </summary>
-        //private static List<GameObject> _gameObjects = new List<GameObject>();
-
-
-        ///// <summary>
-        ///// Liste des objets à renderer
-        ///// </summary>
-        //internal static List<GameObject> GetObjectsToRender()
-        //{
-        //    return _gameObjects;
-        //}
 
         /// <summary>
         /// Sprite batch pour le renderer
@@ -54,25 +41,30 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// CurrentGameTime
+        /// Current GameTime
         /// </summary>
-        public static GameTime GameTime;
+        public static GameTime GameTime { get; private set; }
+
+        /// <summary>
+        /// ElapsedGameTimeSeconds
+        /// </summary>
+        public static float ElapsedGameTimeSeconds { get; private set; }
 
         /// <summary>
         /// Width du jeu
         /// </summary>
-        public static int Width 
-        {
-            get { return _internalGameHost.Width; }
-        }
+        public static int Width  { get { return _internalGameHost.Width; } }
 
         /// <summary>
         /// Height du jeu
         /// </summary>
-        public static int Height
-        {
-            get { return _internalGameHost.Height; }
-        }
+        public static int Height { get { return _internalGameHost.Height; } }
+
+        /// <summary>
+        /// Size du jeu
+        /// </summary>
+        public static Vector2Int Size { get { return _internalGameHost.Size; } }
+
 
 
         /// <summary>
@@ -82,16 +74,6 @@ namespace FNAEngine2D
         {
             _internalGameHost = new InternalGameHost();
         }
-
-        ///// <summary>
-        ///// Ajout d'un render object
-        ///// </summary>
-        //public static T Add<T>(T gameObject) where T: GameObject
-        //{
-        //    _gameObjects.Add(gameObject);
-
-        //    return gameObject;
-        //}
 
         /// <summary>
         /// Permet d'obtenir un élément du Content
@@ -107,13 +89,6 @@ namespace FNAEngine2D
             return _internalGameHost.Content.Load<T>(assetName);
         }
 
-        ///// <summary>
-        ///// Retourne la font demandée
-        ///// </summary>
-        //public static Font GetFont(string filename, int fontSize)
-        //{
-        //    return FontManager.GetFont(filename, fontSize);
-        //}
 
         /// <summary>
         /// Exécution du GameHost
@@ -145,6 +120,16 @@ namespace FNAEngine2D
             {
                 _internalGameHost.Dispose();
             }
+        }
+
+
+        /// <summary>
+        /// CurrentGameTime
+        /// </summary>
+        internal static void SetGameTime(GameTime gameTime)
+        {
+            GameTime = gameTime;
+            ElapsedGameTimeSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
     }

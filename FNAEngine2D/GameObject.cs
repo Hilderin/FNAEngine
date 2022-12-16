@@ -101,10 +101,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Position
         /// </summary>
-        public Point Location
+        public Vector2 Location
         {
-            get { return this.Bounds.Location; }
-            set { this.Bounds.Location = value; }
+            get { return new Vector2(this.X, this.Y); }
+            set
+            {
+                this.Bounds.X = (int)value.X;
+                this.Bounds.Y = (int)value.Y;
+            }
         }
 
         /// <summary>
@@ -117,6 +121,28 @@ namespace FNAEngine2D
             {
                 this.Bounds.X = (int)value.X;
                 this.Bounds.Y = (int)value.Y;
+            }
+        }
+
+        /// <summary>
+        /// Rectangle
+        /// </summary>
+        public Rectangle Rectangle
+        {
+            get { return this.Bounds; }
+            set { this.Bounds = value; }
+        }
+
+        /// <summary>
+        /// Size
+        /// </summary>
+        public Vector2Int Size
+        {
+            get { return new Vector2Int(this.Width, this.Height); }
+            set
+            {
+                this.Bounds.Width = (int)value.X;
+                this.Bounds.Height = (int)value.Y;
             }
         }
 
@@ -137,18 +163,13 @@ namespace FNAEngine2D
         public Vector2 RotationOrigin;
 
 
-
         /// <summary>
         /// Ajout d'un render object enfant
         /// </summary>
         public T Add<T>(T gameObject) where T : GameObject
         {
             gameObject.Parent = this;
-
-            if (this.RootGameObject == null)
-                gameObject.RootGameObject = this;
-            else
-                gameObject.RootGameObject = this.RootGameObject;
+            gameObject.RootGameObject = this.RootGameObject;
 
 
             this.Childrens.Add(gameObject);
@@ -229,8 +250,85 @@ namespace FNAEngine2D
                 this.Childrens[index].DrawWithChildren();
         }
 
+        /// <summary>
+        /// Permet de déplacer en X l'objet et tous ses enfants
+        /// </summary>
+        public void TranslateX(int offsetX)
+        {
+            this.X += offsetX;
+
+            if (this.Childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < this.Childrens.Count; index++)
+                this.Childrens[index].TranslateX(offsetX);
+
+        }
+
+        /// <summary>
+        /// Permet de déplacer en X l'objet et tous ses enfants
+        /// </summary>
+        public void TranslateX(float offsetX)
+        {
+            TranslateX((int)offsetX);
+        }
+
+        /// <summary>
+        /// Permet de déplacer en Y l'objet et tous ses enfants
+        /// </summary>
+        public void TranslateY(int offsetY)
+        {
+            this.Y += offsetY;
+
+            if (this.Childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < this.Childrens.Count; index++)
+                this.Childrens[index].TranslateY(offsetY);
+
+        }
+
+        /// <summary>
+        /// Permet de déplacer en Y l'objet et tous ses enfants
+        /// </summary>
+        public void TranslateY(float offsetY)
+        {
+            TranslateY((int)offsetY);
+        }
 
 
+        /// <summary>
+        /// Permet de déplacer en X et Y l'objet et tous ses enfants
+        /// </summary>
+        public void Translate(int offsetX, int offsetY)
+        {
+            this.X += offsetX;
+            this.Y += offsetY;
+
+
+            if (this.Childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < this.Childrens.Count; index++)
+                this.Childrens[index].Translate(offsetX, offsetY);
+
+        }
+
+        /// <summary>
+        /// Permet de déplacer en X et Y l'objet et tous ses enfants
+        /// </summary>
+        public void Translate(float offsetX, float offsetY)
+        {
+            Translate((int)offsetX, (int)offsetY);
+        }
+
+        /// <summary>
+        /// Permet de déplacer en X et Y l'objet et tous ses enfants
+        /// </summary>
+        public void Translate(Vector2 translation)
+        {
+            this.Translate((int)translation.X, (int)translation.Y);
+        }
 
         /// <summary>
         /// Active le collider
@@ -244,7 +342,15 @@ namespace FNAEngine2D
                 this.RootGameObject._colliderContainer = new ColliderContainer();
 
             _collider = new Collider(this);
-            this.RootGameObject._colliderContainer.Colliders.Add(_collider);
+            AddCollider(_collider);
+        }
+
+        /// <summary>
+        /// Active le collider
+        /// </summary>
+        public void AddCollider(Collider collider)
+        {
+            GetColliderContainer().Add(collider);
         }
 
         /// <summary>
@@ -252,13 +358,15 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision()
         {
-            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+            ColliderContainer container = GetColliderContainer();
+
+            if (container.IsEmpty)
                 return null;
 
             if (_collider == null)
-                return this.RootGameObject._colliderContainer.GetCollision(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
+                return container.GetCollision(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
             else
-                return this.RootGameObject._colliderContainer.GetCollision(_collider.Bounds, _collider);
+                return container.GetCollision(_collider.Bounds, _collider);
         }
 
         /// <summary>
@@ -266,10 +374,12 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(int nextX, int nextY)
         {
-            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+            ColliderContainer container = GetColliderContainer();
+
+            if (container.IsEmpty)
                 return null;
 
-            return this.RootGameObject._colliderContainer.GetCollision(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
+            return container.GetCollision(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
         }
 
         /// <summary>
@@ -277,13 +387,15 @@ namespace FNAEngine2D
         /// </summary>
         public List<Collision> GetCollisions()
         {
-            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+            ColliderContainer container = GetColliderContainer();
+
+            if (container.IsEmpty)
                 return CollisionHelper.EMPTY_COLLISIONS;
 
             if (_collider == null)
-                return this.RootGameObject._colliderContainer.GetCollisions(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
+                return container.GetCollisions(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
             else
-                return this.RootGameObject._colliderContainer.GetCollisions(_collider.Bounds, _collider);
+                return container.GetCollisions(_collider.Bounds, _collider);
 
         }
 
@@ -292,11 +404,23 @@ namespace FNAEngine2D
         /// </summary>
         public List<Collision> GetCollisions(int nextX, int nextY)
         {
-            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+            ColliderContainer container = GetColliderContainer();
+
+            if (container.IsEmpty)
                 return CollisionHelper.EMPTY_COLLISIONS;
 
-            return this.RootGameObject._colliderContainer.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
+            return container.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
+        }
 
+        /// <summary>
+        /// Permet de trouver le collider container où tout mettre les collider
+        /// </summary>
+        private ColliderContainer GetColliderContainer()
+        {
+            if (this.RootGameObject._colliderContainer == null)
+                this.RootGameObject._colliderContainer = new ColliderContainer();
+
+            return this.RootGameObject._colliderContainer;
         }
 
 

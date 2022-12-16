@@ -29,5 +29,13 @@ namespace FNAEngine2D
             return (Math.PI / 180) * angle;
         }
 
+        /// <summary>
+        /// Permet d'arroundir une valeur float en int
+        /// </summary>
+        public static int RoundInt(float value)
+        {
+            return (int)Math.Round(value, 0, MidpointRounding.AwayFromZero);
+        }
+
     }
 }

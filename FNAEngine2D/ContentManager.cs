@@ -1,42 +1,198 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FNAEngine2D
 {
     /// <summary>
-    /// Content Manager
+    /// Content Manager du FNAEngine2D
     /// </summary>
-    public class ContentManager
+    public class ContentManager : Microsoft.Xna.Framework.Content.ContentManager
     {
 
         /// <summary>
-        /// Root du content folder
+        /// Les extensions pour les textures
         /// </summary>
-        private static string _contentFolder;
+        private static string[] TEXTURES_EXTENSIONS = new string[]
+        {
+            ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tga", ".tif", ".tiff"        //, ".dds"
+        };
+
+
+        /// <summary>
+        /// Graphics device
+        /// </summary>
+        private GraphicsDevice _graphicsDevice;
+
+        /// <summary>
+        /// Cache
+        /// </summary>
+        private static ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+
+        /// <summary>
+        /// Disposable assets
+        /// </summary>
+        private static List<IDisposable> _disposableAssets = new List<IDisposable>();
+
+        /// <summary>
+        /// Disposable objets avec leur nom
+        /// </summary>
+        private static Dictionary<string, IDisposable> _disposableAssetsPerName = new Dictionary<string, IDisposable>();
 
         /// <summary>
         /// Constructeur
         /// </summary>
-        static ContentManager()
+        public ContentManager(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            string assemblyLocation = Assembly.GetCallingAssembly().Location;
-            if (assemblyLocation.IndexOf(@"bin\debug\", StringComparison.OrdinalIgnoreCase) > 0
-                || assemblyLocation.IndexOf(@"bin\release\", StringComparison.OrdinalIgnoreCase) > 0)
-                _contentFolder = @"..\..\Content\";
-            else
-                _contentFolder = @"Content\";
         }
 
         /// <summary>
-        /// Permet de retourner le path du content folder
+        /// Constructeur
         /// </summary>
-        public static string ContentFolder { get { return _contentFolder; } }
+        public ContentManager(IServiceProvider serviceProvider, string rootDirectory) : base(serviceProvider, rootDirectory)
+        {
+        }
+
+        /// <summary>
+        /// Clear la cache
+        /// </summary>
+        public static void ClearCache()
+        {
+            _cache.Clear();
+        }
+
+        /// <summary>
+        /// Permet de loader un asset
+        /// </summary>
+        public override T Load<T>(string assetName)
+        {
+            //Dans la cache??
+            object asset = null;
+            if (_cache.TryGetValue(assetName, out asset))
+            {
+                if (asset is T)
+                {
+                    return (T)asset;
+                }
+            }
+
+            //Tentative de lecture sur le disque...
+            bool mustAddToDisposable = true;
+            if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Texture))
+            {
+                //Texture...
+                asset = LoadTexture<T>(assetName);
+            }
+            else
+            {
+                //Fallback sur le ContentManager de base...
+                asset = base.Load<T>(assetName);
+
+                //Le base va le faire...
+                mustAddToDisposable = false;
+            }
+
+            //Si on doit checker le disposable, on va le faire. Si ça vient du base.Load, c'est le base.Unload qui va s'en occuper
+            if (mustAddToDisposable)
+            {
+                //On set dans la cache...
+                _cache[assetName] = asset;
+
+                IDisposable disposableResult = asset as IDisposable;
+                if (disposableResult != null)
+                {
+                    lock (_disposableAssets)
+                    {
+                        //Si on a clearer la cache, on pourrait encore avoir l'objet en mémoire en attendant qu'on reload, on va donc le checker ici...
+                        if (_disposableAssetsPerName.TryGetValue(assetName, out IDisposable oldAsset))
+                        {
+                            oldAsset.Dispose();
+                            _disposableAssetsPerName.Remove(assetName);
+                        }
+
+                        _disposableAssets.Add(disposableResult);
+                        _disposableAssetsPerName[assetName] = disposableResult;
+                    }
+                }
+            }
+
+            return (T)asset;
+
+        }
 
 
+        /// <summary>
+        /// Unload du content...
+        /// </summary>
+        public override void Unload()
+        {
+            // Look for disposable assets.
+            foreach (IDisposable disposable in _disposableAssets)
+            {
+                if (disposable != null)
+                {
+                    disposable.Dispose();
+                }
+            }
+            _disposableAssets.Clear();
+            _cache.Clear();
+
+            base.Unload();
+        }
+
+        /// <summary>
+        /// Permet d'obtenir le path de l'asset
+        /// </summary>
+        private string GetAssetFullPath(string assetName, string[] acceptedExtensions)
+        {
+            foreach (string extension in acceptedExtensions)
+            {
+                string path = Path.Combine(this.RootDirectory, assetName + extension);
+                if (File.Exists(path))
+                    return path;
+            }
+
+            throw new FileNotFoundException("Asset not found: " + assetName + ", accepted extensions: " + String.Join("; ", acceptedExtensions));
+        }
+
+        /// <summary>
+        /// Permet d'accéder au GetGraphicsDevice
+        /// </summary>
+        private GraphicsDevice GetGraphicsDevice()
+        {
+            if (_graphicsDevice == null)
+            {
+                IGraphicsDeviceService result = ServiceProvider.GetService(
+                    typeof(IGraphicsDeviceService)
+                ) as IGraphicsDeviceService;
+                if (result == null)
+                {
+                    throw new ContentLoadException("No Graphics Device Service");
+                }
+                _graphicsDevice = result.GraphicsDevice;
+            }
+            return _graphicsDevice;
+        }
+
+        /// <summary>
+        /// Permet de loader une texture
+        /// </summary>
+        private T LoadTexture<T>(string assetName)
+        {
+            string fullPath = GetAssetFullPath(assetName, TEXTURES_EXTENSIONS);
+
+            using (Stream stream = File.OpenRead(fullPath))
+            {
+                object ret = Texture2D.FromStream(GetGraphicsDevice(), stream);
+                return (T)ret;
+            }
+        }
 
     }
 }

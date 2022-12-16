@@ -31,6 +31,8 @@ namespace FNAEngine2D
         public TextureRender(string assetName)
         {
             _assetName = assetName;
+
+            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
         /// <summary>
@@ -41,6 +43,8 @@ namespace FNAEngine2D
             _assetName = assetName;
 
             this.Bounds = bounds;
+
+            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
         /// <summary>
@@ -52,6 +56,8 @@ namespace FNAEngine2D
 
             this.Bounds = bounds;
             this.Color = color;
+
+            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
         /// <summary>
@@ -71,6 +77,15 @@ namespace FNAEngine2D
         public override void Draw()
         {
             GameHost.SpriteBatch.Draw(_texture, this.Bounds, this.Color);
+        }
+
+        /// <summary>
+        /// Changement du content
+        /// </summary>
+        private void ContentManager_ContentChanged(string assetName)
+        {
+            if(_assetName.Equals(assetName, StringComparison.OrdinalIgnoreCase))
+                _texture = GameHost.GetContent<Texture2D>(_assetName);
         }
 
     }
