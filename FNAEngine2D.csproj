@@ -45,6 +45,7 @@
     <Compile Include="ContentManager.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="InternalGameHost.cs" />
     <Compile Include="GameHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

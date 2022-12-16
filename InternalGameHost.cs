@@ -72,10 +72,9 @@ namespace FNAEngine2D
         {
             //Rendu ici, on peut accéder au GrraphicsDevice
             _graphicsDevice = this.GraphicsDevice;
-            FontManager.SetGraphicsDevice(_graphicsDevice);
 
-            ////On va créer les fonts maintenant...
-            //FontManager.LoadFonts();
+            //Le FontManager a aussi besoin du graphicsDevice...
+            FontManager.SetGraphicsDevice(_graphicsDevice);
 
             //Base initialize...
             base.Initialize();
@@ -90,18 +89,12 @@ namespace FNAEngine2D
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //_image = Content.Load<Texture2D>("sprite");
-
             //Chargement du contenu...
             _rootGameObject.LoadWithChildren();
 
 
-            ////Chargement du contenu des éléments à renderer
-            //List<GameObject> objectsToRender = GameHost.GetObjectsToRender();
-
-            //for (int index = 0; index < objectsToRender.Count; index++)
-            //    objectsToRender[index].LoadContent();
-
+            //Base LoadContent (i guess there's nothing there)
+            base.LoadContent();
         }
 
         /// <summary>
@@ -114,13 +107,11 @@ namespace FNAEngine2D
             //On update le gametime pour l'avoir partout...
             GameHost.GameTime = gameTime;
 
+            //Update des inputs...
+            Input.Update();
+
             //Call du update du current game...
             _rootGameObject.UpdateWithChildren();
-
-            //List<GameObject> objectsToRender = GameHost.GetObjectsToRender();
-
-            //for (int index = 0; index < objectsToRender.Count; index++)
-            //    objectsToRender[index].Draw();
 
             //Update the things FNA handles for us underneath the hood:
             base.Update(gameTime);
@@ -138,15 +129,9 @@ namespace FNAEngine2D
             _graphicsDevice.Clear(Color.Gray);
 
             _spriteBatch.Begin();
-            ////spriteBatch.Draw(_image, new Rectangle(600, 300, 100, 100), new Rectangle(0, 0, 50, 50), new Color(1, 1, 1, 0.4f));
-            //spriteBatch.Draw(_image, new Rectangle(600, 300, _image.Width, _image.Height), null, new Color(1, 1, 1, 0.4f), 0.5f, Vector2.Zero, SpriteEffects.None, 0f);
 
+            //Render des enfants...
             _rootGameObject.DrawWithChildren();
-
-            //List<GameObject> objectsToRender = GameHost.GetObjectsToRender();
-
-            //for (int index = 0; index < objectsToRender.Count; index++)
-            //    objectsToRender[index].Draw();
 
             _spriteBatch.End();
 
