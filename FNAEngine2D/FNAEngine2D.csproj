@@ -46,6 +46,7 @@
     <Compile Include="ColliderContainer.cs" />
     <Compile Include="ColliderRectangle.cs" />
     <Compile Include="Collision.cs" />
+    <Compile Include="CollisionHelper.cs" />
     <Compile Include="ContentManager.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />

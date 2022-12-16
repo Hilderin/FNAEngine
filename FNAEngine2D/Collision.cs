@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D
 {
-
+    /// <summary>
+    /// Emplacement de la collision
+    /// </summary>
     public enum CollisionDirection
     {
-        Left,
-        Right,
-        Top,
-        Bottom,
+        MovingColliderOnLeft,
+        MovingColliderOnRight,
+        MovingColliderOnTop,
+        MovingColliderOnBottom,
         None
     }
 

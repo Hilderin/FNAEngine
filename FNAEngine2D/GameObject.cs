@@ -266,7 +266,7 @@ namespace FNAEngine2D
         /// </summary>
         public IEnumerable<Collision> GetCollisions(int nextX, int nextY)
         {
-            if (_collider == null)
+            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
                 yield break;
 
             foreach (Collision collision in this.RootGameObject._colliderContainer.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider))
