@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using Velentr.Font;
 using System.Windows.Forms;
+using System.IO;
 
 namespace FNAEngine2D
 {
@@ -57,6 +58,22 @@ namespace FNAEngine2D
         /// </summary>
         public static GameTime GameTime;
 
+        /// <summary>
+        /// Width du jeu
+        /// </summary>
+        public static int Width 
+        {
+            get { return _internalGameHost.Width; }
+        }
+
+        /// <summary>
+        /// Height du jeu
+        /// </summary>
+        public static int Height
+        {
+            get { return _internalGameHost.Height; }
+        }
+
 
         /// <summary>
         /// Constructeur
@@ -81,6 +98,12 @@ namespace FNAEngine2D
         /// </summary>
         public static T GetContent<T>(string assetName)
         {
+            if (assetName == "pixel" && typeof(T) == typeof(Texture2D))
+            {
+                object ret = Texture2D.FromStream(_internalGameHost.GraphicsDevice, new MemoryStream(Resource.pixelBin));
+                return (T)ret;
+            }
+
             return _internalGameHost.Content.Load<T>(assetName);
         }
 

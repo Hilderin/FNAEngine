@@ -20,16 +20,11 @@ namespace FNAEngine2D
         private TextRender _textRender;
 
         /// <summary>
-        /// Compteur de frame
-        /// </summary>
-        private int _cptFrame = 0;
-
-        /// <summary>
         /// Renderer de texture
         /// </summary>
         public FPSRender(string fileName, int fontSize, Color color)
         {
-            _textRender = this.Add(new TextRender(String.Empty, fileName, fontSize, new Vector2(0, 0), color));
+            _textRender = this.Add(new TextRender(String.Empty, fileName, fontSize, new Point(0, 0), color));
         }
 
         /// <summary>

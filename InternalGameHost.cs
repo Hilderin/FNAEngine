@@ -49,6 +49,18 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Width
+        /// </summary>
+        public int Width { get { return _graphics.PreferredBackBufferWidth; } }
+
+        /// <summary>
+        /// Height
+        /// </summary>
+        public int Height { get { return _graphics.PreferredBackBufferHeight; } }
+
+
+
+        /// <summary>
         /// Constructeur
         /// </summary>
         public InternalGameHost() //This is the constructor, this function is called whenever the game class is created.

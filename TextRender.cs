@@ -45,11 +45,6 @@ namespace FNAEngine2D
         private Font _font;
 
         /// <summary>
-        /// Position à l'écran
-        /// </summary>
-        public Vector2 Position;
-
-        /// <summary>
         /// Couleur
         /// </summary>
         public Color Color;
@@ -70,25 +65,17 @@ namespace FNAEngine2D
             }
         }
 
-        /// <summary>
-        /// Rotation
-        /// </summary>
-        public float Rotation = 0f;
-
-        /// <summary>
-        /// Rotation
-        /// </summary>
-        public Vector2 RotationOrigin;
+        
 
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fileName, int fontSize, Vector2 position, Color color)
+        public TextRender(string text, string fileName, int fontSize, Point location, Color color)
         {
             _fileName = fileName;
             _fontSize = fontSize;
 
-            this.Position = position;
+            this.Location = location;
             this.Color = color;
             this.Text = text;
 

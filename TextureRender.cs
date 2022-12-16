@@ -21,9 +21,9 @@ namespace FNAEngine2D
         private Texture2D _texture;
 
         /// <summary>
-        /// Position à l'écran
+        /// Color
         /// </summary>
-        public Rectangle Destination;
+        public Color Color = Color.White;
 
         /// <summary>
         /// Renderer de texture
@@ -36,11 +36,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string assetName, Rectangle destination)
+        public TextureRender(string assetName, Rectangle bounds)
         {
             _assetName = assetName;
 
-            this.Destination = destination;
+            this.Bounds = bounds;
+        }
+
+        /// <summary>
+        /// Renderer de texture
+        /// </summary>
+        public TextureRender(string assetName, Rectangle bounds, Color color)
+        {
+            _assetName = assetName;
+
+            this.Bounds = bounds;
+            this.Color = color;
         }
 
         /// <summary>
@@ -50,8 +61,8 @@ namespace FNAEngine2D
         {
             _texture = GameHost.GetContent<Texture2D>(_assetName);
 
-            if (this.Destination == Rectangle.Empty)
-                this.Destination = new Rectangle(0, 0, _texture.Width, _texture.Height);
+            if (this.Bounds == Rectangle.Empty)
+                this.Bounds = new Rectangle(0, 0, _texture.Width, _texture.Height);
         }
 
         /// <summary>
@@ -59,7 +70,7 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
-            GameHost.SpriteBatch.Draw(_texture, this.Destination,  Color.Wheat);
+            GameHost.SpriteBatch.Draw(_texture, this.Bounds, this.Color);
         }
 
     }
