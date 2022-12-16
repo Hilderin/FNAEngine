@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,7 @@ namespace FNAEngine2D
         MovingColliderOnBottom,
         MovingColliderOver,
         MovingColliderIn,
-        Indetermined,
-        None
+        Indetermined
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace FNAEngine2D
         /// <summary>
         /// CollidesWith
         /// </summary>
-        public ColliderRectangle CollidesWith;
+        public Collider CollidesWith;
 
         /// <summary>
         /// Direction d'où vient la collision
@@ -37,12 +37,18 @@ namespace FNAEngine2D
         public CollisionDirection Direction;
 
         /// <summary>
+        /// Bounds là où l'objet a faire la collision.
+        /// </summary>
+        public Rectangle StopBounds;
+
+        /// <summary>
         /// Collision
         /// </summary>
-        public Collision(ColliderRectangle collidesWith, CollisionDirection direction)
+        public Collision(Collider collidesWith, CollisionDirection direction, Rectangle stopBounds)
         {
             this.CollidesWith = collidesWith;
             this.Direction = direction;
+            this.StopBounds = stopBounds;
         }
 
     }

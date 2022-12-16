@@ -13,7 +13,6 @@ namespace FNAEngine2D
     /// </summary>
     public abstract class GameObject
     {
-
         /// <summary>
         /// Collider container
         /// </summary>
@@ -22,7 +21,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Avons-nous un collider?
         /// </summary>
-        private ColliderRectangle _collider = null;
+        private Collider _collider = null;
 
         /// <summary>
         /// RootGameObject
@@ -244,33 +243,59 @@ namespace FNAEngine2D
             if (this.RootGameObject._colliderContainer == null)
                 this.RootGameObject._colliderContainer = new ColliderContainer();
 
-            _collider = new ColliderRectangle(this);
+            _collider = new Collider(this);
             this.RootGameObject._colliderContainer.Colliders.Add(_collider);
         }
 
         /// <summary>
+        /// Permet d'obtenir la première collision
+        /// </summary>
+        public Collision GetCollision()
+        {
+            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+                return null;
+
+            if (_collider == null)
+                return this.RootGameObject._colliderContainer.GetCollision(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
+            else
+                return this.RootGameObject._colliderContainer.GetCollision(_collider.Bounds, _collider);
+        }
+
+        /// <summary>
+        /// Permet d'obtenir la première collision
+        /// </summary>
+        public Collision GetCollision(int nextX, int nextY)
+        {
+            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+                return null;
+
+            return this.RootGameObject._colliderContainer.GetCollision(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
+        }
+
+        /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public IEnumerable<Collision> GetCollisions()
+        public List<Collision> GetCollisions()
         {
-            if (_collider == null)
-                yield break;
+            if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
+                return CollisionHelper.EMPTY_COLLISIONS;
 
-            foreach (Collision collision in this.RootGameObject._colliderContainer.GetCollisions(_collider.Bounds, _collider))
-                yield return collision;
+            if (_collider == null)
+                return this.RootGameObject._colliderContainer.GetCollisions(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
+            else
+                return this.RootGameObject._colliderContainer.GetCollisions(_collider.Bounds, _collider);
 
         }
 
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public IEnumerable<Collision> GetCollisions(int nextX, int nextY)
+        public List<Collision> GetCollisions(int nextX, int nextY)
         {
             if (this.RootGameObject == null || this.RootGameObject._colliderContainer == null)
-                yield break;
+                return CollisionHelper.EMPTY_COLLISIONS;
 
-            foreach (Collision collision in this.RootGameObject._colliderContainer.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider))
-                yield return collision;
+            return this.RootGameObject._colliderContainer.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
 
         }
 

@@ -14,122 +14,140 @@ namespace FNAEngine2D
     public static class CollisionHelper
     {
         /// <summary>
+        /// Empty collisions
+        /// </summary>
+        public readonly static List<Collision> EMPTY_COLLISIONS = new List<Collision>();
+
+
+        /// <summary>
         /// Permet d'obtenir le résultat de la collision entre 2 rectangle
         /// </summary>
-        public static CollisionDirection GetCollision(Rectangle movingCollider, Rectangle collidesWith)
+        public static Collision GetCollision(Rectangle movingCollider, Collider collidesWith)
         {
-            if (!movingCollider.Intersects(collidesWith))
-                return CollisionDirection.None;
+            Rectangle collidesWithRect = collidesWith.Bounds;
 
-            if (movingCollider.Contains(collidesWith))
-                return CollisionDirection.MovingColliderOver;
+            if (!movingCollider.Intersects(collidesWithRect))
+                return null;
 
-            if (collidesWith.Contains(movingCollider))
-                return CollisionDirection.MovingColliderIn;
+            CollisionDirection direction = CollisionDirection.Indetermined;
 
-            if (movingCollider.Bottom >= collidesWith.Top && movingCollider.Bottom <= collidesWith.Bottom)
+            if (movingCollider.Contains(collidesWithRect))
             {
-                //Objet est en haut
-                if (movingCollider.Top < collidesWith.Top)
+                direction = CollisionDirection.MovingColliderOver;
+            }
+            else if (collidesWithRect.Contains(movingCollider))
+            {
+                direction = CollisionDirection.MovingColliderIn;
+            }
+            else
+            {
+                if (movingCollider.Bottom >= collidesWithRect.Top && movingCollider.Bottom <= collidesWithRect.Bottom)
                 {
-                    //On va regarder si on va pas prioriser le côté...
-                    if (movingCollider.Right >= collidesWith.Left && movingCollider.Right <= collidesWith.Right)
+                    //Objet est en haut
+                    if (movingCollider.Top < collidesWithRect.Top)
                     {
-                        if (movingCollider.Right - collidesWith.Left < movingCollider.Bottom - collidesWith.Top)
-                            //On va prioriser la gauche...
-                            return CollisionDirection.MovingColliderOnLeft;
+                        //On va regarder si on va pas prioriser le côté...
+                        if (movingCollider.Right >= collidesWithRect.Left && movingCollider.Right <= collidesWithRect.Right)
+                        {
+                            if (movingCollider.Right - collidesWithRect.Left < movingCollider.Bottom - collidesWithRect.Top)
+                                //On va prioriser la gauche...
+                                direction = CollisionDirection.MovingColliderOnLeft;
+                            else
+                                direction = CollisionDirection.MovingColliderOnTop;
+                        }
+                        else if (movingCollider.Left <= collidesWithRect.Right && movingCollider.Left >= collidesWithRect.Left)
+                        {
+                            //On a aussi une collision sur la droite...
+                            if (collidesWithRect.Right - movingCollider.Left < movingCollider.Bottom - collidesWithRect.Top)
+                                //On va prioriser la droite...
+                                direction = CollisionDirection.MovingColliderOnRight;
+                            else
+                                direction = CollisionDirection.MovingColliderOnTop;
+                        }
+                        else
+                        {
+                            direction = CollisionDirection.MovingColliderOnTop;
+                        }
                     }
-
-                    if (movingCollider.Left <= collidesWith.Right && movingCollider.Left >= collidesWith.Left)
-                    {
-                        //On a aussi une collision sur la droite...
-                        if (collidesWith.Right - movingCollider.Left < movingCollider.Bottom - collidesWith.Top)
-                            //On va prioriser la droite...
-                            return CollisionDirection.MovingColliderOnRight;
-                    }
-
-                    return CollisionDirection.MovingColliderOnTop;
                 }
-            }
 
-            if (movingCollider.Top <= collidesWith.Bottom && movingCollider.Top >= collidesWith.Top)
-            {
-                //Objet est en bas
-                if (movingCollider.Bottom > collidesWith.Bottom)
+                if (direction == CollisionDirection.Indetermined)
                 {
-                    //On va regarder si on va pas prioriser le côté...
-                    if (movingCollider.Right >= collidesWith.Left && movingCollider.Right <= collidesWith.Right)
+                    if (movingCollider.Top <= collidesWithRect.Bottom && movingCollider.Top >= collidesWithRect.Top)
                     {
-                        if(movingCollider.Right - collidesWith.Left < collidesWith.Bottom - movingCollider.Top)
-                            //On va prioriser la gauche...
-                            return CollisionDirection.MovingColliderOnLeft;
-                    }
-                    
-                    if (movingCollider.Left <= collidesWith.Right && movingCollider.Left >= collidesWith.Left)
-                    {
-                        //On a aussi une collision sur la droite...
-                        if(collidesWith.Right - movingCollider.Left < collidesWith.Bottom - movingCollider.Top)
-                            //On va prioriser la droite...
-                            return CollisionDirection.MovingColliderOnRight;
+                        //Objet est en bas
+                        if (movingCollider.Bottom > collidesWithRect.Bottom)
+                        {
+                            //On va regarder si on va pas prioriser le côté...
+                            if (movingCollider.Right >= collidesWithRect.Left && movingCollider.Right <= collidesWithRect.Right)
+                            {
+                                if (movingCollider.Right - collidesWithRect.Left < collidesWithRect.Bottom - movingCollider.Top)
+                                    //On va prioriser la gauche...
+                                    direction = CollisionDirection.MovingColliderOnLeft;
+                                else
+                                    direction = CollisionDirection.MovingColliderOnBottom;
+                            }
+
+                            if (movingCollider.Left <= collidesWithRect.Right && movingCollider.Left >= collidesWithRect.Left)
+                            {
+                                //On a aussi une collision sur la droite...
+                                if (collidesWithRect.Right - movingCollider.Left < collidesWithRect.Bottom - movingCollider.Top)
+                                    //On va prioriser la droite...
+                                    direction = CollisionDirection.MovingColliderOnRight;
+                                else
+                                    direction = CollisionDirection.MovingColliderOnBottom;
+                            }
+                            else
+                            {
+                                direction = CollisionDirection.MovingColliderOnBottom;
+                            }
+                        }
                     }
 
-                    return CollisionDirection.MovingColliderOnBottom;
+                    if (direction == CollisionDirection.Indetermined)
+                    {
+                        if (movingCollider.Right >= collidesWithRect.Left && movingCollider.Right <= collidesWithRect.Right)
+                        {
+                            //Objet est en left
+                            direction = CollisionDirection.MovingColliderOnLeft;
+                        }
+                        else if (movingCollider.Left <= collidesWithRect.Right && movingCollider.Left >= collidesWithRect.Left)
+                        {
+                            //Objet est en right
+                            direction = CollisionDirection.MovingColliderOnRight;
+                        }
+                    }
                 }
+
             }
 
-            if (movingCollider.Right >= collidesWith.Left && movingCollider.Right <= collidesWith.Right)
+            //En fonction de la direction on va déplacer le StopBounds
+            Rectangle stopBounds;
+            switch (direction)
             {
-                //Objet est en left
-                return CollisionDirection.MovingColliderOnLeft;
+                case CollisionDirection.MovingColliderOnLeft:
+                    //La balle est à gauche
+                    stopBounds = new Rectangle(collidesWithRect.Left - movingCollider.Width, movingCollider.Top, movingCollider.Width, movingCollider.Height);
+                    break;
+                case CollisionDirection.MovingColliderOnRight:
+                    //La balle est à droite
+                    stopBounds = new Rectangle(collidesWithRect.Right, movingCollider.Top, movingCollider.Width, movingCollider.Height);
+                    break;
+                case CollisionDirection.MovingColliderOnTop:
+                    //La balle est en haut
+                    stopBounds = new Rectangle(movingCollider.Left, collidesWithRect.Top - movingCollider.Height, movingCollider.Width, movingCollider.Height);
+                    break;
+                case CollisionDirection.MovingColliderOnBottom:
+                    //La balle est en bas
+                    stopBounds = new Rectangle(movingCollider.Left, collidesWithRect.Bottom, movingCollider.Width, movingCollider.Height);
+                    break;
+                default:
+                    stopBounds = movingCollider;
+                    break;
             }
 
-            if (movingCollider.Left <= collidesWith.Right && movingCollider.Left >= collidesWith.Left)
-            {
-                //Objet est en right
-                return CollisionDirection.MovingColliderOnRight;
-            }
 
-
-
-            //bool left = true;
-            //bool right = true;
-            //bool top = true;
-            //bool bottom = true;
-
-            //if (collidesWith.Right < movingCollider.Left)
-            //{
-            //    //Objet est à gauche, pas de collider ici
-            //    left = false;
-            //}
-
-            //if (collidesWith.Left > movingCollider.Right)
-            //{
-            //    //Objet est à droit, pas de collider ici
-            //    right = false;
-            //}
-
-            //if (collidesWith.Bottom < movingCollider.Top)
-            //{
-            //    //Objet est en haut, pas de collider ici
-            //    top = false;
-            //}
-
-            //if (collidesWith.Top > movingCollider.Bottom)
-            //{
-            //    //Objet est en bas, pas de collider ici
-            //    bottom = false;
-            //}
-
-            //if (left)
-            //    return CollisionDirection.MovingColliderOnLeft;
-            //if (right)
-            //    return CollisionDirection.MovingColliderOnRight;
-            //if (top)
-            //    return CollisionDirection.MovingColliderOnTop;
-            //if (bottom)
-            //    return CollisionDirection.MovingColliderOnBottom;
-
-            return CollisionDirection.Indetermined;
+            return new Collision(collidesWith, direction, stopBounds);
         }
 
     }

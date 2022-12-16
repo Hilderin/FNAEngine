@@ -15,25 +15,46 @@ namespace FNAEngine2D
         /// <summary>
         /// Colliders
         /// </summary>
-        public List<ColliderRectangle> Colliders { get; private set; } = new List<ColliderRectangle>();
+        public List<Collider> Colliders { get; private set; } = new List<Collider>();
 
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public IEnumerable<Collision> GetCollisions(Rectangle movingColliderNextBounds, ColliderRectangle movingCollider)
+        public Collision GetCollision(Rectangle movingColliderNextBounds, Collider movingCollider)
         {
             for (int index = 0; index < this.Colliders.Count; index++)
             {
                 if (this.Colliders[index] != movingCollider)
                 {
-                    CollisionDirection direction = CollisionHelper.GetCollision(movingColliderNextBounds, this.Colliders[index].Bounds);
-                    if(direction != CollisionDirection.None)
-                        yield return new Collision(this.Colliders[index], direction);
+                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, this.Colliders[index]);
+                    if (collision != null)
+                        return collision;
                 }
             }
+
+            return null;
         }
 
-        
+        /// <summary>
+        /// Permet d'obtenir la liste des collisions
+        /// </summary>
+        public List<Collision> GetCollisions(Rectangle movingColliderNextBounds, Collider movingCollider)
+        {
+            List<Collision> collisions = new List<Collision>();
+            for (int index = 0; index < this.Colliders.Count; index++)
+            {
+                if (this.Colliders[index] != movingCollider)
+                {
+                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, this.Colliders[index]);
+                    if (collision != null)
+                        collisions.Add(collision);
+                }
+            }
+
+            return collisions;
+        }
+
+
 
 
     }

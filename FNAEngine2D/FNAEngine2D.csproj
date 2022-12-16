@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColliderContainer.cs" />
-    <Compile Include="ColliderRectangle.cs" />
+    <Compile Include="Collider.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="CollisionHelper.cs" />
     <Compile Include="ContentManager.cs" />
