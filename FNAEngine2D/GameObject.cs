@@ -497,7 +497,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir la première collision
         /// </summary>
-        public Collision GetCollision()
+        public Collision GetCollision(Type[] types)
         {
             ColliderContainer container = GetColliderContainer();
 
@@ -505,28 +505,28 @@ namespace FNAEngine2D
                 return null;
 
             if (_collider == null)
-                return container.GetCollision(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
+                return container.GetCollision(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider, types);
             else
-                return container.GetCollision(_collider.Bounds, _collider);
+                return container.GetCollision(_collider.Bounds, _collider, types);
         }
 
         /// <summary>
         /// Permet d'obtenir la première collision
         /// </summary>
-        public Collision GetCollision(int nextX, int nextY)
+        public Collision GetCollision(int nextX, int nextY, Type[] types)
         {
             ColliderContainer container = GetColliderContainer();
 
             if (container.IsEmpty)
                 return null;
 
-            return container.GetCollision(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
+            return container.GetCollision(new Rectangle(nextX, nextY, this.Width, this.Height), _collider, types);
         }
 
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public List<Collision> GetCollisions()
+        public List<Collision> GetCollisions(Type[] types)
         {
             ColliderContainer container = GetColliderContainer();
 
@@ -534,23 +534,23 @@ namespace FNAEngine2D
                 return CollisionHelper.EMPTY_COLLISIONS;
 
             if (_collider == null)
-                return container.GetCollisions(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider);
+                return container.GetCollisions(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider, types);
             else
-                return container.GetCollisions(_collider.Bounds, _collider);
+                return container.GetCollisions(_collider.Bounds, _collider, types);
 
         }
 
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public List<Collision> GetCollisions(int nextX, int nextY)
+        public List<Collision> GetCollisions(int nextX, int nextY, Type[] types)
         {
             ColliderContainer container = GetColliderContainer();
 
             if (container.IsEmpty)
                 return CollisionHelper.EMPTY_COLLISIONS;
 
-            return container.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider);
+            return container.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider, types);
         }
 
         /// <summary>
@@ -567,6 +567,22 @@ namespace FNAEngine2D
         public virtual void Show()
         {
             _visible = true;
+        }
+
+        /// <summary>
+        /// Count the gameobject in children
+        /// </summary>
+        public int Count(Type gameObjectType)
+        {
+            int count = 0;
+
+            for (int index = 0; index < this.Childrens.Count; index++)
+            {
+                if (this.Childrens[index].GetType() == gameObjectType)
+                    count++;
+            }
+
+            return count;
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public Collision GetCollision(Rectangle movingColliderNextBounds, Collider movingCollider)
+        public Collision GetCollision(Rectangle movingColliderNextBounds, Collider movingCollider, Type[] types)
         {
             if (_colliders.Count == 0)
                 return null;
@@ -52,9 +52,12 @@ namespace FNAEngine2D
             {
                 if (_colliders[index] != movingCollider)
                 {
-                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
-                    if (collision != null)
-                        return collision;
+                    if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
+                    {
+                        Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
+                        if (collision != null)
+                            return collision;
+                    }
                 }
             }
 
@@ -64,7 +67,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public List<Collision> GetCollisions(Rectangle movingColliderNextBounds, Collider movingCollider)
+        public List<Collision> GetCollisions(Rectangle movingColliderNextBounds, Collider movingCollider, Type[] types)
         {
             if (_colliders.Count == 0)
                 return CollisionHelper.EMPTY_COLLISIONS;
@@ -74,9 +77,12 @@ namespace FNAEngine2D
             {
                 if (_colliders[index] != movingCollider)
                 {
-                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
-                    if (collision != null)
-                        collisions.Add(collision);
+                    if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
+                    {
+                        Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
+                        if (collision != null)
+                            collisions.Add(collision);
+                    }
                 }
             }
 
