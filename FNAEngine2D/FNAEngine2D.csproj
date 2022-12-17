@@ -54,9 +54,12 @@
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />
     <Compile Include="GameMath.cs" />
+    <Compile Include="IMouseEventHandler.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InternalGameHost.cs" />
     <Compile Include="GameHost.cs" />
+    <Compile Include="MouseAction.cs" />
+    <Compile Include="MouseManager.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameObject.cs" />

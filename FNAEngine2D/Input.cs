@@ -16,10 +16,7 @@ namespace FNAEngine2D
         private static MouseState _mouseState;
         private static MouseState _lastMouseState;
 
-        /// <summary>
-        /// Indique si la souris est visible
-        /// </summary>
-        public static bool IsMouseVisible { get; private set; }
+        private static Vector2 _mousePosition;
 
         /// <summary>
         /// Call at each Update
@@ -31,6 +28,9 @@ namespace FNAEngine2D
 
             _lastMouseState = _mouseState;
             _mouseState = Mouse.GetState();
+
+            _mousePosition = new Vector2(_mouseState.X, _mouseState.Y) * GameHost.InternalGameHost.ScreenScale;
+
         }
 
         /// <summary>
@@ -72,6 +72,17 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Returns whether or not the left mouse button is newlly down
+        /// </summary>
+        public static bool MouseLeftNewDown()
+        {
+            if (_mouseState.LeftButton == ButtonState.Pressed && _lastMouseState.LeftButton == ButtonState.Released)
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
         /// Returns whether or not the right mouse button is being pressed.
         /// </summary>
         public static bool MouseRightDown()
@@ -87,7 +98,7 @@ namespace FNAEngine2D
         /// </summary>
         public static bool MouseLeftClicked()
         {
-            if (_mouseState.LeftButton == ButtonState.Pressed && _lastMouseState.LeftButton == ButtonState.Released)
+            if (_mouseState.LeftButton == ButtonState.Released && _lastMouseState.LeftButton == ButtonState.Pressed)
                 return true;
             else
                 return false;
@@ -105,42 +116,12 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Display the mouse cursor
+        /// Gets mouse coordinates adjusted for virtual resolution and camera position.
         /// </summary>
-        public static void ShowMouse()
+        public static Vector2 MousePosition()
         {
-            Input.IsMouseVisible = true;
-
-            //Si on a un gamehost, on va le setter...
-            if (GameHost.InternalGameHost != null && GameHost.InternalGameHost.IsInitialized)
-                GameHost.InternalGameHost.IsMouseVisible = true;
+            return _mousePosition;
         }
-
-
-        /// <summary>
-        /// Hide the mouse cursor
-        /// </summary>
-        public static void HideMouse()
-        {
-            Input.IsMouseVisible = false;
-
-            //Si on a un gamehost, on va le setter...
-            if (GameHost.InternalGameHost != null && GameHost.InternalGameHost.IsInitialized)
-                GameHost.InternalGameHost.IsMouseVisible = false;
-        }
-
-
-        ///// <summary>
-        ///// Gets mouse coordinates adjusted for virtual resolution and camera position.
-        ///// </summary>
-        //public static Vector2 MousePositionCamera()
-        //{
-        //    Vector2 mousePosition = Vector2.Zero;
-        //    mousePosition.X = _mouseState.X;
-        //    mousePosition.Y = _mouseState.Y;
-
-        //    return ScreenToWorld(mousePosition);
-        //}
 
         ///// <summary>
         ///// Gets the last mouse coordinates adjusted for virtual resolution and camera position.

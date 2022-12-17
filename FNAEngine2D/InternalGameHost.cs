@@ -38,12 +38,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Taille de l'écran
         /// </summary>
-        private Point _screenSize;
+        private Point _gameSize;
 
         /// <summary>
         /// Taille de l'écran
         /// </summary>
-        private Rectangle _screenRectangle;
+        private Rectangle _gameRectangle;
 
         /// <summary>
         /// Indique si l'objet est initialisé
@@ -55,6 +55,16 @@ namespace FNAEngine2D
         /// Sprite batch pour le renderer
         /// </summary>
         public SpriteBatch SpriteBatch { get { return _spriteBatch; } }
+
+        /// <summary>
+        /// The scale result of merging Internal size with Screen size.
+        /// </summary>
+        public Vector2 ScreenScale { get; private set; }
+
+        /// <summary>
+        /// The scale used for beginning the SpriteBatch.
+        /// </summary>
+        public Matrix ScaleMatrix { get; private set; }
 
         /// <summary>
         /// Game actuellement en train de rouler
@@ -74,27 +84,27 @@ namespace FNAEngine2D
         /// <summary>
         /// Width
         /// </summary>
-        public int Width { get { return _screenSize.X; } }
+        public int Width { get { return _gameSize.X; } }
 
         /// <summary>
         /// Height
         /// </summary>
-        public int Height { get { return _screenSize.Y; } }
+        public int Height { get { return _gameSize.Y; } }
 
         /// <summary>
         /// Size
         /// </summary>
-        public Point Size { get { return _screenSize; } }
+        public Point Size { get { return _gameSize; } }
 
         /// <summary>
         /// Rectangle
         /// </summary>
-        public Rectangle Rectangle { get { return _screenRectangle; } }
+        public Rectangle Rectangle { get { return _gameRectangle; } }
 
         /// <summary>
         /// Bounds
         /// </summary>
-        public Rectangle Bounds { get { return _screenRectangle; } }
+        public Rectangle Bounds { get { return _gameRectangle; } }
 
 
         /// <summary>
@@ -107,15 +117,54 @@ namespace FNAEngine2D
             //Création du Content Manager..
             this.Content = new ContentManager(this.Services, ContentHelper.ContentFolder);
 
+            //Setting de default resolution...
+            SetResolution(1200, 720, 1200, 720, false);
+            
+        }
 
-            _graphics.PreferredBackBufferWidth = 1200;
-            _graphics.PreferredBackBufferHeight = 720;
-            _graphics.IsFullScreen = false;
+
+        /// <summary>
+        /// Set the resolution
+        /// </summary>
+        /// <param name="screenWidth">Width on screen (real window width)</param>
+        /// <param name="screenHeight">Height on screen (real window height)</param>
+        /// <param name="internalWidth">Internal width, number of pixels everything use internally</param>
+        /// <param name="internalHeight">Internal height, number of pixels everything use internally</param>
+        public void SetResolution(int screenWidth, int screenHeight, int internalWidth, int internalHeight, bool isFullScreen)
+        {
+
+            _graphics.PreferredBackBufferWidth = screenWidth;
+            _graphics.PreferredBackBufferHeight = screenHeight;
+            _graphics.IsFullScreen = isFullScreen;
             _graphics.ApplyChanges();
 
-            _screenSize = new Point(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-            _screenRectangle = new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _gameSize = new Point(internalWidth, internalHeight);
+            _gameRectangle = new Rectangle(0, 0, internalWidth, internalHeight);
+
+            if (screenWidth == internalWidth && screenHeight == internalHeight)
+            {
+                //No scaling...
+                ScreenScale = Vector2.One;
+                ScaleMatrix = Matrix.Identity;
+
+            }
+            else
+            {
+
+                float widthScale = (float)screenWidth / internalWidth;
+                float heightScale = (float)screenHeight / internalHeight;
+
+                ScreenScale = new Vector2(widthScale, heightScale);
+
+                //ScreenAspectRatio = new Vector2(widthScale / heightScale);
+                Vector3 scalingFactor = new Vector3(widthScale, heightScale, 1);
+                ScaleMatrix = Matrix.CreateScale(scalingFactor);
+
+            }
+            
+
         }
+
 
 
         /// <summary>
@@ -139,7 +188,7 @@ namespace FNAEngine2D
 
 
             //Setup the mouse...
-            this.IsMouseVisible = Input.IsMouseVisible;
+            this.IsMouseVisible = MouseManager.IsMouseVisible;
 
         }
 
@@ -190,6 +239,9 @@ namespace FNAEngine2D
             //Update des inputs...
             Input.Update();
 
+            //Processing des mouses events...
+            MouseManager.ProcessMouseEvents();
+
             //Call du update du current game...
             _rootGameObject.UpdateWithChildren();
 
@@ -208,12 +260,15 @@ namespace FNAEngine2D
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
             _graphicsDevice.Clear(Color.Gray);
 
-            _spriteBatch.Begin();
+            //Render...
+            if (_rootGameObject.Visible)
+            {
+                _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, ScaleMatrix);
 
-            //Render des enfants...
-            _rootGameObject.DrawWithChildren();
+                _rootGameObject.DrawWithChildren();
 
-            _spriteBatch.End();
+                _spriteBatch.End();
+            }
 
             //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);

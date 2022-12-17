@@ -20,10 +20,16 @@ namespace FNAEngine2D
     /// </summary>
     public static class GameHost
     {
+       
         /// <summary>
         /// Internal GameHost
         /// </summary>
         private static InternalGameHost _internalGameHost;
+
+        /// <summary>
+        /// Run done?
+        /// </summary>
+        private static bool _runDone = false;
 
 
         /// <summary>
@@ -66,9 +72,19 @@ namespace FNAEngine2D
         public static int Width { get { return _internalGameHost.Width; } }
 
         /// <summary>
+        /// Center X
+        /// </summary>
+        public static int CenterX { get { return _internalGameHost.Width / 2; } }
+
+        /// <summary>
         /// Height du jeu
         /// </summary>
         public static int Height { get { return _internalGameHost.Height; } }
+
+        /// <summary>
+        /// Center Y
+        /// </summary>
+        public static int CenterY { get { return _internalGameHost.Height / 2; } }
 
         /// <summary>
         /// Size du jeu
@@ -101,6 +117,18 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Set the resolution
+        /// </summary>
+        /// <param name="screenWidth">Width on screen (real window width)</param>
+        /// <param name="screenHeight">Height on screen (real window height)</param>
+        /// <param name="internalWidth">Internal width, number of pixels everything use internally</param>
+        /// <param name="internalHeight">Internal height, number of pixels everything use internally</param>
+        public static void SetResolution(int screenWidth, int screenHeight, int internalWidth, int internalHeight, bool isFullScreen)
+        {
+            _internalGameHost.SetResolution(screenWidth, screenHeight, internalWidth, internalHeight, isFullScreen);
+        }
+
+        /// <summary>
         /// Permet d'obtenir un élément du Content
         /// </summary>
         public static T GetContent<T>(string assetName)
@@ -122,6 +150,12 @@ namespace FNAEngine2D
         {
             try
             {
+                //We dispose of the _internalGameHost at the end, Run cannot be called multiple times
+                if (_runDone)
+                    throw new InvalidOperationException("Run can be executed only once.");
+
+                _runDone = true;
+
                 RunInternal(rootGameObject);
             }
             catch (Exception ex)

@@ -34,5 +34,14 @@ namespace FNAEngine2D
             //On fait le - car sinon, la rotation va partir dans l'autre sens...
             return Vector2.Transform(toRotate - origin, Matrix.CreateRotationZ(-radians)) + origin;
         }
+
+        /// <summary>
+        /// Check if vector2 in rectangle
+        /// </summary>
+        public static bool Intersects(Vector2 vector, Rectangle bounds)
+        {
+            return (bounds.X <= vector.X && bounds.Right >= vector.X
+                    && bounds.Y <= vector.Y && bounds.Bottom >= vector.Y);
+        }
     }
 }

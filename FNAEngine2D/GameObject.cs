@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,11 @@ namespace FNAEngine2D
         /// Gère le loading des childrens
         /// </summary>
         private bool _loaded = false;
+
+        /// <summary>
+        /// Visible
+        /// </summary>
+        private bool _visible = true;
 
         /// <summary>
         /// Collider container
@@ -52,6 +58,24 @@ namespace FNAEngine2D
         /// Indique si l'objet est paused
         /// </summary>
         public bool Paused;
+
+        /// <summary>
+        /// Visibity of the object
+        /// </summary>
+        public bool Visible
+        {
+            get { return _visible; }
+            set
+            {
+                if (_visible != value)
+                {
+                    if (value)
+                        Show();
+                    else
+                        Hide();
+                }
+            }
+        }
 
 
         /// <summary>
@@ -201,8 +225,7 @@ namespace FNAEngine2D
             this.Childrens.Add(gameObject);
 
             //Already a collider? can happen if remove and readded...
-            if (_collider != null)
-                GetColliderContainer().Add(_collider);
+            AddColliders(gameObject);
 
             //If not loaded already... can happen if remove and readded...
             if (!gameObject._loaded)
@@ -219,12 +242,38 @@ namespace FNAEngine2D
             gameObject.Parent = null;
             gameObject.RootGameObject = null;
 
-            if(_collider != null)
-                GetColliderContainer().Remove(_collider);
+            //Remove de colliders for the gameobject and all children...
+            RemoveColliders(gameObject);
 
             this.Childrens.Remove(gameObject);
+
+            MouseManager.RemoveGameObject(gameObject);
         }
 
+        /// <summary>
+        /// Remove all the gameobject of a certain type
+        /// </summary>
+        public void Remove(Type gameObjectType)
+        {
+            for (int index = this.Childrens.Count - 1; index >= 0; index--)
+            {
+                if (this.Childrens[index].GetType() == gameObjectType)
+                {
+                    Remove(this.Childrens[index]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove all the gameobject
+        /// </summary>
+        public void RemoveAll()
+        {
+            for (int index = this.Childrens.Count - 1; index >= 0; index--)
+            {
+                Remove(this.Childrens[index]);
+            }
+        }
 
         /// <summary>
         /// Chargement du content
@@ -301,7 +350,10 @@ namespace FNAEngine2D
                 return;
 
             for (int index = 0; index < this.Childrens.Count; index++)
-                this.Childrens[index].DrawWithChildren();
+            {
+                if (this.Childrens[index].Visible)
+                    this.Childrens[index].DrawWithChildren();
+            }
         }
 
 
@@ -502,6 +554,22 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Hide a object
+        /// </summary>
+        public virtual void Hide()
+        {
+            _visible = false;
+        }
+
+        /// <summary>
+        /// Show a object
+        /// </summary>
+        public virtual void Show()
+        {
+            _visible = true;
+        }
+
+        /// <summary>
         /// Permet de trouver le collider container où tout mettre les collider
         /// </summary>
         private ColliderContainer GetColliderContainer()
@@ -510,6 +578,46 @@ namespace FNAEngine2D
                 this.RootGameObject._colliderContainer = new ColliderContainer();
 
             return this.RootGameObject._colliderContainer;
+        }
+
+        /// <summary>
+        /// Process the removal of a game object for colliders (including children)
+        /// </summary>
+        private void AddColliders(GameObject gameObject)
+        {
+            if (gameObject._collider != null)
+            {
+                GetColliderContainer().Add(gameObject._collider);
+            }
+
+            if (gameObject.Childrens.Count > 0)
+            {
+                for (int index = 0; index < gameObject.Childrens.Count; index++)
+                {
+                    AddColliders(gameObject.Childrens[index]);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Process the removal of a game object for colliders (including children)
+        /// </summary>
+        private void RemoveColliders(GameObject gameObject)
+        {
+            if (gameObject._collider != null)
+            {
+                GetColliderContainer().Remove(gameObject._collider);
+            }
+
+            if (gameObject.Childrens.Count > 0)
+            {
+                for (int index = 0; index < gameObject.Childrens.Count; index++)
+                {
+                    RemoveColliders(gameObject.Childrens[index]);
+                }
+            }
+
         }
 
 
