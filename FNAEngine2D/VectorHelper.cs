@@ -43,5 +43,21 @@ namespace FNAEngine2D
             return (bounds.X <= vector.X && bounds.Right >= vector.X
                     && bounds.Y <= vector.Y && bounds.Bottom >= vector.Y);
         }
+
+        /// <summary>
+        /// Add on x axis
+        /// </summary>
+        public static Vector2 AddX(Vector2 vector, float x)
+        {
+            return new Vector2(vector.X + x, vector.Y);
+        }
+
+        /// <summary>
+        /// Add on y axis
+        /// </summary>
+        public static Vector2 AddY(Vector2 vector, float y)
+        {
+            return new Vector2(vector.X, vector.Y + y);
+        }
     }
 }

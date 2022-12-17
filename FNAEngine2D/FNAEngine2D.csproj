@@ -71,6 +71,9 @@
     </Compile>
     <Compile Include="TextRender.cs" />
     <Compile Include="TextureRender.cs" />
+    <Compile Include="RectangleHelper.cs" />
+    <Compile Include="RectangleExtensions.cs" />
+    <Compile Include="Vector2Extensions.cs" />
     <Compile Include="VectorHelper.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -14,13 +14,12 @@ WARNING: This project is meant to learn XNA quand create little games for yourse
 Some nice feature are already working:
 
 - GameHost / GameObject structure
-- TextureRender: a GameObject to draw texture on screen
-- TextRenderer: a GameObject to draw text on screen
+- TextureRender: GameObject to draw texture on screen
+- TextRenderer: GameObject to draw text on screen with different alignments
 - Collider: Basic rectangle collision detection system
 - Input: Basic input system (that i took from Michael Hicks: https://www.youtube.com/playlist?list=PL3wErD7ZIp_DtsTKoouVCxu81UQkI9VZL)
 - ContentManager: Custom ContentManager that hot reloads the modified texture at runtime
 - IMouseEventHandler: Implement Mouse Down, Up and Click on GameObject
-- 
 
 
 # Exemple

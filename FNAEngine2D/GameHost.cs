@@ -191,5 +191,13 @@ namespace FNAEngine2D
             ElapsedGameTimeSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
+        /// <summary>
+        /// Quit the game
+        /// </summary>
+        public static void Quit()
+        {
+            _internalGameHost.Exit();
+        }
+
     }
 }

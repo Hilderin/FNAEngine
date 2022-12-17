@@ -19,6 +19,11 @@ namespace FNAEngine2D
         private static Vector2 _mousePosition;
 
         /// <summary>
+        /// Consumed key pressed
+        /// </summary>
+        private static List<Keys> _consumedKeyPressed = new List<Keys>();
+
+        /// <summary>
         /// Call at each Update
         /// </summary>
         public static void Update()
@@ -31,6 +36,7 @@ namespace FNAEngine2D
 
             _mousePosition = new Vector2(_mouseState.X, _mouseState.Y) * GameHost.InternalGameHost.ScreenScale;
 
+            _consumedKeyPressed.Clear();
         }
 
         /// <summary>
@@ -52,12 +58,27 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if key was just pressed.
         /// </summary>
-        public static bool IsKeyPressed(Keys input)
+        public static bool IsKeyPressed(Keys input, bool consume = true)
         {
-            if (_keyboardState.IsKeyDown(input) == true && _lastKeyboardState.IsKeyDown(input) == false)
+            if (_keyboardState.IsKeyDown(input) == true && _lastKeyboardState.IsKeyDown(input) == false
+                && !_consumedKeyPressed.Contains(input))
+            {
+                if (consume)
+                    ConsumeKeyPressed(input);
+
                 return true;
+            }
             else
                 return false;
+        }
+
+        /// <summary>
+        /// Remove the key pressed from the state, we processed it
+        /// The goal is to prevent multiple gamepobject to process the keypressed
+        /// </summary>
+        public static void ConsumeKeyPressed(Keys input)
+        {
+            _consumedKeyPressed.Add(input);
         }
 
         /// <summary>
