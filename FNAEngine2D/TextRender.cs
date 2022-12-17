@@ -13,17 +13,29 @@ using static System.Net.Mime.MediaTypeNames;
 namespace FNAEngine2D
 {
     /// <summary>
-    /// Alignement du text
+    /// Alignment horizontal
     /// </summary>
-    public enum TextAlignment
+    public enum TextHorizontalAlignment
     {
         Left,
         Right,
         Center
     }
 
+    /// <summary>
+    /// Alignment vertical
+    /// </summary>
+    public enum TextVerticalAlignment
+    {
+        Top,
+        Bottom,
+        Middle
+    }
 
 
+    /// <summary>
+    /// Text render
+    /// </summary>
     public class TextRender : GameObject
     {
         /// <summary>
@@ -58,9 +70,14 @@ namespace FNAEngine2D
         private Font _font;
 
         /// <summary>
-        /// Alignement du text
+        /// Alignment horizontal
         /// </summary>
-        private TextAlignment _textAlignment = TextAlignment.Left;
+        private TextHorizontalAlignment _horizontalAlignment = TextHorizontalAlignment.Left;
+
+        /// <summary>
+        /// Alignment vertical
+        /// </summary>
+        private TextVerticalAlignment _verticalAlignment = TextVerticalAlignment.Top;
 
         /// <summary>
         /// Couleur
@@ -86,12 +103,21 @@ namespace FNAEngine2D
 
 
         /// <summary>
-        /// Alignement du texte
+        /// Alignment horizontal
         /// </summary>
-        public TextAlignment TextAlignment
+        public TextHorizontalAlignment HorizontalAlignment
         {
-            get { return _textAlignment; }
-            set { _textAlignment = value; }
+            get { return _horizontalAlignment; }
+            set { _horizontalAlignment = value; }
+        }
+
+        /// <summary>
+        /// Alignment vertical
+        /// </summary>
+        public TextVerticalAlignment VerticalAlignment
+        {
+            get { return _verticalAlignment; }
+            set { _verticalAlignment = value; }
         }
 
 
@@ -106,6 +132,23 @@ namespace FNAEngine2D
             this.Location = location;
             this.Color = color;
             this.Text = text;
+
+        }
+
+        /// <summary>
+        /// Renderer de texture
+        /// </summary>
+        public TextRender(string text, string fileName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment)
+        {
+            _fileName = fileName;
+            _fontSize = fontSize;
+
+            this.Bounds = bounds;
+            this.Color = color;
+            this.Text = text;
+
+            _horizontalAlignment = horizontalAlignment;
+            _verticalAlignment = verticalAlignment;
 
         }
 
@@ -134,24 +177,44 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
+            int x;
+            int y;
 
-            Vector2 position;
-            switch (_textAlignment)
+            //Calculate horizontal position...
+            switch (_horizontalAlignment)
             {
-                case TextAlignment.Right:
+                case TextHorizontalAlignment.Right:
                     //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
-                    position = new Vector2((int)(this.X + this.Width - _textCache.Width), this.Y);
+                    x = (int)(this.X + this.Width - _textCache.Width);
                     break;
-                case TextAlignment.Center:
+                case TextHorizontalAlignment.Center:
                     //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
-                    position = new Vector2((int)(this.X + (this.Width / 2) - (_textCache.Width / 2)), this.Y);
+                    x = (int)(this.X + (this.Width / 2) - (_textCache.Width / 2));
                     break;
                 default:
-                    position = this.Position;
+                    x = (int)this.Position.X;
                     break;
             }
 
-            GameHost.SpriteBatch.DrawString(_textCache, position, this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
+            //Calculate vertical position...
+            switch (_verticalAlignment)
+            {
+                case TextVerticalAlignment.Bottom:
+                    //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
+                    y = (int)(this.Y + this.Height - _textCache.Height);
+                    break;
+                case TextVerticalAlignment.Middle:
+                    //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
+                    //The _textCache.Height is just wrong...
+                    //I padded with a +8 we will see later if it's good for every fonts
+                    y = (int)(this.Y + (this.Height / 2) - ((_fontSize + 8) / 2));
+                    break;
+                default:
+                    y = (int)this.Position.Y;
+                    break;
+            }
+
+            GameHost.SpriteBatch.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
             //_font.DrawString(this.Text, this.Position, this.Color, this.Rotation, this.RotationOrigin);
         }
 

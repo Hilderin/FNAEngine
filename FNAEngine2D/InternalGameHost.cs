@@ -38,7 +38,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Taille de l'écran
         /// </summary>
-        private Vector2Int _screenSize;
+        private Point _screenSize;
+
+        /// <summary>
+        /// Taille de l'écran
+        /// </summary>
+        private Rectangle _screenRectangle;
 
         /// <summary>
         /// Indique si l'objet est initialisé
@@ -79,8 +84,17 @@ namespace FNAEngine2D
         /// <summary>
         /// Size
         /// </summary>
-        public Vector2Int Size { get { return _screenSize; } }
+        public Point Size { get { return _screenSize; } }
 
+        /// <summary>
+        /// Rectangle
+        /// </summary>
+        public Rectangle Rectangle { get { return _screenRectangle; } }
+
+        /// <summary>
+        /// Bounds
+        /// </summary>
+        public Rectangle Bounds { get { return _screenRectangle; } }
 
 
         /// <summary>
@@ -99,7 +113,8 @@ namespace FNAEngine2D
             _graphics.IsFullScreen = false;
             _graphics.ApplyChanges();
 
-            _screenSize = new Vector2Int(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _screenSize = new Point(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _screenRectangle = new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
         }
 
 
@@ -140,7 +155,7 @@ namespace FNAEngine2D
             GameHost.ContentLoading = true;
 
             //Chargement du contenu...
-            _rootGameObject.LoadWithChildren();
+            _rootGameObject.Load();
 
 
             //Base LoadContent (i guess there's nothing there)

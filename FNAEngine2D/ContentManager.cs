@@ -151,9 +151,19 @@ namespace FNAEngine2D
         /// </summary>
         private string GetAssetFullPath(string assetName, string[] acceptedExtensions)
         {
+            /* On some platforms, name and slash direction matter.
+			 * We store the asset by a /-separating key rather than
+			 * how the path to the file was passed to us to avoid
+			 * loading "content/asset1.xnb" and "content\\ASSET1.xnb"
+			 * as if they were two different files. this matches
+			 * stock XNA behavior. The Dictionary will ignore case
+			 * differences.
+			 */
+            string filename = assetName.Replace('\\', '/');
+
             foreach (string extension in acceptedExtensions)
             {
-                string path = Path.Combine(this.RootDirectory, assetName + extension);
+                string path = Path.Combine(this.RootDirectory, filename + extension);
                 if (File.Exists(path))
                     return path;
             }

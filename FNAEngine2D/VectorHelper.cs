@@ -12,7 +12,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de trouver le centre
         /// </summary>
-        public static Vector2 Center(Vector2Int size, Vector2Int objectSize)
+        public static Vector2 Center(Point size, Point objectSize)
         {
             return new Vector2((size.X / 2) - (objectSize.X / 2), (size.Y / 2) - (objectSize.Y / 2));
         }

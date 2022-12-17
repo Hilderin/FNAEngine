@@ -58,7 +58,6 @@
     <Compile Include="InternalGameHost.cs" />
     <Compile Include="GameHost.cs" />
     <Compile Include="Texture.cs" />
-    <Compile Include="Vector2Int.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="FPSRender.cs" />

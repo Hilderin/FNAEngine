@@ -73,7 +73,17 @@ namespace FNAEngine2D
         /// <summary>
         /// Size du jeu
         /// </summary>
-        public static Vector2Int Size { get { return _internalGameHost.Size; } }
+        public static Point Size { get { return _internalGameHost.Size; } }
+
+        /// <summary>
+        /// Rectangle of the game
+        /// </summary>
+        public static Rectangle Rectangle { get { return _internalGameHost.Rectangle; } }
+
+        /// <summary>
+        /// Bounds of the game
+        /// </summary>
+        public static Rectangle Bounds { get { return _internalGameHost.Bounds; } }
 
         /// <summary>
         /// InternalGameHost

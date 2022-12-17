@@ -17,8 +17,6 @@ namespace FNAEngine2D
         /// Gère le loading des childrens
         /// </summary>
         private bool _loaded = false;
-        //private bool _isLoading = false;
-        //private List<GameObject> _childrenAddOnLoading = null;
 
         /// <summary>
         /// Collider container
@@ -148,9 +146,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Size
         /// </summary>
-        public Vector2Int Size
+        public Point Size
         {
-            get { return new Vector2Int(this.Width, this.Height); }
+            get { return new Point(this.Width, this.Height); }
             set
             {
                 this.Bounds.Width = (int)value.X;
@@ -198,24 +196,33 @@ namespace FNAEngine2D
         {
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
-
+                      
 
             this.Childrens.Add(gameObject);
 
-            //if (_isLoading)
-            //{
-            //    if (_childrenAddOnLoading == null)
-            //        _childrenAddOnLoading = new List<GameObject>();
-            //    _childrenAddOnLoading.Add(gameObject);
-            //}
-            //else
-            //{
-            //On va loader tout de suite le contenu car sinon, ça ne sera jamais appellé
-            //if (GameHost.ContentLoaded)
-            gameObject.LoadWithChildren();
-            //}
+            //Already a collider? can happen if remove and readded...
+            if (_collider != null)
+                GetColliderContainer().Add(_collider);
+
+            //If not loaded already... can happen if remove and readded...
+            if (!gameObject._loaded)
+                gameObject.Load();
 
             return gameObject;
+        }
+
+        /// <summary>
+        /// Remove the gameobject
+        /// </summary>
+        public void Remove(GameObject gameObject)
+        {
+            gameObject.Parent = null;
+            gameObject.RootGameObject = null;
+
+            if(_collider != null)
+                GetColliderContainer().Remove(_collider);
+
+            this.Childrens.Remove(gameObject);
         }
 
 
@@ -227,27 +234,27 @@ namespace FNAEngine2D
 
         }
 
-        /// <summary>
-        /// Chargement du content
-        /// </summary>
-        internal void LoadWithChildren()
-        {
-            //_isLoading = true;
+        ///// <summary>
+        ///// Chargement du content
+        ///// </summary>
+        //internal void LoadWithChildren()
+        //{
+        //    //_isLoading = true;
 
-            this.Load();
+        //    this.Load();
 
-            if (this.Childrens.Count > 0)
-            {
-                for (int index = 0; index < this.Childrens.Count; index++)
-                {
-                    if (!this.Childrens[index]._loaded)
-                        this.Childrens[index].LoadWithChildren();
-                }
-            }
+        //    if (this.Childrens.Count > 0)
+        //    {
+        //        for (int index = 0; index < this.Childrens.Count; index++)
+        //        {
+        //            if (!this.Childrens[index]._loaded)
+        //                this.Childrens[index].LoadWithChildren();
+        //        }
+        //    }
 
-            _loaded = true;
+        //    _loaded = true;
 
-        }
+        //}
 
         /// <summary>
         /// Logique d'update
@@ -420,22 +427,19 @@ namespace FNAEngine2D
             if (_collider != null)
                 return;
 
-            if (this.RootGameObject == null)
+            //RootGameObject is never really added anywhere...
+            if (this == GameHost.RootGameObject)
                 throw new InvalidOperationException("Impossible to enable collider on root game object.");
 
-            if (this.RootGameObject._colliderContainer == null)
-                this.RootGameObject._colliderContainer = new ColliderContainer();
 
             _collider = new Collider(this);
-            AddCollider(_collider);
-        }
 
-        /// <summary>
-        /// Active le collider
-        /// </summary>
-        public void AddCollider(Collider collider)
-        {
-            GetColliderContainer().Add(collider);
+            //If not already added, we will add it in the ColliderContainer on Add
+            if (this.Parent == null)
+                return;
+
+            //Add to container...
+            GetColliderContainer().Add(_collider);
         }
 
         /// <summary>
