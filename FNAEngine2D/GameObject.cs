@@ -14,6 +14,13 @@ namespace FNAEngine2D
     public abstract class GameObject
     {
         /// <summary>
+        /// Gère le loading des childrens
+        /// </summary>
+        private bool _loaded = false;
+        //private bool _isLoading = false;
+        //private List<GameObject> _childrenAddOnLoading = null;
+
+        /// <summary>
         /// Collider container
         /// </summary>
         private ColliderContainer _colliderContainer = null;
@@ -42,6 +49,11 @@ namespace FNAEngine2D
         /// Childrens
         /// </summary>
         public List<GameObject> Childrens { get; private set; } = new List<GameObject>();
+
+        /// <summary>
+        /// Indique si l'objet est paused
+        /// </summary>
+        public bool Paused;
 
 
         /// <summary>
@@ -190,6 +202,19 @@ namespace FNAEngine2D
 
             this.Childrens.Add(gameObject);
 
+            //if (_isLoading)
+            //{
+            //    if (_childrenAddOnLoading == null)
+            //        _childrenAddOnLoading = new List<GameObject>();
+            //    _childrenAddOnLoading.Add(gameObject);
+            //}
+            //else
+            //{
+            //On va loader tout de suite le contenu car sinon, ça ne sera jamais appellé
+            //if (GameHost.ContentLoaded)
+            gameObject.LoadWithChildren();
+            //}
+
             return gameObject;
         }
 
@@ -199,11 +224,6 @@ namespace FNAEngine2D
         /// </summary>
         public virtual void Load()
         {
-            //if (this.Childrens.Count == 0)
-            //    return;
-
-            //for (int index = 0; index < this.Childrens.Count; index++)
-            //    this.Childrens[index].LoadContent();
 
         }
 
@@ -212,13 +232,20 @@ namespace FNAEngine2D
         /// </summary>
         internal void LoadWithChildren()
         {
+            //_isLoading = true;
+
             this.Load();
 
-            if (this.Childrens.Count == 0)
-                return;
+            if (this.Childrens.Count > 0)
+            {
+                for (int index = 0; index < this.Childrens.Count; index++)
+                {
+                    if (!this.Childrens[index]._loaded)
+                        this.Childrens[index].LoadWithChildren();
+                }
+            }
 
-            for (int index = 0; index < this.Childrens.Count; index++)
-                this.Childrens[index].LoadWithChildren();
+            _loaded = true;
 
         }
 
@@ -235,6 +262,10 @@ namespace FNAEngine2D
         /// </summary>
         internal void UpdateWithChildren()
         {
+            //Paused?
+            if (this.Paused)
+                return;
+
             this.Update();
 
             if (this.Childrens.Count == 0)
@@ -265,6 +296,24 @@ namespace FNAEngine2D
             for (int index = 0; index < this.Childrens.Count; index++)
                 this.Childrens[index].DrawWithChildren();
         }
+
+
+        /// <summary>
+        /// Destruction du game object
+        /// </summary>
+        public void Destroy()
+        {
+            if (this.Parent == null)
+                throw new InvalidOperationException("Impossible du destroy de root game object.");
+
+            //Simply removing this...
+            this.Parent.Childrens.Remove(this);
+
+            //Retrait du collider...
+            if (_collider != null)
+                GetColliderContainer().Remove(_collider);
+        }
+
 
         /// <summary>
         /// Permet de déplacer en X l'objet et tous ses enfants
@@ -347,10 +396,30 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Permet de déplacer vers une coordonnées
+        /// </summary>
+        public void TranslateTo(Vector2 destination)
+        {
+            this.Translate(destination.X - this.X, destination.Y - this.Y);
+        }
+
+        /// <summary>
+        /// Permet de déplacer vers une coordonnées
+        /// </summary>
+        public void TranslateTo(Point destination)
+        {
+            this.Translate(destination.X - this.X, destination.Y - this.Y);
+        }
+
+        /// <summary>
         /// Active le collider
         /// </summary>
         public void EnableCollider()
         {
+            //Already enabled?
+            if (_collider != null)
+                return;
+
             if (this.RootGameObject == null)
                 throw new InvalidOperationException("Impossible to enable collider on root game object.");
 

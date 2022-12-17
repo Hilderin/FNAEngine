@@ -10,6 +10,11 @@ namespace FNAEngine2D
     public static class GameMath
     {
         /// <summary>
+        /// Random object
+        /// </summary>
+        private static Random _random = new Random();
+
+        /// <summary>
         /// Converti un rad en degree
         /// </summary>
         public static float RadToDeg(float radians)
@@ -63,6 +68,14 @@ namespace FNAEngine2D
 
             // There's no check to see if min > max.
             return value;
+        }
+
+        /// <summary>
+        /// Permet d'obtenir une valeur random entre 2 floats
+        /// </summary>
+        public static float RandomFloat(float min, float max)
+        {
+            return (float)(_random.NextDouble() * (max - min)) + min;
         }
 
     }

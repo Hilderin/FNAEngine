@@ -40,6 +40,11 @@ namespace FNAEngine2D
         /// </summary>
         private Vector2Int _screenSize;
 
+        /// <summary>
+        /// Indique si l'objet est initialisé
+        /// </summary>
+        public bool IsInitialized { get; private set; }
+
 
         /// <summary>
         /// Sprite batch pour le renderer
@@ -110,8 +115,16 @@ namespace FNAEngine2D
             //Le FontManager a aussi besoin du graphicsDevice...
             FontManager.SetGraphicsDevice(_graphicsDevice);
 
+
             //Base initialize...
             base.Initialize();
+
+            //On indique si c'est initialisé
+            this.IsInitialized = true;
+
+
+            //Setup the mouse...
+            this.IsMouseVisible = Input.IsMouseVisible;
 
         }
 
@@ -123,12 +136,19 @@ namespace FNAEngine2D
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            //On indique qu'on est en train de loadé le contenu
+            GameHost.ContentLoading = true;
+
             //Chargement du contenu...
             _rootGameObject.LoadWithChildren();
 
 
             //Base LoadContent (i guess there's nothing there)
             base.LoadContent();
+
+            //On indique que le contenu est loadé!
+            GameHost.ContentLoaded = true;
+            GameHost.ContentLoading = false;
 
             //Maintenant, on peut commencer à regarder les modifications...
 #if DEBUG

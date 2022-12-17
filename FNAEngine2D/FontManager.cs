@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +62,10 @@ namespace FNAEngine2D
         {
             if (_fontManager == null)
                 throw new InvalidOperationException("GetFont called before initialize.");
+
+
+            if (String.IsNullOrEmpty(Path.GetExtension(filename)))
+                filename += ".ttf";
 
             return _fontManager.GetFont(ContentHelper.ContentFolder + filename, fontSize);
         }

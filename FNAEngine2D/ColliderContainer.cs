@@ -16,12 +16,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Collider empty?
         /// </summary>
-        public bool IsEmpty { get { return this.Colliders.Count == 0; } }
+        public bool IsEmpty { get { return _colliders.Count == 0; } }
 
         /// <summary>
         /// Colliders
         /// </summary>
-        public List<Collider> Colliders { get; private set; } = new List<Collider>();
+        private List<Collider> _colliders = new List<Collider>();
 
 
         /// <summary>
@@ -29,7 +29,15 @@ namespace FNAEngine2D
         /// </summary>
         public void Add(Collider collider)
         {
-            this.Colliders.Add(collider);
+            _colliders.Add(collider);
+        }
+
+        /// <summary>
+        /// Retire un collider
+        /// </summary>
+        public void Remove(Collider collider)
+        {
+            _colliders.Remove(collider);
         }
 
         /// <summary>
@@ -37,14 +45,14 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(Rectangle movingColliderNextBounds, Collider movingCollider)
         {
-            if (this.Colliders.Count == 0)
+            if (_colliders.Count == 0)
                 return null;
 
-            for (int index = 0; index < this.Colliders.Count; index++)
+            for (int index = 0; index < _colliders.Count; index++)
             {
-                if (this.Colliders[index] != movingCollider)
+                if (_colliders[index] != movingCollider)
                 {
-                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, this.Colliders[index]);
+                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
                     if (collision != null)
                         return collision;
                 }
@@ -58,15 +66,15 @@ namespace FNAEngine2D
         /// </summary>
         public List<Collision> GetCollisions(Rectangle movingColliderNextBounds, Collider movingCollider)
         {
-            if (this.Colliders.Count == 0)
+            if (_colliders.Count == 0)
                 return CollisionHelper.EMPTY_COLLISIONS;
 
             List<Collision> collisions = new List<Collision>();
-            for (int index = 0; index < this.Colliders.Count; index++)
+            for (int index = 0; index < _colliders.Count; index++)
             {
-                if (this.Colliders[index] != movingCollider)
+                if (_colliders[index] != movingCollider)
                 {
-                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, this.Colliders[index]);
+                    Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
                     if (collision != null)
                         collisions.Add(collision);
                 }

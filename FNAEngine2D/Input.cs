@@ -17,6 +17,11 @@ namespace FNAEngine2D
         private static MouseState _lastMouseState;
 
         /// <summary>
+        /// Indique si la souris est visible
+        /// </summary>
+        public static bool IsMouseVisible { get; private set; }
+
+        /// <summary>
         /// Call at each Update
         /// </summary>
         public static void Update()
@@ -98,6 +103,32 @@ namespace FNAEngine2D
             else
                 return false;
         }
+
+        /// <summary>
+        /// Display the mouse cursor
+        /// </summary>
+        public static void ShowMouse()
+        {
+            Input.IsMouseVisible = true;
+
+            //Si on a un gamehost, on va le setter...
+            if (GameHost.InternalGameHost != null && GameHost.InternalGameHost.IsInitialized)
+                GameHost.InternalGameHost.IsMouseVisible = true;
+        }
+
+
+        /// <summary>
+        /// Hide the mouse cursor
+        /// </summary>
+        public static void HideMouse()
+        {
+            Input.IsMouseVisible = false;
+
+            //Si on a un gamehost, on va le setter...
+            if (GameHost.InternalGameHost != null && GameHost.InternalGameHost.IsInitialized)
+                GameHost.InternalGameHost.IsMouseVisible = false;
+        }
+
 
         ///// <summary>
         ///// Gets mouse coordinates adjusted for virtual resolution and camera position.

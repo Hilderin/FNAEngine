@@ -91,7 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\pixel.bin" />
-    <None Include="Resources\pixel.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

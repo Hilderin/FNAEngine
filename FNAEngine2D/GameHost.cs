@@ -46,6 +46,16 @@ namespace FNAEngine2D
         public static GameTime GameTime { get; private set; }
 
         /// <summary>
+        /// Indique si le contenu est en train d'être loadé
+        /// </summary>
+        public static bool ContentLoading { get; internal set; }
+
+        /// <summary>
+        /// Indique si le contenu a été loadé
+        /// </summary>
+        public static bool ContentLoaded { get; internal set; }
+
+        /// <summary>
         /// ElapsedGameTimeSeconds
         /// </summary>
         public static float ElapsedGameTimeSeconds { get; private set; }
@@ -53,7 +63,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Width du jeu
         /// </summary>
-        public static int Width  { get { return _internalGameHost.Width; } }
+        public static int Width { get { return _internalGameHost.Width; } }
 
         /// <summary>
         /// Height du jeu
@@ -64,6 +74,11 @@ namespace FNAEngine2D
         /// Size du jeu
         /// </summary>
         public static Vector2Int Size { get { return _internalGameHost.Size; } }
+
+        /// <summary>
+        /// InternalGameHost
+        /// </summary>
+        internal static InternalGameHost InternalGameHost { get { return _internalGameHost; } }
 
 
 
