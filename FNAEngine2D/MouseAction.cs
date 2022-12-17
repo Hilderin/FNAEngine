@@ -16,6 +16,9 @@ namespace FNAEngine2D
         LeftButtonDown,
         LeftButtonUp,
         LeftButtonClicked,
+        RightButtonDown,
+        RightButtonUp,
+        RightButtonClicked,
     }
 
 }

@@ -83,6 +83,17 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Returns whether or not the right mouse button is newlly down
+        /// </summary>
+        public static bool MouseRightNewDown()
+        {
+            if (_mouseState.RightButton == ButtonState.Pressed && _lastMouseState.RightButton == ButtonState.Released)
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
         /// Returns whether or not the right mouse button is being pressed.
         /// </summary>
         public static bool MouseRightDown()

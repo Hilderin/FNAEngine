@@ -19,6 +19,8 @@ Some nice feature are already working:
 - Collider: Basic rectangle collision detection system
 - Input: Basic input system (that i took from Michael Hicks: https://www.youtube.com/playlist?list=PL3wErD7ZIp_DtsTKoouVCxu81UQkI9VZL)
 - ContentManager: Custom ContentManager that hot reloads the modified texture at runtime
+- IMouseEventHandler: Implement Mouse Down, Up and Click on GameObject
+- 
 
 
 # Exemple

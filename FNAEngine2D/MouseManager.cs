@@ -25,9 +25,14 @@ namespace FNAEngine2D
         private static List<IMouseEventHandler> _lastOverGameObjects = new List<IMouseEventHandler>();
 
         /// <summary>
-        /// Object with mouse down
+        /// Objects with mouse left down
         /// </summary>
-        private static List<IMouseEventHandler> _mouseDownObjects = new List<IMouseEventHandler>();
+        private static List<IMouseEventHandler> _mouseLeftDownObjects = new List<IMouseEventHandler>();
+
+        /// <summary>
+        /// Objects with mouse right down
+        /// </summary>
+        private static List<IMouseEventHandler> _mouseRightDownObjects = new List<IMouseEventHandler>();
 
         /// <summary>
         /// Display the mouse cursor
@@ -62,7 +67,8 @@ namespace FNAEngine2D
             if (gameObject is IMouseEventHandler)
             {
                 _lastOverGameObjects.Remove((IMouseEventHandler)gameObject);
-                _mouseDownObjects.Remove((IMouseEventHandler)gameObject);
+                _mouseLeftDownObjects.Remove((IMouseEventHandler)gameObject);
+                _mouseRightDownObjects.Remove((IMouseEventHandler)gameObject);
             }
 
             if (gameObject.Childrens.Count > 0)
@@ -108,7 +114,12 @@ namespace FNAEngine2D
                             if (Input.MouseLeftDown())
                             {
                                 newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
-                                _mouseDownObjects.Add(newOverGameObjects[index]);
+                                _mouseLeftDownObjects.Add(newOverGameObjects[index]);
+                            }
+                            if (Input.MouseRightDown())
+                            {
+                                newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
+                                _mouseRightDownObjects.Add(newOverGameObjects[index]);
                             }
                         }
                     }
@@ -130,13 +141,18 @@ namespace FNAEngine2D
                             if (Input.MouseLeftNewDown())
                             {
                                 _lastOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
-                                _mouseDownObjects.Add(_lastOverGameObjects[index]);
+                                _mouseLeftDownObjects.Add(_lastOverGameObjects[index]);
+                            }
+                            if (Input.MouseRightNewDown())
+                            {
+                                _lastOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
+                                _mouseRightDownObjects.Add(_lastOverGameObjects[index]);
                             }
                         }
                     }
                 }
 
-                //Clicked... ??
+                //Left Clicked... ??
                 if (Input.MouseLeftClicked())
                 {
                     for (int index = 0; index < newOverGameObjects.Count; index++)
@@ -145,10 +161,26 @@ namespace FNAEngine2D
                         newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonUp);
                     }
 
-                    for (int index = 0; index < _mouseDownObjects.Count; index++)
+                    for (int index = 0; index < _mouseLeftDownObjects.Count; index++)
                     {
                         //Clicked...
-                        _mouseDownObjects[index].HandleMouseEvent(MouseAction.LeftButtonClicked);
+                        _mouseLeftDownObjects[index].HandleMouseEvent(MouseAction.LeftButtonClicked);
+                    }
+                }
+
+                //Right Clicked... ??
+                if (Input.MouseRightClicked())
+                {
+                    for (int index = 0; index < newOverGameObjects.Count; index++)
+                    {
+                        //Up...
+                        newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonUp);
+                    }
+
+                    for (int index = 0; index < _mouseRightDownObjects.Count; index++)
+                    {
+                        //Clicked...
+                        _mouseRightDownObjects[index].HandleMouseEvent(MouseAction.RightButtonClicked);
                     }
                 }
 
