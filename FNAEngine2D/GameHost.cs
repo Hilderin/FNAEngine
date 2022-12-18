@@ -51,15 +51,15 @@ namespace FNAEngine2D
         /// </summary>
         public static GameTime GameTime { get; private set; }
 
-        /// <summary>
-        /// Indique si le contenu est en train d'être loadé
-        /// </summary>
-        public static bool ContentLoading { get; internal set; }
+        ///// <summary>
+        ///// Indique si le contenu est en train d'être loadé
+        ///// </summary>
+        //public static bool ContentLoading { get; internal set; }
 
-        /// <summary>
-        /// Indique si le contenu a été loadé
-        /// </summary>
-        public static bool ContentLoaded { get; internal set; }
+        ///// <summary>
+        ///// Indique si le contenu a été loadé
+        ///// </summary>
+        //public static bool ContentLoaded { get; internal set; }
 
         /// <summary>
         /// ElapsedGameTimeSeconds

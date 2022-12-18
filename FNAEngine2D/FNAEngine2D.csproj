@@ -53,7 +53,11 @@
     <Compile Include="ContentManager.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />
+    <Compile Include="GameContent.cs" />
+    <Compile Include="GameContentContainer.cs" />
+    <Compile Include="GameContentManager.cs" />
     <Compile Include="GameMath.cs" />
+    <Compile Include="GameContentObject.cs" />
     <Compile Include="IMouseEventHandler.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InternalGameHost.cs" />
@@ -80,6 +84,9 @@
     <PackageReference Include="FNA-XNA-Wrapper">
       <Version>22.12.1</Version>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.2</Version>
+    </PackageReference>
     <PackageReference Include="SharpFont.NetStandard">
       <Version>1.0.5</Version>
     </PackageReference>
@@ -97,5 +104,6 @@
   <ItemGroup>
     <None Include="Resources\pixel.bin" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

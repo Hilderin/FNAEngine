@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -71,13 +72,8 @@ namespace FNAEngine2D
                 _mouseRightDownObjects.Remove((IMouseEventHandler)gameObject);
             }
 
-            if (gameObject.Childrens.Count > 0)
-            {
-                for (int index = 0; index < gameObject.Childrens.Count; index++)
-                {
-                    RemoveGameObject(gameObject.Childrens[index]);
-                }
-            }
+            //Also remove for childrens...
+            gameObject.ForEach(o => RemoveGameObject(o));
 
         }
 
@@ -204,11 +200,7 @@ namespace FNAEngine2D
                 }
             }
 
-            if (gameObject.Childrens.Count == 0)
-                return;
-
-            for (int index = 0; index < gameObject.Childrens.Count; index++)
-                ProcessGameObject(gameObject.Childrens[index], mousePosition, newOverGameObjects);
+            gameObject.ForEach(o => ProcessGameObject(o, mousePosition, newOverGameObjects));
         }
 
 

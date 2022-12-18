@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,26 +12,34 @@ namespace FNAEngine2D
     public class TextureRender: GameObject
     {
         /// <summary>
-        /// Nom de l'asset
-        /// </summary>
-        private string _assetName;
-
-        /// <summary>
         /// Texture à renderer
         /// </summary>
         private Texture2D _texture;
 
         /// <summary>
+        /// TextureName
+        /// </summary>
+        public string TextureName { get; set; }
+
+        /// <summary>
         /// Color
         /// </summary>
-        public Color Color = Color.White;
+        public Color Color { get; set; } = Color.White;
+
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public TextureRender()
+        {
+            ContentHelper.ContentChanged += ContentManager_ContentChanged;
+        }
 
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string assetName)
+        public TextureRender(string TextureName)
         {
-            _assetName = assetName;
+            this.TextureName = TextureName;
 
             ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
@@ -38,9 +47,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string assetName, Rectangle bounds)
+        public TextureRender(string TextureName, Rectangle bounds)
         {
-            _assetName = assetName;
+            this.TextureName = TextureName;
 
             this.Bounds = bounds;
 
@@ -50,9 +59,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string assetName, Rectangle bounds, Color color)
+        public TextureRender(string TextureName, Rectangle bounds, Color color)
         {
-            _assetName = assetName;
+            this.TextureName = TextureName;
 
             this.Bounds = bounds;
             this.Color = color;
@@ -65,10 +74,19 @@ namespace FNAEngine2D
         /// </summary>
         public override void Load()
         {
-            _texture = GameHost.GetContent<Texture2D>(_assetName);
+            if (String.IsNullOrEmpty(this.TextureName))
+            {
+                _texture = null;
+            }
+            else
+            {
+                _texture = GameHost.GetContent<Texture2D>(this.TextureName);
 
-            if (this.Bounds == Rectangle.Empty)
-                this.Bounds = new Rectangle(0, 0, _texture.Width, _texture.Height);
+                if (this.Width == 0)
+                    this.Width = _texture.Width;
+                if (this.Height == 0)
+                    this.Height = _texture.Height;
+            }
         }
 
         /// <summary>
@@ -76,16 +94,19 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
+            if (_texture == null)
+                return;
+
             GameHost.SpriteBatch.Draw(_texture, this.Bounds, this.Color);
         }
 
         /// <summary>
         /// Changement du content
         /// </summary>
-        private void ContentManager_ContentChanged(string assetName)
+        private void ContentManager_ContentChanged(string TextureName)
         {
-            if(_assetName.Equals(assetName, StringComparison.OrdinalIgnoreCase))
-                _texture = GameHost.GetContent<Texture2D>(_assetName);
+            if(this.TextureName.Equals(TextureName, StringComparison.OrdinalIgnoreCase))
+                _texture = GameHost.GetContent<Texture2D>(this.TextureName);
         }
 
     }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,11 +19,20 @@ namespace FNAEngine2D
     {
 
         /// <summary>
-        /// Les extensions pour les textures
+        /// Extensions for textures
         /// </summary>
         private static string[] TEXTURES_EXTENSIONS = new string[]
         {
             ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tga", ".tif", ".tiff"        //, ".dds"
+        };
+
+
+        /// <summary>
+        /// Extensions for game content
+        /// </summary>
+        private static string[] GAMECONTENT_EXTENSIONS = new string[]
+        {
+            ".json"
         };
 
 
@@ -60,11 +71,12 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Clear la cache
+        /// Remove a asset from the cache
         /// </summary>
-        public static void ClearCache()
+        public static void RemoveFromCache(string assetName)
         {
-            _cache.Clear();
+            _cache.TryRemove(assetName.Replace("\\", "/"), out var bidon);
+            _cache.TryRemove(assetName.Replace("/", "\\"), out bidon);
         }
 
         /// <summary>
@@ -88,6 +100,11 @@ namespace FNAEngine2D
             {
                 //Texture...
                 asset = LoadTexture<T>(assetName);
+            }
+            else if (typeof(T) == typeof(GameContent))
+            {
+                //Texture...
+                asset = LoadGameContent(assetName);
             }
             else
             {
@@ -201,6 +218,26 @@ namespace FNAEngine2D
             {
                 object ret = Texture2D.FromStream(GetGraphicsDevice(), stream);
                 return (T)ret;
+            }
+        }
+
+        /// <summary>
+        /// Load game content file
+        /// </summary>
+        private GameContent LoadGameContent(string assetName)
+        {
+            string fullPath = GetAssetFullPath(assetName, GAMECONTENT_EXTENSIONS);
+
+            var serializer = new JsonSerializer();
+            using (Stream stream = File.OpenRead(fullPath))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    using (JsonTextReader jsonReader = new JsonTextReader(reader))
+                    {
+                        return serializer.Deserialize<GameContent>(jsonReader);
+                    }
+                }
             }
         }
 

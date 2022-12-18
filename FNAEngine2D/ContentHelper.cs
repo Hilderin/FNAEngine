@@ -26,7 +26,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Extensions traités
         /// </summary>
-        private static readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png" };
+        private static readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png", ".json" };
 
 
         /// <summary>
@@ -125,13 +125,15 @@ namespace FNAEngine2D
                 ListChanges.Clear();
             }
 
-            //On clear la cache...
-            ContentManager.ClearCache();
-
-            if (ContentChanged != null)
+            foreach (string assetName in changes)
             {
-                foreach (string assetName in changes)
+                //On clear la cache...
+                ContentManager.RemoveFromCache(assetName);
+
+                if (ContentChanged != null)
+                {
                     ContentChanged(assetName);
+                }
             }
 
         }

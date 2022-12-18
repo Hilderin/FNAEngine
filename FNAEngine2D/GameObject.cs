@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace FNAEngine2D
 {
@@ -18,6 +20,11 @@ namespace FNAEngine2D
         /// Gère le loading des childrens
         /// </summary>
         private bool _loaded = false;
+
+        /// <summary>
+        /// Add children autorized
+        /// </summary>
+        internal bool _addAuthorized = false;
 
         /// <summary>
         /// Visible
@@ -34,6 +41,12 @@ namespace FNAEngine2D
         /// </summary>
         private Collider _collider = null;
 
+
+        /// <summary>
+        /// Childrens
+        /// </summary>
+        private List<GameObject> _childrens = new List<GameObject>();
+
         /// <summary>
         /// RootGameObject
         /// </summary>
@@ -49,15 +62,16 @@ namespace FNAEngine2D
         /// </summary>
         public Rectangle Bounds;
 
+
         /// <summary>
-        /// Childrens
+        /// Name of the object
         /// </summary>
-        public List<GameObject> Childrens { get; private set; } = new List<GameObject>();
+        public string Name { get; set; }
 
         /// <summary>
         /// Indique si l'objet est paused
         /// </summary>
-        public bool Paused;
+        public bool Paused { get; set; }
 
         /// <summary>
         /// Visibity of the object
@@ -214,22 +228,54 @@ namespace FNAEngine2D
 
 
         /// <summary>
+        /// Count des childrens
+        /// </summary>
+        public int NbChildren
+        {
+            get { return _childrens.Count; }
+        }
+
+
+        /// <summary>
+        /// Get a child
+        /// </summary>
+        public GameObject Get(int indexChildren)
+        {
+            return _childrens[indexChildren];
+        }
+
+        /// <summary>
         /// Ajout d'un render object enfant
         /// </summary>
         public T Add<T>(T gameObject) where T : GameObject
         {
+            return Insert(_childrens.Count, gameObject);
+        }
+
+        /// <summary>
+        /// Ajout d'un render object enfant
+        /// </summary>
+        public T Insert<T>(int index, T gameObject) where T : GameObject
+        {
+            
+            if (!_addAuthorized)
+                throw new InvalidOperationException("Add or Insert not authorized before Load method.");
+
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
-                      
 
-            this.Childrens.Add(gameObject);
+
+            this._childrens.Insert(index, gameObject);
 
             //Already a collider? can happen if remove and readded...
             AddColliders(gameObject);
 
             //If not loaded already... can happen if remove and readded...
             if (!gameObject._loaded)
+            {
+                gameObject._addAuthorized = true;
                 gameObject.Load();
+            }
 
             return gameObject;
         }
@@ -245,7 +291,25 @@ namespace FNAEngine2D
             //Remove de colliders for the gameobject and all children...
             RemoveColliders(gameObject);
 
-            this.Childrens.Remove(gameObject);
+            this._childrens.Remove(gameObject);
+
+            MouseManager.RemoveGameObject(gameObject);
+        }
+
+        /// <summary>
+        /// Remove the gameobject
+        /// </summary>
+        public void RemoveAt(int index)
+        {
+            GameObject gameObject = _childrens[index];
+
+            gameObject.Parent = null;
+            gameObject.RootGameObject = null;
+
+            //Remove de colliders for the gameobject and all children...
+            RemoveColliders(gameObject);
+
+            this._childrens.RemoveAt(index);
 
             MouseManager.RemoveGameObject(gameObject);
         }
@@ -255,11 +319,11 @@ namespace FNAEngine2D
         /// </summary>
         public void Remove(Type gameObjectType)
         {
-            for (int index = this.Childrens.Count - 1; index >= 0; index--)
+            for (int index = this._childrens.Count - 1; index >= 0; index--)
             {
-                if (this.Childrens[index].GetType() == gameObjectType)
+                if (this._childrens[index].GetType() == gameObjectType)
                 {
-                    Remove(this.Childrens[index]);
+                    Remove(this._childrens[index]);
                 }
             }
         }
@@ -269,10 +333,70 @@ namespace FNAEngine2D
         /// </summary>
         public void RemoveAll()
         {
-            for (int index = this.Childrens.Count - 1; index >= 0; index--)
+            for (int index = this._childrens.Count - 1; index >= 0; index--)
             {
-                Remove(this.Childrens[index]);
+                Remove(this._childrens[index]);
             }
+        }
+
+        /// <summary>
+        /// Find a GameObjet by name
+        /// </summary>
+        public GameObject Find(string name)
+        {
+            return Find(o => o.Name == name);
+        }
+
+        /// <summary>
+        /// Find a GameObjet by name
+        /// </summary>
+        public T Find<T>(string name) where T : GameObject
+        {
+            return (T)Find(o => typeof(T).IsAssignableFrom(o.GetType()) && o.Name == name);
+        }
+
+        /// <summary>
+        /// Find a GameObject
+        /// </summary>
+        public GameObject Find(Func<GameObject, bool> findFunc)
+        {
+            GameObject ret = _childrens.Find(o => findFunc(o));
+            if (ret == null)
+            {
+                if (_childrens.Count > 0)
+                {
+                    for (int index = 0; index < _childrens.Count; index++)
+                    {
+                        ret = _childrens[index].Find(findFunc);
+                        if (ret != null)
+                            break;
+                    }
+                }
+
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Find a GameObjet
+        /// </summary>
+        public T Find<T>(Func<T, bool> findFunc) where T: GameObject
+        {
+            return (T)Find(o => typeof(T).IsAssignableFrom(o.GetType()) && findFunc((T)o));
+
+        }
+
+
+        /// <summary>
+        /// Execute an action for each GameObjet in childrens
+        /// </summary>
+        public void ForEach(Action<GameObject> action)
+        {
+            if (_childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < _childrens.Count; index++)
+                action(_childrens[index]);
         }
 
         /// <summary>
@@ -322,13 +446,18 @@ namespace FNAEngine2D
             if (this.Paused)
                 return;
 
+            //Update GameContent if needed...
+#if DEBUG
+            GameContentManager.ReloadModifiedContent(this);
+#endif
+
             this.Update();
 
-            if (this.Childrens.Count == 0)
+            if (this._childrens.Count == 0)
                 return;
 
-            for (int index = 0; index < this.Childrens.Count; index++)
-                this.Childrens[index].UpdateWithChildren();
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].UpdateWithChildren();
         }
 
         /// <summary>
@@ -346,13 +475,13 @@ namespace FNAEngine2D
         {
             this.Draw();
 
-            if (this.Childrens.Count == 0)
+            if (this._childrens.Count == 0)
                 return;
 
-            for (int index = 0; index < this.Childrens.Count; index++)
+            for (int index = 0; index < this._childrens.Count; index++)
             {
-                if (this.Childrens[index].Visible)
-                    this.Childrens[index].DrawWithChildren();
+                if (this._childrens[index].Visible)
+                    this._childrens[index].DrawWithChildren();
             }
         }
 
@@ -366,7 +495,7 @@ namespace FNAEngine2D
                 throw new InvalidOperationException("Impossible du destroy de root game object.");
 
             //Simply removing this...
-            this.Parent.Childrens.Remove(this);
+            this.Parent._childrens.Remove(this);
 
             //Retrait du collider...
             if (_collider != null)
@@ -381,11 +510,11 @@ namespace FNAEngine2D
         {
             this.X += offsetX;
 
-            if (this.Childrens.Count == 0)
+            if (this._childrens.Count == 0)
                 return;
 
-            for (int index = 0; index < this.Childrens.Count; index++)
-                this.Childrens[index].TranslateX(offsetX);
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].TranslateX(offsetX);
 
         }
 
@@ -404,11 +533,11 @@ namespace FNAEngine2D
         {
             this.Y += offsetY;
 
-            if (this.Childrens.Count == 0)
+            if (this._childrens.Count == 0)
                 return;
 
-            for (int index = 0; index < this.Childrens.Count; index++)
-                this.Childrens[index].TranslateY(offsetY);
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].TranslateY(offsetY);
 
         }
 
@@ -430,11 +559,11 @@ namespace FNAEngine2D
             this.Y += offsetY;
 
 
-            if (this.Childrens.Count == 0)
+            if (this._childrens.Count == 0)
                 return;
 
-            for (int index = 0; index < this.Childrens.Count; index++)
-                this.Childrens[index].Translate(offsetX, offsetY);
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].Translate(offsetX, offsetY);
 
         }
 
@@ -468,6 +597,63 @@ namespace FNAEngine2D
         public void TranslateTo(Point destination)
         {
             this.Translate(destination.X - this.X, destination.Y - this.Y);
+        }
+
+
+        /// <summary>
+        /// Resize width of an offset
+        /// </summary>
+        public void ResizeWidth(int offsetX)
+        {
+            this.Width += offsetX;
+
+
+            if (this._childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].ResizeWidth(offsetX);
+
+        }
+
+        /// <summary>
+        /// Resize height of an offset
+        /// </summary>
+        public void ResizeHeight(int offsetY)
+        {
+            this.Height += offsetY;
+
+            if (this._childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].ResizeHeight(offsetY);
+
+        }
+
+        /// <summary>
+        /// Resize width and height of an offset
+        /// </summary>
+        public void Resize(int offsetX, int offsetY)
+        {
+            this.Width += offsetX;
+            this.Height += offsetY;
+
+
+            if (this._childrens.Count == 0)
+                return;
+
+            for (int index = 0; index < this._childrens.Count; index++)
+                this._childrens[index].Resize(offsetX, offsetY);
+
+        }
+
+        /// <summary>
+        /// Resize to a width and height
+        /// </summary>
+        public void ResizeTo(int offsetX, int offsetY)
+        {
+            this.Resize(offsetX - this.Width, offsetY - this.Height);
         }
 
         /// <summary>
@@ -569,6 +755,8 @@ namespace FNAEngine2D
             _visible = true;
         }
 
+
+
         /// <summary>
         /// Count the gameobject in children
         /// </summary>
@@ -576,9 +764,9 @@ namespace FNAEngine2D
         {
             int count = 0;
 
-            for (int index = 0; index < this.Childrens.Count; index++)
+            for (int index = 0; index < this._childrens.Count; index++)
             {
-                if (this.Childrens[index].GetType() == gameObjectType)
+                if (this._childrens[index].GetType() == gameObjectType)
                     count++;
             }
 
@@ -606,11 +794,11 @@ namespace FNAEngine2D
                 GetColliderContainer().Add(gameObject._collider);
             }
 
-            if (gameObject.Childrens.Count > 0)
+            if (gameObject._childrens.Count > 0)
             {
-                for (int index = 0; index < gameObject.Childrens.Count; index++)
+                for (int index = 0; index < gameObject._childrens.Count; index++)
                 {
-                    AddColliders(gameObject.Childrens[index]);
+                    AddColliders(gameObject._childrens[index]);
                 }
             }
 
@@ -626,11 +814,11 @@ namespace FNAEngine2D
                 GetColliderContainer().Remove(gameObject._collider);
             }
 
-            if (gameObject.Childrens.Count > 0)
+            if (gameObject._childrens.Count > 0)
             {
-                for (int index = 0; index < gameObject.Childrens.Count; index++)
+                for (int index = 0; index < gameObject._childrens.Count; index++)
                 {
-                    RemoveColliders(gameObject.Childrens[index]);
+                    RemoveColliders(gameObject._childrens[index]);
                 }
             }
 

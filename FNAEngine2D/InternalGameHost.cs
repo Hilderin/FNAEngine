@@ -200,19 +200,20 @@ namespace FNAEngine2D
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //On indique qu'on est en train de loadé le contenu
-            GameHost.ContentLoading = true;
+            ////On indique qu'on est en train de loadé le contenu
+            //GameHost.ContentLoading = true;
 
             //Chargement du contenu...
+            _rootGameObject._addAuthorized = true;
             _rootGameObject.Load();
 
 
             //Base LoadContent (i guess there's nothing there)
             base.LoadContent();
 
-            //On indique que le contenu est loadé!
-            GameHost.ContentLoaded = true;
-            GameHost.ContentLoading = false;
+            ////On indique que le contenu est loadé!
+            //GameHost.ContentLoaded = true;
+            //GameHost.ContentLoading = false;
 
             //Maintenant, on peut commencer à regarder les modifications...
 #if DEBUG

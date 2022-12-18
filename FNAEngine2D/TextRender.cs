@@ -49,20 +49,6 @@ namespace FNAEngine2D
         /// </summary>
         private Velentr.Font.Text _textCache;
 
-        /// <summary>
-        /// Text
-        /// </summary>
-        private string _text;
-
-        /// <summary>
-        /// Nom de la font
-        /// </summary>
-        private string _fileName;
-
-        /// <summary>
-        /// Font size
-        /// </summary>
-        private int _fontSize;
 
         /// <summary>
         /// Texture à renderer
@@ -70,19 +56,67 @@ namespace FNAEngine2D
         private Font _font;
 
         /// <summary>
+        /// Nom de la font
+        /// </summary>
+        private string _fontName;
+
+        /// <summary>
+        /// Size de la font
+        /// </summary>
+        private int _fontSize = 12;
+
+        /// <summary>
+        /// Text
+        /// </summary>
+        private string _text;
+
+
+        /// <summary>
+        /// Nom de la font
+        /// </summary>
+        public string FontName
+        {
+            get { return _fontName; }
+            set
+            {
+                if (_fontName != value)
+                {
+                    _fontName = value;
+                    _textUpdated = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Font size
+        /// </summary>
+        public int FontSize
+        {
+            get { return _fontSize; }
+            set
+            {
+                if (_fontSize != value)
+                {
+                    _fontSize = value;
+                    _textUpdated = true;
+                }
+            }
+        }
+
+        /// <summary>
         /// Alignment horizontal
         /// </summary>
-        private TextHorizontalAlignment _horizontalAlignment = TextHorizontalAlignment.Left;
+        public TextHorizontalAlignment HorizontalAlignment { get; set; } = TextHorizontalAlignment.Left;
 
         /// <summary>
         /// Alignment vertical
         /// </summary>
-        private TextVerticalAlignment _verticalAlignment = TextVerticalAlignment.Top;
+        public TextVerticalAlignment VerticalAlignment { get; set; } = TextVerticalAlignment.Top;
 
         /// <summary>
         /// Couleur
         /// </summary>
-        public Color Color;
+        public Color Color { get; set; } = Color.Black;
 
 
         /// <summary>
@@ -101,32 +135,19 @@ namespace FNAEngine2D
             }
         }
 
-
         /// <summary>
-        /// Alignment horizontal
+        /// Empty constructor
         /// </summary>
-        public TextHorizontalAlignment HorizontalAlignment
+        public TextRender()
         {
-            get { return _horizontalAlignment; }
-            set { _horizontalAlignment = value; }
         }
-
-        /// <summary>
-        /// Alignment vertical
-        /// </summary>
-        public TextVerticalAlignment VerticalAlignment
-        {
-            get { return _verticalAlignment; }
-            set { _verticalAlignment = value; }
-        }
-
 
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fileName, int fontSize, Vector2 location, Color color)
+        public TextRender(string text, string fontName, int fontSize, Vector2 location, Color color)
         {
-            _fileName = fileName;
+            _fontName = fontName;
             _fontSize = fontSize;
 
             this.Location = location;
@@ -138,17 +159,17 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fileName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment)
+        public TextRender(string text, string fontName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment)
         {
-            _fileName = fileName;
+            _fontName = fontName;
             _fontSize = fontSize;
 
             this.Bounds = bounds;
             this.Color = color;
             this.Text = text;
 
-            _horizontalAlignment = horizontalAlignment;
-            _verticalAlignment = verticalAlignment;
+            HorizontalAlignment = horizontalAlignment;
+            VerticalAlignment = verticalAlignment;
 
         }
 
@@ -157,7 +178,10 @@ namespace FNAEngine2D
         /// </summary>
         public override void Load()
         {
-            _font = new Font(_fileName, _fontSize);
+            if (String.IsNullOrEmpty(_fontName))
+                _font = null;
+            else
+                _font = new Font(_fontName, FontSize);
         }
 
         /// <summary>
@@ -167,7 +191,10 @@ namespace FNAEngine2D
         {
             if (_textUpdated)
             {
-                _textCache = _font.MakeText(this.Text);
+                if (_font == null || String.IsNullOrEmpty(this.Text))
+                    _textCache = null;
+                else
+                    _textCache = _font.MakeText(this.Text);
                 _textUpdated = false;
             }
         }
@@ -177,11 +204,14 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
+            if (_font == null || _textCache == null)
+                return;
+
             int x;
             int y;
 
             //Calculate horizontal position...
-            switch (_horizontalAlignment)
+            switch (HorizontalAlignment)
             {
                 case TextHorizontalAlignment.Right:
                     //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
@@ -197,7 +227,7 @@ namespace FNAEngine2D
             }
 
             //Calculate vertical position...
-            switch (_verticalAlignment)
+            switch (VerticalAlignment)
             {
                 case TextVerticalAlignment.Bottom:
                     //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
@@ -207,7 +237,7 @@ namespace FNAEngine2D
                     //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
                     //The _textCache.Height is just wrong...
                     //I padded with a +8 we will see later if it's good for every fonts
-                    y = (int)(this.Y + (this.Height / 2) - ((_fontSize + 8) / 2));
+                    y = (int)(this.Y + (this.Height / 2) - ((FontSize + 8) / 2));
                     break;
                 default:
                     y = (int)this.Position.Y;
