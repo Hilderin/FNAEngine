@@ -24,7 +24,10 @@ Some nice feature are already working:
 
 # Exemple
 
-Check my Pong test game that i created with this engine: https://github.com/Hilderin/Pong
+Check my test games that i created with this engine: 
+- Pong: https://github.com/Hilderin/Pong
+- Platformer: https://github.com/Hilderin/Platformer
+
 
 
 # Dependencies
