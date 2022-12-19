@@ -68,9 +68,9 @@ namespace FNAEngine2D
             string assemblyLocation = Assembly.GetCallingAssembly().Location;
             if (assemblyLocation.IndexOf(@"bin\debug\", StringComparison.OrdinalIgnoreCase) > 0
                 || assemblyLocation.IndexOf(@"bin\release\", StringComparison.OrdinalIgnoreCase) > 0)
-                _contentFolder = @"..\..\Content\";
+                _contentFolder = Path.GetFullPath(@"..\..\Content\");
             else
-                _contentFolder = @"Content\";
+                _contentFolder = Path.GetFullPath(@"Content\");
         }
 
         /// <summary>
@@ -125,14 +125,23 @@ namespace FNAEngine2D
                 ListChanges.Clear();
             }
 
-            foreach (string assetName in changes)
+            foreach (string fullPath in changes)
             {
                 //On clear la cache...
-                ContentManager.RemoveFromCache(assetName);
+                ContentManager.RemoveFromCache(fullPath);
 
                 if (ContentChanged != null)
                 {
-                    ContentChanged(assetName);
+                    string assetName = fullPath.Substring(ContentFolder.Length);
+
+                    //Retrait de l'extension...
+                    int index = assetName.LastIndexOf('.');
+                    if (index > 0)
+                    {
+                        assetName = assetName.Substring(0, index);
+
+                        ContentChanged(assetName);
+                    }
                 }
             }
 
@@ -168,21 +177,13 @@ namespace FNAEngine2D
 
                 if (EXTENSIONS.Contains(extension))
                 {
-                    string assetName = fullPath.Substring(ContentFolder.Length);
+                    
+                    if (!ListChanges.Contains(fullPath))
+                        ListChanges.Add(fullPath);
 
-                    //Retrait de l'extension...
-                    int index = assetName.LastIndexOf('.');
-                    if (index > 0)
+                    if (_taskUpdateContent == null)
                     {
-                        assetName = assetName.Substring(0, index);
-
-                        if (!ListChanges.Contains(assetName))
-                            ListChanges.Add(assetName);
-
-                        if (_taskUpdateContent == null)
-                        {
-                            _taskUpdateContent = Task.Factory.StartNew(TaskWaitBeforeForNotification);
-                        }
+                        _taskUpdateContent = Task.Factory.StartNew(TaskWaitBeforeForNotification);
                     }
                 }
             }

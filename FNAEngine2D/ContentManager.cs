@@ -35,6 +35,22 @@ namespace FNAEngine2D
             ".json"
         };
 
+        /// <summary>
+        /// Extensions for sprite animation
+        /// </summary>
+        private static string[] SPRITE_EXTENSIONS = new string[]
+        {
+            ".json"
+        };
+
+        /// <summary>
+        /// Extensions for sprite animation
+        /// </summary>
+        private static string[] SPRITEANIMATION_EXTENSIONS = new string[]
+        {
+            ".json"
+        };
+
 
         /// <summary>
         /// Graphics device
@@ -44,7 +60,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Cache
         /// </summary>
-        private static ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
+        private static ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Cache
+        /// </summary>
+        private static ConcurrentDictionary<string, string> _cacheFullPathFullAssetName = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Disposable assets
@@ -54,7 +75,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Disposable objets avec leur nom
         /// </summary>
-        private static Dictionary<string, IDisposable> _disposableAssetsPerName = new Dictionary<string, IDisposable>();
+        private static Dictionary<string, IDisposable> _disposableAssetsPerName = new Dictionary<string, IDisposable>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Constructeur
@@ -73,10 +94,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Remove a asset from the cache
         /// </summary>
-        public static void RemoveFromCache(string assetName)
+        public static void RemoveFromCache(string fullPath)
         {
-            _cache.TryRemove(assetName.Replace("\\", "/"), out var bidon);
-            _cache.TryRemove(assetName.Replace("/", "\\"), out bidon);
+            if (_cacheFullPathFullAssetName.TryRemove(fullPath.Replace('\\', '/'), out string fullAssetName))
+                _cache.TryRemove(fullAssetName, out var bidon);
         }
 
         /// <summary>
@@ -85,8 +106,9 @@ namespace FNAEngine2D
         public override T Load<T>(string assetName)
         {
             //Dans la cache??
+            string fullAssetName = typeof(T).Name + "." + assetName;
             object asset = null;
-            if (_cache.TryGetValue(assetName, out asset))
+            if (_cache.TryGetValue(fullAssetName, out asset))
             {
                 if (asset is T)
                 {
@@ -95,31 +117,39 @@ namespace FNAEngine2D
             }
 
             //Tentative de lecture sur le disque...
-            bool mustAddToDisposable = true;
+            string fullPath = null;
             if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Texture))
             {
                 //Texture...
-                asset = LoadTexture<T>(assetName);
+                asset = LoadTexture<T>(assetName, out fullPath);
             }
             else if (typeof(T) == typeof(GameContent))
             {
-                //Texture...
-                asset = LoadGameContent(assetName);
+                //GameContent...
+                asset = LoadGameContent(assetName, out fullPath);
+            }
+            else if (typeof(T) == typeof(Sprite))
+            {
+                //Sprite...
+                asset = LoadSprite(assetName, out fullPath);
+            }
+            else if (typeof(T) == typeof(SpriteAnimation))
+            {
+                //SpriteAnimation...
+                asset = LoadSpriteAnimation(assetName, out fullPath);
             }
             else
             {
                 //Fallback sur le ContentManager de base...
                 asset = base.Load<T>(assetName);
-
-                //Le base va le faire...
-                mustAddToDisposable = false;
             }
 
             //Si on doit checker le disposable, on va le faire. Si ça vient du base.Load, c'est le base.Unload qui va s'en occuper
-            if (mustAddToDisposable)
+            if (fullPath != null)
             {
                 //On set dans la cache...
-                _cache[assetName] = asset;
+                _cache[fullAssetName] = asset;
+                _cacheFullPathFullAssetName[fullPath] = fullAssetName;
 
                 IDisposable disposableResult = asset as IDisposable;
                 if (disposableResult != null)
@@ -127,14 +157,14 @@ namespace FNAEngine2D
                     lock (_disposableAssets)
                     {
                         //Si on a clearer la cache, on pourrait encore avoir l'objet en mémoire en attendant qu'on reload, on va donc le checker ici...
-                        if (_disposableAssetsPerName.TryGetValue(assetName, out IDisposable oldAsset))
+                        if (_disposableAssetsPerName.TryGetValue(fullAssetName, out IDisposable oldAsset))
                         {
                             oldAsset.Dispose();
-                            _disposableAssetsPerName.Remove(assetName);
+                            _disposableAssetsPerName.Remove(fullAssetName);
                         }
 
                         _disposableAssets.Add(disposableResult);
-                        _disposableAssetsPerName[assetName] = disposableResult;
+                        _disposableAssetsPerName[fullAssetName] = disposableResult;
                     }
                 }
             }
@@ -176,11 +206,9 @@ namespace FNAEngine2D
 			 * stock XNA behavior. The Dictionary will ignore case
 			 * differences.
 			 */
-            string filename = assetName.Replace('\\', '/');
-
             foreach (string extension in acceptedExtensions)
             {
-                string path = Path.Combine(this.RootDirectory, filename + extension);
+                string path = Path.Combine(this.RootDirectory, assetName + extension).Replace('\\', '/');
                 if (File.Exists(path))
                     return path;
             }
@@ -210,9 +238,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de loader une texture
         /// </summary>
-        private T LoadTexture<T>(string assetName)
+        private T LoadTexture<T>(string assetName, out string fullPath)
         {
-            string fullPath = GetAssetFullPath(assetName, TEXTURES_EXTENSIONS);
+            fullPath = GetAssetFullPath(assetName, TEXTURES_EXTENSIONS);
 
             using (Stream stream = File.OpenRead(fullPath))
             {
@@ -224,10 +252,35 @@ namespace FNAEngine2D
         /// <summary>
         /// Load game content file
         /// </summary>
-        private GameContent LoadGameContent(string assetName)
+        private GameContent LoadGameContent(string assetName, out string fullPath)
         {
-            string fullPath = GetAssetFullPath(assetName, GAMECONTENT_EXTENSIONS);
+            fullPath = GetAssetFullPath(assetName, GAMECONTENT_EXTENSIONS);
+            return Deserialize<GameContent>(fullPath);
+        }
 
+        /// <summary>
+        /// Sprite
+        /// </summary>
+        private Sprite LoadSprite(string assetName, out string fullPath)
+        {
+            fullPath = GetAssetFullPath(assetName, SPRITE_EXTENSIONS);
+            return Deserialize<Sprite>(fullPath);
+        }
+
+        /// <summary>
+        /// SpriteAnimation
+        /// </summary>
+        private SpriteAnimation LoadSpriteAnimation(string assetName, out string fullPath)
+        {
+            fullPath = GetAssetFullPath(assetName, SPRITEANIMATION_EXTENSIONS);
+            return Deserialize<SpriteAnimation>(fullPath);
+        }
+
+        /// <summary>
+        /// Deserialize json
+        /// </summary>
+        private T Deserialize<T>(string fullPath)
+        {
             var serializer = new JsonSerializer();
             using (Stream stream = File.OpenRead(fullPath))
             {
@@ -235,11 +288,12 @@ namespace FNAEngine2D
                 {
                     using (JsonTextReader jsonReader = new JsonTextReader(reader))
                     {
-                        return serializer.Deserialize<GameContent>(jsonReader);
+                        return serializer.Deserialize<T>(jsonReader);
                     }
                 }
             }
         }
+
 
     }
 }

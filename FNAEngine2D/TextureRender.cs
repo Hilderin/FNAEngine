@@ -37,36 +37,25 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string TextureName)
+        public TextureRender(string textureName): this()
         {
-            this.TextureName = TextureName;
-
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
+            this.TextureName = textureName;
         }
 
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string TextureName, Rectangle bounds)
+        public TextureRender(string textureName, Rectangle bounds) : this(textureName)
         {
-            this.TextureName = TextureName;
-
             this.Bounds = bounds;
-
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string TextureName, Rectangle bounds, Color color)
+        public TextureRender(string TextureName, Rectangle bounds, Color color) : this(TextureName, bounds)
         {
-            this.TextureName = TextureName;
-
-            this.Bounds = bounds;
             this.Color = color;
-
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
         /// <summary>
@@ -105,7 +94,7 @@ namespace FNAEngine2D
         /// </summary>
         private void ContentManager_ContentChanged(string TextureName)
         {
-            if(this.TextureName.Equals(TextureName, StringComparison.OrdinalIgnoreCase))
+            if(!String.IsNullOrEmpty(this.TextureName) && this.TextureName.Equals(TextureName, StringComparison.OrdinalIgnoreCase))
                 _texture = GameHost.GetContent<Texture2D>(this.TextureName);
         }
 

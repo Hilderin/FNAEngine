@@ -67,6 +67,11 @@ namespace FNAEngine2D
         public static float ElapsedGameTimeSeconds { get; private set; }
 
         /// <summary>
+        /// ElapsedGameTimeMilliseconds
+        /// </summary>
+        public static float ElapsedGameTimeMilliseconds { get; private set; }
+
+        /// <summary>
         /// Width du jeu
         /// </summary>
         public static int Width { get { return _internalGameHost.Width; } }
@@ -189,6 +194,7 @@ namespace FNAEngine2D
         {
             GameTime = gameTime;
             ElapsedGameTimeSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            ElapsedGameTimeMilliseconds = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
         /// <summary>
