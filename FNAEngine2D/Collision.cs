@@ -26,10 +26,15 @@ namespace FNAEngine2D
     /// </summary>
     public class Collision
     {
+        ///// <summary>
+        ///// CollidesWith
+        ///// </summary>
+        //public List<Collider> CollidesWith = new List<Collider>(1);
+
         /// <summary>
         /// CollidesWith
         /// </summary>
-        public Collider CollidesWith;
+        public List<GameObject> CollidesWith = new List<GameObject>(1);
 
         /// <summary>
         /// Direction d'où vient la collision
@@ -44,9 +49,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Collision
         /// </summary>
-        public Collision(Collider collidesWith, CollisionDirection direction, Vector2 stopLocation)
+        public Collision(GameObject collidesWith, CollisionDirection direction, Vector2 stopLocation)
         {
-            this.CollidesWith = collidesWith;
+            this.CollidesWith.Add(collidesWith);
             this.Direction = direction;
             this.StopLocation = stopLocation;
         }

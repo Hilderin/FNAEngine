@@ -18,16 +18,30 @@ namespace FNAEngine2D
         /// </summary>
         public readonly static List<Collision> EMPTY_COLLISIONS = new List<Collision>();
 
-
         /// <summary>
         /// Permet d'obtenir le résultat de la collision entre 2 rectangle
         /// </summary>
         public static Collision GetCollision(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider collidesWith)
         {
-           
+            Collision collision = null;
+            GetCollision(movingColliderLocation, movingColliderSize, collidesWith, ref collision);
+            return collision;
+        }
+
+        /// <summary>
+        /// Permet d'obtenir le résultat de la collision entre 2 rectangle
+        /// </summary>
+        public static bool GetCollision(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider collidesWith, ref Collision collision)
+        {
+
+            //We start from the other collider...
+            if (collision != null)
+                movingColliderLocation = collision.StopLocation;
+
+
             //Collision??
             if (!VectorHelper.Intersects(movingColliderLocation, movingColliderSize, collidesWith.Location, collidesWith.Size))
-                return null;
+                return false;
 
             CollisionDirection direction = CollisionDirection.Indetermined;
 
@@ -157,9 +171,20 @@ namespace FNAEngine2D
 
             }
 
-            
+            //Returning collision....
+            if (collision != null)
+            {
+                //Already a collision...
+                collision.CollidesWith.Add(collidesWith.GameObject);
+                collision.StopLocation = stopLocation;
+            }
+            else
+            {
+                //New collision...
+                collision = new Collision(collidesWith.GameObject, direction, stopLocation);
+            }
 
-            return new Collision(collidesWith, direction, stopLocation);
+            return true;
         }
 
     }

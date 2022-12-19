@@ -48,46 +48,46 @@ namespace FNAEngine2D
             if (_colliders.Count == 0)
                 return null;
 
+            Collision ret = null;
+
             for (int index = 0; index < _colliders.Count; index++)
             {
                 if (_colliders[index] != movingCollider)
                 {
                     if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
                     {
-                        Collision collision = CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, _colliders[index]);
-                        if (collision != null)
-                            return collision;
+                        CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, _colliders[index], ref ret);
                     }
                 }
             }
 
-            return null;
+            return ret;
         }
 
-        /// <summary>
-        /// Permet d'obtenir la liste des collisions
-        /// </summary>
-        public List<Collision> GetCollisions(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, Type[] types)
-        {
-            if (_colliders.Count == 0)
-                return CollisionHelper.EMPTY_COLLISIONS;
+        ///// <summary>
+        ///// Permet d'obtenir la liste des collisions
+        ///// </summary>
+        //public List<Collision> GetCollisions(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, Type[] types)
+        //{
+        //    if (_colliders.Count == 0)
+        //        return CollisionHelper.EMPTY_COLLISIONS;
 
-            List<Collision> collisions = new List<Collision>();
-            for (int index = 0; index < _colliders.Count; index++)
-            {
-                if (_colliders[index] != movingCollider)
-                {
-                    if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
-                    {
-                        Collision collision = CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, _colliders[index]);
-                        if (collision != null)
-                            collisions.Add(collision);
-                    }
-                }
-            }
+        //    List<Collision> collisions = new List<Collision>();
+        //    for (int index = 0; index < _colliders.Count; index++)
+        //    {
+        //        if (_colliders[index] != movingCollider)
+        //        {
+        //            if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
+        //            {
+        //                Collision collision = CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, _colliders[index]);
+        //                if (collision != null)
+        //                    collisions.Add(collision);
+        //            }
+        //        }
+        //    }
 
-            return collisions;
-        }
+        //    return collisions;
+        //}
 
 
 

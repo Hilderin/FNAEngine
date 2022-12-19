@@ -713,37 +713,37 @@ namespace FNAEngine2D
             return GetCollision(new Vector2(nextX, nextY), types);
         }
 
-        /// <summary>
-        /// Permet d'obtenir la liste des collisions
-        /// </summary>
-        public List<Collision> GetCollisions(Type[] types)
-        {
-            return GetCollisions(_location, types);
+        ///// <summary>
+        ///// Permet d'obtenir la liste des collisions
+        ///// </summary>
+        //public List<Collision> GetCollisions(Type[] types)
+        //{
+        //    return GetCollisions(_location, types);
 
-        }
+        //}
 
-        /// <summary>
-        /// Permet d'obtenir la première collision
-        /// </summary>
-        public List<Collision> GetCollisions(Vector2 position, Type[] types)
-        {
-            ColliderContainer container = GetColliderContainer();
+        ///// <summary>
+        ///// Permet d'obtenir la première collision
+        ///// </summary>
+        //public List<Collision> GetCollisions(Vector2 position, Type[] types)
+        //{
+        //    ColliderContainer container = GetColliderContainer();
 
-            if (container.IsEmpty)
-                return CollisionHelper.EMPTY_COLLISIONS;
+        //    if (container.IsEmpty)
+        //        return CollisionHelper.EMPTY_COLLISIONS;
 
-            return container.GetCollisions(position, _size, _collider, types);
+        //    return container.GetCollisions(position, _size, _collider, types);
 
-        }
+        //}
 
 
-        /// <summary>
-        /// Permet d'obtenir la liste des collisions
-        /// </summary>
-        public List<Collision> GetCollisions(int nextX, int nextY, Type[] types)
-        {
-            return GetCollisions(new Vector2(nextX, nextY), types);
-        }
+        ///// <summary>
+        ///// Permet d'obtenir la liste des collisions
+        ///// </summary>
+        //public List<Collision> GetCollisions(int nextX, int nextY, Type[] types)
+        //{
+        //    return GetCollisions(new Vector2(nextX, nextY), types);
+        //}
 
         /// <summary>
         /// Hide a object
