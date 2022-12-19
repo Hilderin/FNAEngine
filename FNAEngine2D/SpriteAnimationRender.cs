@@ -54,6 +54,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Restart the animation
+        /// </summary>
+        public void Restart()
+        {
+            _currentFrame = -1;
+        }
+
+        /// <summary>
         /// Loading...
         /// </summary>
         public override void Load()
@@ -97,7 +105,10 @@ namespace FNAEngine2D
 
             //First frame?
             if (_currentFrame < 0)
+            {
                 _currentFrame = 0;
+                newTime = 0;
+            }
 
             //We could skip frames...
             while (newTime >= _spriteAnimation.Frames[_currentFrame].Duration)

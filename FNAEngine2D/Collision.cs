@@ -39,16 +39,16 @@ namespace FNAEngine2D
         /// <summary>
         /// Bounds là où l'objet a faire la collision.
         /// </summary>
-        public Rectangle StopBounds;
+        public Vector2 StopLocation;
 
         /// <summary>
         /// Collision
         /// </summary>
-        public Collision(Collider collidesWith, CollisionDirection direction, Rectangle stopBounds)
+        public Collision(Collider collidesWith, CollisionDirection direction, Vector2 stopLocation)
         {
             this.CollidesWith = collidesWith;
             this.Direction = direction;
-            this.StopBounds = stopBounds;
+            this.StopLocation = stopLocation;
         }
 
     }

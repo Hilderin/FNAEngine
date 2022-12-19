@@ -14,7 +14,7 @@ namespace FNAEngine2D
     /// <summary>
     /// RenderObject
     /// </summary>
-    public abstract class GameObject
+    public class GameObject
     {
         /// <summary>
         /// Gère le loading des childrens
@@ -48,6 +48,16 @@ namespace FNAEngine2D
         private List<GameObject> _childrens = new List<GameObject>();
 
         /// <summary>
+        /// Location
+        /// </summary>
+        private Vector2 _location;
+
+        /// <summary>
+        /// Size
+        /// </summary>
+        private Vector2 _size;
+
+        /// <summary>
         /// RootGameObject
         /// </summary>
         public GameObject RootGameObject;
@@ -58,15 +68,14 @@ namespace FNAEngine2D
         public GameObject Parent;
 
         /// <summary>
-        /// Bounds
-        /// </summary>
-        public Rectangle Bounds;
-
-
-        /// <summary>
         /// Name of the object
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Indicate if GameObject is enabled (is disable, GameObject is not updated or drow)
+        /// </summary>
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Indique si l'objet est paused
@@ -93,121 +102,127 @@ namespace FNAEngine2D
 
 
         /// <summary>
+        /// Bounds
+        /// </summary>
+        public Rectangle Bounds
+        {
+            get { return new Rectangle((int)_location.X, (int)_location.Y, (int)_size.X, (int)_size.Y); }
+            set
+            {
+                _location = value.GetLocation();
+                _size = value.GetSize();
+            }
+        }
+
+        /// <summary>
         /// Position X
         /// </summary>
-        public int X
+        public float X
         {
-            get { return this.Bounds.X; }
-            set { this.Bounds.X = value; }
+            get { return _location.X; }
+            set { _location.X = value; }
         }
 
         /// <summary>
         /// Position Y
         /// </summary>
-        public int Y
+        public float Y
         {
-            get { return this.Bounds.Y; }
-            set { this.Bounds.Y = value; }
+            get { return _location.Y; }
+            set { _location.Y = value; }
         }
 
         /// <summary>
         /// Width
         /// </summary>
-        public int Width
+        public float Width
         {
-            get { return this.Bounds.Width; }
-            set { this.Bounds.Width = value; }
+            get { return _size.X; }
+            set { _size.X = value; }
         }
 
         /// <summary>
         /// Height
         /// </summary>
-        public int Height
+        public float Height
         {
-            get { return this.Bounds.Height; }
-            set { this.Bounds.Height = value; }
+            get { return (int)_size.Y; }
+            set { _size.Y = value; }
         }
 
         /// <summary>
         /// Right
         /// </summary>
-        public int Right
+        public float Right
         {
-            get { return this.Bounds.Right; }
-            set { this.Bounds.X = value - this.Width; }
+            get { return _location.X + _size.X; }
+            set { _location.X = value - _size.X; }
         }
 
         /// <summary>
         /// Bottom
         /// </summary>
-        public int Bottom
+        public float Bottom
         {
-            get { return this.Bounds.Bottom; }
-            set { this.Bounds.Y = value - this.Height; }
+            get { return _location.Y + _size.Y; }
+            set { _location.Y = value - _size.Y; }
         }
 
         /// <summary>
-        /// Position
+        /// Location
         /// </summary>
         public Vector2 Location
         {
-            get { return new Vector2(this.X, this.Y); }
-            set
-            {
-                this.Bounds.X = (int)value.X;
-                this.Bounds.Y = (int)value.Y;
-            }
+            get { return _location; }
+            set { _location = value; }
         }
 
-        /// <summary>
-        /// Position
-        /// </summary>
-        public Vector2 Position
-        {
-            get { return new Vector2(this.X, this.Y); }
-            set
-            {
-                this.Bounds.X = (int)value.X;
-                this.Bounds.Y = (int)value.Y;
-            }
-        }
+        ///// <summary>
+        ///// Position
+        ///// </summary>
+        //public Vector2 Position
+        //{
+        //    get { return new Vector2(this.X, this.Y); }
+        //    set
+        //    {
+        //        this.Bounds.X = (int)value.X;
+        //        this.Bounds.Y = (int)value.Y;
+        //    }
+        //}
 
-        /// <summary>
-        /// Rectangle
-        /// </summary>
-        public Rectangle Rectangle
-        {
-            get { return this.Bounds; }
-            set { this.Bounds = value; }
-        }
+        ///// <summary>
+        ///// Rectangle
+        ///// </summary>
+        //public Rectangle Rectangle
+        //{
+        //    get { return this.Bounds; }
+        //    set { this.Bounds = value; }
+        //}
 
         /// <summary>
         /// Size
         /// </summary>
-        public Point Size
+        public Vector2 Size
         {
-            get { return new Point(this.Width, this.Height); }
-            set
-            {
-                this.Bounds.Width = (int)value.X;
-                this.Bounds.Height = (int)value.Y;
-            }
+            get { return _size; }
+            set { _size = value; }
+
         }
 
         /// <summary>
         /// Center en X
         /// </summary>
-        public int CenterX
+        public float CenterX
         {
-            get { return this.Bounds.X + (this.Bounds.Width / 2); }
+            get { return _location.X + (_size.X / 2); }
         }
 
         /// <summary>
         /// Center en Y
         /// </summary>
-        public int CenterY
+        public float CenterY
         {
-            get { return this.Bounds.Y + (this.Bounds.Height / 2); }
+            get { return _location.Y + (_size.Y / 2); }
         }
 
 
@@ -442,8 +457,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void UpdateWithChildren()
         {
-            //Paused?
-            if (this.Paused)
+            //Paused or disabled?
+            if (this.Paused || !this.Enabled)
                 return;
 
             //Update GameContent if needed...
@@ -473,6 +488,10 @@ namespace FNAEngine2D
         /// </summary>
         internal void DrawWithChildren()
         {
+            //Disabled?
+            if (!this.Enabled)
+                return;
+
             this.Draw();
 
             if (this._childrens.Count == 0)
@@ -506,9 +525,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de déplacer en X l'objet et tous ses enfants
         /// </summary>
-        public void TranslateX(int offsetX)
+        public void TranslateX(float offsetX)
         {
-            this.X += offsetX;
+            _location.X += offsetX;
 
             if (this._childrens.Count == 0)
                 return;
@@ -519,19 +538,11 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Permet de déplacer en X l'objet et tous ses enfants
-        /// </summary>
-        public void TranslateX(float offsetX)
-        {
-            TranslateX((int)offsetX);
-        }
-
-        /// <summary>
         /// Permet de déplacer en Y l'objet et tous ses enfants
         /// </summary>
-        public void TranslateY(int offsetY)
+        public void TranslateY(float offsetY)
         {
-            this.Y += offsetY;
+            _location.Y += offsetY;
 
             if (this._childrens.Count == 0)
                 return;
@@ -541,22 +552,14 @@ namespace FNAEngine2D
 
         }
 
-        /// <summary>
-        /// Permet de déplacer en Y l'objet et tous ses enfants
-        /// </summary>
-        public void TranslateY(float offsetY)
-        {
-            TranslateY((int)offsetY);
-        }
-
 
         /// <summary>
         /// Permet de déplacer en X et Y l'objet et tous ses enfants
         /// </summary>
-        public void Translate(int offsetX, int offsetY)
+        public void Translate(float offsetX, float offsetY)
         {
-            this.X += offsetX;
-            this.Y += offsetY;
+            _location.X += offsetX;
+            _location.Y += offsetY;
 
 
             if (this._childrens.Count == 0)
@@ -570,17 +573,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de déplacer en X et Y l'objet et tous ses enfants
         /// </summary>
-        public void Translate(float offsetX, float offsetY)
-        {
-            Translate((int)offsetX, (int)offsetY);
-        }
-
-        /// <summary>
-        /// Permet de déplacer en X et Y l'objet et tous ses enfants
-        /// </summary>
         public void Translate(Vector2 translation)
         {
-            this.Translate((int)translation.X, (int)translation.Y);
+            this.Translate(translation.X, translation.Y);
         }
 
         /// <summary>
@@ -588,7 +583,7 @@ namespace FNAEngine2D
         /// </summary>
         public void TranslateTo(Vector2 destination)
         {
-            this.Translate(destination.X - this.X, destination.Y - this.Y);
+            this.Translate(destination.X - _location.X, destination.Y - _location.Y);
         }
 
         /// <summary>
@@ -596,16 +591,16 @@ namespace FNAEngine2D
         /// </summary>
         public void TranslateTo(Point destination)
         {
-            this.Translate(destination.X - this.X, destination.Y - this.Y);
+            this.Translate(destination.X - _location.X, destination.Y - _location.Y);
         }
 
 
         /// <summary>
         /// Resize width of an offset
         /// </summary>
-        public void ResizeWidth(int offsetX)
+        public void ResizeWidth(float offsetX)
         {
-            this.Width += offsetX;
+            _size.X += offsetX;
 
 
             if (this._childrens.Count == 0)
@@ -619,9 +614,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Resize height of an offset
         /// </summary>
-        public void ResizeHeight(int offsetY)
+        public void ResizeHeight(float offsetY)
         {
-            this.Height += offsetY;
+            _size.Y += offsetY;
+
 
             if (this._childrens.Count == 0)
                 return;
@@ -631,13 +627,14 @@ namespace FNAEngine2D
 
         }
 
+
         /// <summary>
         /// Resize width and height of an offset
         /// </summary>
-        public void Resize(int offsetX, int offsetY)
+        public void Resize(float offsetX, float offsetY)
         {
-            this.Width += offsetX;
-            this.Height += offsetY;
+            _size.X += offsetX;
+            _size.Y += offsetY;
 
 
             if (this._childrens.Count == 0)
@@ -651,19 +648,19 @@ namespace FNAEngine2D
         /// <summary>
         /// Resize to a width and height
         /// </summary>
-        public void ResizeTo(int offsetX, int offsetY)
+        public void ResizeTo(float offsetX, float offsetY)
         {
-            this.Resize(offsetX - this.Width, offsetY - this.Height);
+            this.Resize(offsetX - _size.X, offsetY - _size.Y);
         }
 
         /// <summary>
         /// Active le collider
         /// </summary>
-        public void EnableCollider()
+        public GameObject EnableCollider()
         {
             //Already enabled?
             if (_collider != null)
-                return;
+                return this;
 
             //RootGameObject is never really added anywhere...
             if (this == GameHost.RootGameObject)
@@ -674,10 +671,12 @@ namespace FNAEngine2D
 
             //If not already added, we will add it in the ColliderContainer on Add
             if (this.Parent == null)
-                return;
+                return this;
 
             //Add to container...
             GetColliderContainer().Add(_collider);
+
+            return this;
         }
 
         /// <summary>
@@ -690,23 +689,28 @@ namespace FNAEngine2D
             if (container.IsEmpty)
                 return null;
 
-            if (_collider == null)
-                return container.GetCollision(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider, types);
-            else
-                return container.GetCollision(_collider.Bounds, _collider, types);
+            return container.GetCollision(this._location, this._size, _collider, types);
         }
 
         /// <summary>
         /// Permet d'obtenir la première collision
         /// </summary>
-        public Collision GetCollision(int nextX, int nextY, Type[] types)
+        public Collision GetCollision(Vector2 position, Type[] types)
         {
             ColliderContainer container = GetColliderContainer();
 
             if (container.IsEmpty)
                 return null;
 
-            return container.GetCollision(new Rectangle(nextX, nextY, this.Width, this.Height), _collider, types);
+            return container.GetCollision(position, _size, _collider, types);
+        }
+
+        /// <summary>
+        /// Permet d'obtenir la première collision
+        /// </summary>
+        public Collision GetCollision(float nextX, float nextY, Type[] types)
+        {
+            return GetCollision(new Vector2(nextX, nextY), types);
         }
 
         /// <summary>
@@ -714,29 +718,31 @@ namespace FNAEngine2D
         /// </summary>
         public List<Collision> GetCollisions(Type[] types)
         {
-            ColliderContainer container = GetColliderContainer();
-
-            if (container.IsEmpty)
-                return CollisionHelper.EMPTY_COLLISIONS;
-
-            if (_collider == null)
-                return container.GetCollisions(new Rectangle(this.X, this.Y, this.Width, this.Height), _collider, types);
-            else
-                return container.GetCollisions(_collider.Bounds, _collider, types);
+            return GetCollisions(_location, types);
 
         }
 
         /// <summary>
-        /// Permet d'obtenir la liste des collisions
+        /// Permet d'obtenir la première collision
         /// </summary>
-        public List<Collision> GetCollisions(int nextX, int nextY, Type[] types)
+        public List<Collision> GetCollisions(Vector2 position, Type[] types)
         {
             ColliderContainer container = GetColliderContainer();
 
             if (container.IsEmpty)
                 return CollisionHelper.EMPTY_COLLISIONS;
 
-            return container.GetCollisions(new Rectangle(nextX, nextY, this.Width, this.Height), _collider, types);
+            return container.GetCollisions(position, _size, _collider, types);
+
+        }
+
+
+        /// <summary>
+        /// Permet d'obtenir la liste des collisions
+        /// </summary>
+        public List<Collision> GetCollisions(int nextX, int nextY, Type[] types)
+        {
+            return GetCollisions(new Vector2(nextX, nextY), types);
         }
 
         /// <summary>

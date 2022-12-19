@@ -20,6 +20,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de trouver le centre
         /// </summary>
+        public static Vector2 Center(Point size, Vector2 objectSize)
+        {
+            return new Vector2((size.X / 2) - (objectSize.X / 2), (size.Y / 2) - (objectSize.Y / 2));
+        }
+
+        /// <summary>
+        /// Permet de trouver le centre
+        /// </summary>
         public static Vector2 Center(int width, int height, int objectWidth, int objectHeight)
         {
             return new Vector2((width / 2) - (objectWidth / 2), (height / 2) - (objectHeight / 2));
@@ -42,6 +50,24 @@ namespace FNAEngine2D
         {
             return (bounds.X <= vector.X && bounds.Right >= vector.X
                     && bounds.Y <= vector.Y && bounds.Bottom >= vector.Y);
+        }
+
+        /// <summary>
+        /// Check if 2 rectangles reprensented by locations and size intersects
+        /// </summary>
+        public static bool Intersects(Vector2 locationA, Vector2 sizeA, Vector2 locationB, Vector2 sizeB)
+        {
+            return (locationB.X <= (locationA.X + sizeA.X) && (locationB.X + sizeB.X) >= locationA.X
+                    && locationB.Y <= (locationA.Y + sizeA.Y) && (locationB.Y + sizeB.Y) >= locationA.Y);
+        }
+
+        /// <summary>
+        /// Check if 2 rectangles reprensented by locations and size intersects
+        /// </summary>
+        public static bool Contains(Vector2 locationA, Vector2 sizeA, Vector2 locationB, Vector2 sizeB)
+        {
+            return locationA.X <= locationB.X && (locationA.X + sizeA.X) >= (locationB.X + sizeB.X)
+                   && locationA.Y <= locationB.Y && (locationA.Y + sizeA.Y) >= (locationB.Y + sizeB.Y);
         }
 
         /// <summary>

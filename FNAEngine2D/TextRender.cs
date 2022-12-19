@@ -222,7 +222,7 @@ namespace FNAEngine2D
                     x = (int)(this.X + (this.Width / 2) - (_textCache.Width / 2));
                     break;
                 default:
-                    x = (int)this.Position.X;
+                    x = (int)this.X;
                     break;
             }
 
@@ -240,7 +240,7 @@ namespace FNAEngine2D
                     y = (int)(this.Y + (this.Height / 2) - ((FontSize + 8) / 2));
                     break;
                 default:
-                    y = (int)this.Position.Y;
+                    y = (int)this.Y;
                     break;
             }
 

@@ -22,43 +22,55 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir le résultat de la collision entre 2 rectangle
         /// </summary>
-        public static Collision GetCollision(Rectangle movingCollider, Collider collidesWith)
+        public static Collision GetCollision(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider collidesWith)
         {
-            Rectangle collidesWithRect = collidesWith.Bounds;
-
-            if (!movingCollider.Intersects(collidesWithRect))
+           
+            //Collision??
+            if (!VectorHelper.Intersects(movingColliderLocation, movingColliderSize, collidesWith.Location, collidesWith.Size))
                 return null;
 
             CollisionDirection direction = CollisionDirection.Indetermined;
 
-            if (movingCollider.Contains(collidesWithRect))
+            Vector2 stopLocation;
+
+            if (VectorHelper.Contains(movingColliderLocation, movingColliderSize, collidesWith.Location, collidesWith.Size))
             {
                 direction = CollisionDirection.MovingColliderOver;
+                stopLocation = movingColliderLocation;
             }
-            else if (collidesWithRect.Contains(movingCollider))
+            else if (VectorHelper.Contains(collidesWith.Location, collidesWith.Size, movingColliderLocation, movingColliderSize))
             {
                 direction = CollisionDirection.MovingColliderIn;
+                stopLocation = movingColliderLocation;
             }
             else
             {
-                if (movingCollider.Bottom >= collidesWithRect.Top && movingCollider.Bottom <= collidesWithRect.Bottom)
+                //Somewhere else...
+                Vector2 collidesWithLocation = collidesWith.Location;
+                float collidesWithRectRight = collidesWithLocation.X + collidesWith.Size.X;
+                float collidesWithRectBottom = collidesWithLocation.Y + collidesWith.Size.Y;
+
+                float movingColliderRight = movingColliderLocation.X + movingColliderSize.X;
+                float movingColliderBottom = movingColliderLocation.Y + movingColliderSize.Y;
+
+                if (movingColliderBottom >= collidesWithLocation.Y && movingColliderBottom <= collidesWithRectBottom)
                 {
                     //Objet est en haut
-                    if (movingCollider.Top < collidesWithRect.Top)
+                    if (movingColliderLocation.Y < collidesWithLocation.Y)
                     {
                         //On va regarder si on va pas prioriser le côté...
-                        if (movingCollider.Right >= collidesWithRect.Left && movingCollider.Right <= collidesWithRect.Right)
+                        if (movingColliderRight >= collidesWithLocation.X && movingColliderRight <= collidesWithRectRight)
                         {
-                            if (movingCollider.Right - collidesWithRect.Left < movingCollider.Bottom - collidesWithRect.Top)
+                            if (movingColliderRight - collidesWithLocation.X < movingColliderBottom - collidesWithLocation.Y)
                                 //On va prioriser la gauche...
                                 direction = CollisionDirection.MovingColliderOnLeft;
                             else
                                 direction = CollisionDirection.MovingColliderOnTop;
                         }
-                        else if (movingCollider.Left <= collidesWithRect.Right && movingCollider.Left >= collidesWithRect.Left)
+                        else if (movingColliderLocation.X <= collidesWithRectRight && movingColliderLocation.X >= collidesWithLocation.X)
                         {
                             //On a aussi une collision sur la droite...
-                            if (collidesWithRect.Right - movingCollider.Left < movingCollider.Bottom - collidesWithRect.Top)
+                            if (collidesWithRectRight - movingColliderLocation.X < movingColliderBottom - collidesWithLocation.Y)
                                 //On va prioriser la droite...
                                 direction = CollisionDirection.MovingColliderOnRight;
                             else
@@ -73,25 +85,25 @@ namespace FNAEngine2D
 
                 if (direction == CollisionDirection.Indetermined)
                 {
-                    if (movingCollider.Top <= collidesWithRect.Bottom && movingCollider.Top >= collidesWithRect.Top)
+                    if (movingColliderLocation.Y <= collidesWithRectBottom && movingColliderLocation.Y >= collidesWithLocation.Y)
                     {
                         //Objet est en bas
-                        if (movingCollider.Bottom > collidesWithRect.Bottom)
+                        if (movingColliderBottom > collidesWithRectBottom)
                         {
                             //On va regarder si on va pas prioriser le côté...
-                            if (movingCollider.Right >= collidesWithRect.Left && movingCollider.Right <= collidesWithRect.Right)
+                            if (movingColliderRight >= collidesWithLocation.X && movingColliderRight <= collidesWithRectRight)
                             {
-                                if (movingCollider.Right - collidesWithRect.Left < collidesWithRect.Bottom - movingCollider.Top)
+                                if (movingColliderRight - collidesWithLocation.X < collidesWithRectBottom - movingColliderLocation.Y)
                                     //On va prioriser la gauche...
                                     direction = CollisionDirection.MovingColliderOnLeft;
                                 else
                                     direction = CollisionDirection.MovingColliderOnBottom;
                             }
 
-                            if (movingCollider.Left <= collidesWithRect.Right && movingCollider.Left >= collidesWithRect.Left)
+                            if (movingColliderLocation.X <= collidesWithRectRight && movingColliderLocation.X >= collidesWithLocation.X)
                             {
                                 //On a aussi une collision sur la droite...
-                                if (collidesWithRect.Right - movingCollider.Left < collidesWithRect.Bottom - movingCollider.Top)
+                                if (collidesWithRectRight - movingColliderLocation.X < collidesWithRectBottom - movingColliderLocation.Y)
                                     //On va prioriser la droite...
                                     direction = CollisionDirection.MovingColliderOnRight;
                                 else
@@ -106,12 +118,12 @@ namespace FNAEngine2D
 
                     if (direction == CollisionDirection.Indetermined)
                     {
-                        if (movingCollider.Right >= collidesWithRect.Left && movingCollider.Right <= collidesWithRect.Right)
+                        if (movingColliderRight >= collidesWithLocation.X && movingColliderRight <= collidesWithRectRight)
                         {
                             //Objet est en left
                             direction = CollisionDirection.MovingColliderOnLeft;
                         }
-                        else if (movingCollider.Left <= collidesWithRect.Right && movingCollider.Left >= collidesWithRect.Left)
+                        else if (movingColliderLocation.X <= collidesWithRectRight && movingColliderLocation.X >= collidesWithLocation.X)
                         {
                             //Objet est en right
                             direction = CollisionDirection.MovingColliderOnRight;
@@ -119,35 +131,35 @@ namespace FNAEngine2D
                     }
                 }
 
+                //En fonction de la direction on va déplacer le StopBounds
+                switch (direction)
+                {
+                    case CollisionDirection.MovingColliderOnLeft:
+                        //La balle est à gauche
+                        stopLocation = new Vector2(collidesWithLocation.X - movingColliderSize.X, movingColliderLocation.Y);
+                        break;
+                    case CollisionDirection.MovingColliderOnRight:
+                        //La balle est à droite
+                        stopLocation = new Vector2(collidesWithRectRight, movingColliderLocation.Y);
+                        break;
+                    case CollisionDirection.MovingColliderOnTop:
+                        //La balle est en haut
+                        stopLocation = new Vector2(movingColliderLocation.X, collidesWithLocation.Y - movingColliderSize.Y);
+                        break;
+                    case CollisionDirection.MovingColliderOnBottom:
+                        //La balle est en bas
+                        stopLocation = new Vector2(movingColliderLocation.X, collidesWithRectBottom);
+                        break;
+                    default:
+                        stopLocation = movingColliderLocation;
+                        break;
+                }
+
             }
 
-            //En fonction de la direction on va déplacer le StopBounds
-            Rectangle stopBounds;
-            switch (direction)
-            {
-                case CollisionDirection.MovingColliderOnLeft:
-                    //La balle est à gauche
-                    stopBounds = new Rectangle(collidesWithRect.Left - movingCollider.Width, movingCollider.Top, movingCollider.Width, movingCollider.Height);
-                    break;
-                case CollisionDirection.MovingColliderOnRight:
-                    //La balle est à droite
-                    stopBounds = new Rectangle(collidesWithRect.Right, movingCollider.Top, movingCollider.Width, movingCollider.Height);
-                    break;
-                case CollisionDirection.MovingColliderOnTop:
-                    //La balle est en haut
-                    stopBounds = new Rectangle(movingCollider.Left, collidesWithRect.Top - movingCollider.Height, movingCollider.Width, movingCollider.Height);
-                    break;
-                case CollisionDirection.MovingColliderOnBottom:
-                    //La balle est en bas
-                    stopBounds = new Rectangle(movingCollider.Left, collidesWithRect.Bottom, movingCollider.Width, movingCollider.Height);
-                    break;
-                default:
-                    stopBounds = movingCollider;
-                    break;
-            }
+            
 
-
-            return new Collision(collidesWith, direction, stopBounds);
+            return new Collision(collidesWith, direction, stopLocation);
         }
 
     }

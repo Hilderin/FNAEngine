@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharacterInput.cs" />
     <Compile Include="ColliderContainer.cs" />
     <Compile Include="Collider.cs" />
     <Compile Include="Collision.cs" />
@@ -72,6 +73,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="RigidBody.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationRender.cs" />
     <Compile Include="SpriteAnimationFrame.cs" />

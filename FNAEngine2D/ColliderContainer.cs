@@ -43,7 +43,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public Collision GetCollision(Rectangle movingColliderNextBounds, Collider movingCollider, Type[] types)
+        public Collision GetCollision(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, Type[] types)
         {
             if (_colliders.Count == 0)
                 return null;
@@ -54,7 +54,7 @@ namespace FNAEngine2D
                 {
                     if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
                     {
-                        Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
+                        Collision collision = CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, _colliders[index]);
                         if (collision != null)
                             return collision;
                     }
@@ -67,7 +67,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public List<Collision> GetCollisions(Rectangle movingColliderNextBounds, Collider movingCollider, Type[] types)
+        public List<Collision> GetCollisions(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, Type[] types)
         {
             if (_colliders.Count == 0)
                 return CollisionHelper.EMPTY_COLLISIONS;
@@ -79,7 +79,7 @@ namespace FNAEngine2D
                 {
                     if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
                     {
-                        Collision collision = CollisionHelper.GetCollision(movingColliderNextBounds, _colliders[index]);
+                        Collision collision = CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, _colliders[index]);
                         if (collision != null)
                             collisions.Add(collision);
                     }

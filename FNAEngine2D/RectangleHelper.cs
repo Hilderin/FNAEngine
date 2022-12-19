@@ -10,12 +10,23 @@ namespace FNAEngine2D
     public static class RectangleHelper
     {
         /// <summary>
-        /// Permet de trouver le rectangle au center
+        /// Get the rectangle centered
         /// </summary>
         public static Rectangle Center(Rectangle parentBounds, int width, int height)
         {
             return new Rectangle((parentBounds.Width / 2) - (width / 2)
                                 , (parentBounds.Height / 2) - (height / 2)
+                                , width
+                                , height);
+        }
+
+        /// <summary>
+        /// Get the rectangle centered and align with the bottom
+        /// </summary>
+        public static Rectangle CenterBottom(Rectangle parentBounds, int width, int height)
+        {
+            return new Rectangle((parentBounds.Width / 2) - (width / 2)
+                                , parentBounds.Height - height
                                 , width
                                 , height);
         }

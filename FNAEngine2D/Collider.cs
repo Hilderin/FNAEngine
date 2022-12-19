@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +15,14 @@ namespace FNAEngine2D
     {
 
         /// <summary>
-        /// Bounds redéfini
+        /// Location
         /// </summary>
-        private Rectangle? _bounds = null;
+        public Vector2 Location { get { return this.GameObject.Location; } }
 
         /// <summary>
-        /// Bounds
+        /// Location
         /// </summary>
-        public Rectangle Bounds
-        { 
-            get 
-            {
-                if (_bounds != null)
-                    return _bounds.Value;
-
-                return this.GameObject.Bounds;
-            } 
-        }
+        public Vector2 Size { get { return this.GameObject.Size; } }
 
         /// <summary>
         /// GameObject associé au collider
@@ -50,24 +42,25 @@ namespace FNAEngine2D
         /// </summary>
         public Collider(Rectangle bounds)
         {
-            _bounds = bounds;
+            this.GameObject = new GameObject();
+            this.GameObject.Bounds = bounds;
         }
 
         /// <summary>
         /// Collider sous forme de rectangle
         /// </summary>
-        public Collider(int x, int y, int width, int height)
+        public Collider(int x, int y, int width, int height): this(new Rectangle(x, y, width, height))
         {
-            _bounds = new Rectangle(x, y, width, height);
+            
         }
 
         
         /// <summary>
         /// Permet de savoir si le rectangle collider avec ce collider
         /// </summary>
-        public bool Intersects(Rectangle rectangle)
+        public bool Intersects(Vector2 location, Vector2 size)
         {
-            return rectangle.Intersects(this.Bounds);
+            return VectorHelper.Intersects(this.Location, this.Size, location, size);
         }
 
     }
