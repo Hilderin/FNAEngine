@@ -294,9 +294,9 @@ namespace FNAEngine2D
                 if(value.Length != 7)
                     throw new FormatException("Invalid color: " + value + ", expected \"r, g, b\" or \"r, g, b, a\" or #RRGGBB.");
 
-                float r = Int32.Parse(value.Substring(1, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
-                float g = Int32.Parse(value.Substring(3, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
-                float b = Int32.Parse(value.Substring(5, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
+                int r = Int32.Parse(value.Substring(1, 2), System.Globalization.NumberStyles.HexNumber);
+                int g = Int32.Parse(value.Substring(3, 2), System.Globalization.NumberStyles.HexNumber);
+                int b = Int32.Parse(value.Substring(5, 2), System.Globalization.NumberStyles.HexNumber);
 
                 return new Color(r, g, b, 1);
             }
@@ -308,10 +308,10 @@ namespace FNAEngine2D
                 if (parts.Length != 3 && parts.Length != 4)
                     throw new FormatException("Invalid color: " + value + ", expected \"r, g, b\" or \"r, g, b, a\" or #RRGGBB.");
 
-                float r = Int32.Parse(parts[0]);
-                float g = Int32.Parse(parts[1]);
-                float b = Int32.Parse(parts[2]);
-                float a = (parts.Length == 4 ? Int32.Parse(parts[3]) : 1);
+                int r = Int32.Parse(parts[0]);
+                int g = Int32.Parse(parts[1]);
+                int b = Int32.Parse(parts[2]);
+                int a = (parts.Length == 4 ? Int32.Parse(parts[3]) : 1);
 
                 //Création of the color...
                 return new Color(r, g, b, a);

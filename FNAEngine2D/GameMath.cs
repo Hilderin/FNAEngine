@@ -78,5 +78,44 @@ namespace FNAEngine2D
             return (float)(_random.NextDouble() * (max - min)) + min;
         }
 
+        /// <summary>
+        /// Calculate the square value
+        /// </summary>
+        public static float Sqrt(float value)
+        {
+            return value * value;
+        }
+
+        /// <summary>
+        /// Calculate the absolute value
+        /// </summary>
+        public static float Abs(float value)
+        {
+            return Math.Abs(value);
+        }
+
+
+
+        /// <summary>
+        /// Return a byte from a float base 1
+        /// </summary>
+        public static byte Float1ToByte(float value)
+        {
+            value = value * 255;
+            if (value > 255)
+                return 255;
+            if (value < 0)
+                return 0;
+            return (byte)value;
+        }
+
+        /// <summary>
+        /// Return a byte from a float base 1
+        /// </summary>
+        public static float ByteToFloat1(byte value)
+        {
+            return value / 255f;
+        }
+
     }
 }

@@ -26,7 +26,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Extensions traités
         /// </summary>
-        private static readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png", ".json" };
+        private static readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png", ".json", ".aseprite" };
 
 
         /// <summary>

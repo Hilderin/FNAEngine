@@ -45,11 +45,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Asperite\AseFile.cs" />
+    <Compile Include="Asperite\Chunk.cs" />
+    <Compile Include="Asperite\Chunks\CelChunk.cs" />
+    <Compile Include="Asperite\Chunks\CelExtraChunk.cs" />
+    <Compile Include="Asperite\Chunks\CompressedCelChunk.cs" />
+    <Compile Include="Asperite\Chunks\FrameTagsChunk.cs" />
+    <Compile Include="Asperite\Chunks\LayerChunk.cs" />
+    <Compile Include="Asperite\Chunks\LinkedCelChunk.cs" />
+    <Compile Include="Asperite\Chunks\PaletteChunk.cs" />
+    <Compile Include="Asperite\Chunks\RawCelChunk.cs" />
+    <Compile Include="Asperite\Frame.cs" />
+    <Compile Include="Asperite\Header.cs" />
+    <Compile Include="Asperite\MetaData.cs" />
+    <Compile Include="Asperite\Pixel.cs" />
+    <Compile Include="Asperite\PixelFormats\GrayscalePixel.cs" />
+    <Compile Include="Asperite\PixelFormats\IndexedPixel.cs" />
+    <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
+    <Compile Include="Asperite\Utils\Texture2DBlender.cs" />
+    <Compile Include="Asperite\Utils\Texture2DUtil.cs" />
     <Compile Include="CharacterInput.cs" />
     <Compile Include="ColliderContainer.cs" />
     <Compile Include="Collider.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="CollisionHelper.cs" />
+    <Compile Include="ColorExtension.cs" />
     <Compile Include="ContentHelper.cs" />
     <Compile Include="ContentManager.cs" />
     <Compile Include="Font.cs" />
@@ -80,6 +100,7 @@
     <Compile Include="SpriteAnimationFrame.cs" />
     <Compile Include="TextRender.cs" />
     <Compile Include="SpriteRender.cs" />
+    <Compile Include="Texture2DExtensions.cs" />
     <Compile Include="TextureRender.cs" />
     <Compile Include="RectangleHelper.cs" />
     <Compile Include="RectangleExtensions.cs" />

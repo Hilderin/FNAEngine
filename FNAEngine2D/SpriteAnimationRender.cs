@@ -136,7 +136,7 @@ namespace FNAEngine2D
                 return;
 
             GameHost.SpriteBatch.Draw(_spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(_spriteAnimation.Frames[_currentFrame].SpriteX * _spriteAnimation.Sprite.TileWidth, _spriteAnimation.Frames[_currentFrame].SpriteY * _spriteAnimation.Sprite.TileHeight, _spriteAnimation.Sprite.TileWidth, _spriteAnimation.Sprite.TileHeight), this.Color);
-
+            
         }
 
 

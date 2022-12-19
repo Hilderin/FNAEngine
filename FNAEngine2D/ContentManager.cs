@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using FNAEngine2D.Aseprite;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,7 +25,7 @@ namespace FNAEngine2D
         /// </summary>
         private static string[] TEXTURES_EXTENSIONS = new string[]
         {
-            ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tga", ".tif", ".tiff"        //, ".dds"
+            ".aseprite", ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tga", ".tif", ".tiff"        //, ".dds"
         };
 
 
@@ -48,7 +50,7 @@ namespace FNAEngine2D
         /// </summary>
         private static string[] SPRITEANIMATION_EXTENSIONS = new string[]
         {
-            ".json"
+            ".aseprite", ".json"
         };
 
 
@@ -244,8 +246,20 @@ namespace FNAEngine2D
 
             using (Stream stream = File.OpenRead(fullPath))
             {
-                object ret = Texture2D.FromStream(GetGraphicsDevice(), stream);
-                return (T)ret;
+                if (Path.GetExtension(fullPath).Equals(".aseprite", StringComparison.OrdinalIgnoreCase))
+                {
+                    //Aseprite file...
+                    AseFile aseFile = new AseFile(stream);
+
+                    //We take the first frame
+                    object ret = aseFile.GetFrame(0);
+                    return (T)ret;
+                }
+                else
+                {
+                    object ret = Texture2D.FromStream(GetGraphicsDevice(), stream);
+                    return (T)ret;
+                }
             }
         }
 
@@ -273,7 +287,20 @@ namespace FNAEngine2D
         private SpriteAnimation LoadSpriteAnimation(string assetName, out string fullPath)
         {
             fullPath = GetAssetFullPath(assetName, SPRITEANIMATION_EXTENSIONS);
-            return Deserialize<SpriteAnimation>(fullPath);
+            if (Path.GetExtension(fullPath).Equals(".aseprite", StringComparison.OrdinalIgnoreCase))
+            {
+                //Aseprite file...
+                using (Stream stream = File.OpenRead(fullPath))
+                {
+                    AseFile aseFile = new AseFile(stream);
+
+                    return aseFile.GetSpriteAnimation();
+                }
+            }
+            else
+            {
+                return Deserialize<SpriteAnimation>(fullPath);
+            }
         }
 
         /// <summary>
