@@ -17,9 +17,11 @@ Some nice feature are already working:
 - TextureRender: GameObject to draw texture on screen
 - TextRenderer: GameObject to draw text on screen with different alignments
 - Collider: Basic rectangle collision detection system
+- RigidBody: Basic rigifbody to simulate physics in 2D (platform/side scrolling)
 - Input: Basic input system (that i took from Michael Hicks: https://www.youtube.com/playlist?list=PL3wErD7ZIp_DtsTKoouVCxu81UQkI9VZL)
 - ContentManager: Custom ContentManager that hot reloads the modified texture at runtime
 - IMouseEventHandler: Implement Mouse Down, Up and Click on GameObject
+- Aseprite format integration for textures and sprite animations. (checkout Asperite, it's very nice for sprites and Pixel Arts: https://github.com/aseprite/aseprite (it's free if you build it yourself).
 
 
 # Exemple
