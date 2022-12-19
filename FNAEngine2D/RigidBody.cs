@@ -28,6 +28,11 @@ namespace FNAEngine2D
         private float _timeBeginFall;
 
         /// <summary>
+        /// List of forces applied
+        /// </summary>
+        private List<Force> _forces = new List<Force>();
+
+        /// <summary>
         /// Object attached to
         /// </summary>
         public GameObject GameObject { get { return _gameObject; } }
@@ -64,18 +69,30 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Add a force
+        /// </summary>
+        public Force AddForce(Vector2 target, float speedMps)
+        {
+            Force force = new Force(target, speedMps);
+
+            _forces.Add(force);
+
+            return force;
+        }
+
+        /// <summary>
         /// Apply the physics
         /// </summary>
         public Vector2 ApplyPhysics()
         {
             //-------------
             //Moving left/right
-            float deltaX = 0f;
+            Vector2 delta = Vector2.Zero;
             
             if(IsMovingLeft)
-                deltaX -= SpeedMps * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeterScale;
+                delta.X -= SpeedMps * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeter;
             if (IsMovingRight)
-                deltaX += SpeedMps * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeterScale;
+                delta.X += SpeedMps * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeter;
 
 
             //-------------
@@ -88,11 +105,26 @@ namespace FNAEngine2D
             _timeBeginFall += GameHost.ElapsedGameTimeSeconds;
             float acceleration = GravityMps * _timeBeginFall;
 
-            float deltaY = acceleration * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeterScale;
+            delta.Y = acceleration * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeter;
 
+            //------------
+            //Other forces...
+            if (_forces.Count > 0)
+            {
+                for (int index = _forces.Count - 1; index >= 0; index--)
+                {
+                    //Applying force...
+                    delta = _forces[index].Apply(delta);
+
+                    //If done, remove it..
+                    if (_forces[index].IsCompleted)
+                        _forces.RemoveAt(index);
+                }
+            }
 
             _lastLocation = _gameObject.Location;
-            return _gameObject.Location + new Vector2(deltaX, deltaY);
+
+            return _gameObject.Location + delta;
 
         }
 

@@ -49,7 +49,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Number of pixels = 1 meter
         /// </summary>
-        public static float NbPixelPerMeterScale { get; set; } = 100;
+        public static float NbPixelPerMeter { get; set; } = 100;
 
         /// <summary>
         /// Current GameTime
