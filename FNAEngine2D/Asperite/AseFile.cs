@@ -202,12 +202,12 @@ namespace FNAEngine2D.Aseprite
                 Texture2D celTex = GetTextureFromCel(cels[i]);
 
                 //First player, we will keep this texture...
-                //if (i == 0)
-                //{
-                //    texture = celTex;
-                //}
-                //else
-                //{
+                if (i == 0)
+                {
+                    texture = celTex;
+                }
+                else
+                {
                     switch (blendMode)
                     {
                         case LayerBlendMode.Normal: texture = Texture2DBlender.Normal(texture, celTex, opacity); break;
@@ -232,7 +232,7 @@ namespace FNAEngine2D.Aseprite
                     }
 
                     celTex.Dispose();
-               // }
+               }
             }
 
             
