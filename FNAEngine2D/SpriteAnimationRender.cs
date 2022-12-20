@@ -24,7 +24,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Sprite animation
         /// </summary>
-        private SpriteAnimation _spriteAnimation;
+        private Content<SpriteAnimation> _spriteAnimation;
 
         /// <summary>
         /// Information on the sprite animation
@@ -42,7 +42,7 @@ namespace FNAEngine2D
         /// </summary>
         public SpriteAnimationRender()
         {
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
+            
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace FNAEngine2D
                 _spriteAnimation = GameHost.GetContent<SpriteAnimation>(this.SpriteAnimationName);
 
                 if (this.Width == 0)
-                    this.Width = _spriteAnimation.Sprite.TileScreenWidth;
+                    this.Width = _spriteAnimation.Data.Sprite.TileScreenWidth;
                 if (this.Height == 0)
-                    this.Height = _spriteAnimation.Sprite.TileScreenHeight;
+                    this.Height = _spriteAnimation.Data.Sprite.TileScreenHeight;
             }
 
         }
@@ -88,14 +88,16 @@ namespace FNAEngine2D
         public override void Update()
         {
             //Littre validations...
-            if (_spriteAnimation == null || _spriteAnimation.Frames.Length == 0 || _spriteAnimation.Sprite == null || _spriteAnimation.Sprite.Texture == null)
+            SpriteAnimation spriteAnimation = _spriteAnimation.Data;
+
+            if (spriteAnimation == null || spriteAnimation.Frames.Length == 0 || spriteAnimation.Sprite == null || spriteAnimation.Sprite.Texture == null)
             {
                 _currentFrame = -1;
                 return;
             }
 
             //Only one frame?
-            if (_spriteAnimation.Frames.Length == 0)
+            if (spriteAnimation.Frames.Length == 0)
             {
                 _currentFrame = 0;
                 return;
@@ -111,15 +113,15 @@ namespace FNAEngine2D
             }
 
             //We could skip frames...
-            while (newTime >= _spriteAnimation.Frames[_currentFrame].Duration)
+            while (newTime >= spriteAnimation.Frames[_currentFrame].Duration)
             {
                 //Next frame...
                 _currentFrame++;
-                if (_currentFrame >= _spriteAnimation.Frames.Length)
+                if (_currentFrame >= spriteAnimation.Frames.Length)
                     _currentFrame = 0;
 
                 //We remove the duration used on this frame...
-                newTime -= _spriteAnimation.Frames[_currentFrame].Duration;
+                newTime -= spriteAnimation.Frames[_currentFrame].Duration;
             }
 
             _elapsedTime = newTime;
@@ -135,18 +137,11 @@ namespace FNAEngine2D
             if (_currentFrame < 0)
                 return;
 
-            GameHost.SpriteBatch.Draw(_spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(_spriteAnimation.Frames[_currentFrame].SpriteX * _spriteAnimation.Sprite.TileWidth, _spriteAnimation.Frames[_currentFrame].SpriteY * _spriteAnimation.Sprite.TileHeight, _spriteAnimation.Sprite.TileWidth, _spriteAnimation.Sprite.TileHeight), this.Color);
+            SpriteAnimation spriteAnimation = _spriteAnimation.Data;
+
+            GameHost.SpriteBatch.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].SpriteX * spriteAnimation.Sprite.TileWidth, spriteAnimation.Frames[_currentFrame].SpriteY * spriteAnimation.Sprite.TileHeight, spriteAnimation.Sprite.TileWidth, spriteAnimation.Sprite.TileHeight), this.Color);
             
         }
 
-
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string assetName)
-        {
-            if (!String.IsNullOrEmpty(this.SpriteAnimationName) && this.SpriteAnimationName.Equals(assetName, StringComparison.OrdinalIgnoreCase))
-                _spriteAnimation = GameHost.GetContent<SpriteAnimation>(this.SpriteAnimationName);
-        }
     }
 }

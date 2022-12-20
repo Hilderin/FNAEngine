@@ -13,6 +13,11 @@ namespace FNAEngine2D
     public class TileSet
     {
         /// <summary>
+        /// Texture
+        /// </summary>
+        private Content<Texture2D> _texture;
+
+        /// <summary>
         /// TextureName
         /// </summary>
         private string _textureName;
@@ -40,7 +45,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Texture for the tileset
         /// </summary>
-        public Texture2D Texture { get; set; }
+        public Texture2D Texture { get { return _texture.Data; } }
 
         /// <summary>
         /// TextureName
@@ -56,9 +61,9 @@ namespace FNAEngine2D
 
                     //Loading Texture...
                     if (String.IsNullOrEmpty(value))
-                        this.Texture = null;
+                        _texture = null;
                     else
-                        this.Texture = GameHost.GetContent<Texture2D>(value);
+                        _texture = GameHost.GetContent<Texture2D>(value);
                 }
             }
         }
@@ -72,18 +77,8 @@ namespace FNAEngine2D
             this.TileSize = tileSize;
             this.TileScreenSize = tileScreenSize;
             this.Tiles = tiles;
-
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
 
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string textureName)
-        {
-            if (!String.IsNullOrEmpty(this.TileSetName) && this.TileSetName.Equals(textureName, StringComparison.OrdinalIgnoreCase))
-                this.Texture = GameHost.GetContent<Texture2D>(this.TileSetName);
-        }
     }
 }

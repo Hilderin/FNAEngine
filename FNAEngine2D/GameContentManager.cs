@@ -47,7 +47,6 @@ namespace FNAEngine2D
             //Game assembly
             _assemblies.Add(Assembly.GetEntryAssembly());
 
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
         }
 
 
@@ -64,12 +63,12 @@ namespace FNAEngine2D
         /// </summary>
         private static GameObject Apply(GameObject gameObject, string assetName, bool fromRefresh)
         {
-            GameContent content = GameHost.GetContent<GameContent>(assetName);
+            var content = GameHost.GetContent<GameContent>(assetName);
 
             //We all in a container to facilitate the update...
             GameContentContainer container = GetContainer(gameObject, assetName);
 
-            ReplaceContent(container, content);
+            ReplaceContent(container, content.Data);
 
             if (!fromRefresh)
                 AddGameObjectUsage(gameObject, assetName);

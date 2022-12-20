@@ -141,15 +141,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir un élément du Content
         /// </summary>
-        public static T GetContent<T>(string assetName)
+        public static Content<T> GetContent<T>(string assetName)
         {
-            if (assetName == "pixel" && typeof(T) == typeof(Texture2D))
-            {
-                object ret = Texture2D.FromStream(_internalGameHost.GraphicsDevice, new MemoryStream(Resource.pixelBin));
-                return (T)ret;
-            }
-
-            return _internalGameHost.Content.Load<T>(assetName);
+            return _internalGameHost.ContentManager.GetContent<T>(assetName);
         }
 
 

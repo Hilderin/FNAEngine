@@ -70,7 +70,8 @@
     <Compile Include="Collision.cs" />
     <Compile Include="CollisionHelper.cs" />
     <Compile Include="ColorExtension.cs" />
-    <Compile Include="ContentHelper.cs" />
+    <Compile Include="Content.cs" />
+    <Compile Include="ContentWatcher.cs" />
     <Compile Include="ContentManager.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />
@@ -95,6 +96,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="RigidBody.cs" />
+    <Compile Include="SoundEffectPlayer.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationRender.cs" />
     <Compile Include="SpriteAnimationFrame.cs" />

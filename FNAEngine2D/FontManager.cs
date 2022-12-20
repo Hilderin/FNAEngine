@@ -67,7 +67,7 @@ namespace FNAEngine2D
             if (String.IsNullOrEmpty(Path.GetExtension(filename)))
                 filename += ".ttf";
 
-            return _fontManager.GetFont(ContentHelper.ContentFolder + filename, fontSize);
+            return _fontManager.GetFont(ContentWatcher.ContentFolder + filename, fontSize);
         }
     }
 }

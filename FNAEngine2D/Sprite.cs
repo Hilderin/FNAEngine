@@ -13,6 +13,11 @@ namespace FNAEngine2D
     public class Sprite
     {
         /// <summary>
+        /// Texture
+        /// </summary>
+        private Content<Texture2D> _texture; 
+
+        /// <summary>
         /// TextureName
         /// </summary>
         private string _textureName;
@@ -40,7 +45,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Texture for the tileset
         /// </summary>
-        public Texture2D Texture { get; set; }
+        public Texture2D Texture { get { return _texture.Data; } }
 
 
         /// <summary>
@@ -57,9 +62,9 @@ namespace FNAEngine2D
 
                     //Loading Texture...
                     if (String.IsNullOrEmpty(value))
-                        this.Texture = null;
+                        _texture = null;
                     else
-                        this.Texture = GameHost.GetContent<Texture2D>(value);
+                        _texture = GameHost.GetContent<Texture2D>(value);
                 }
             }
         }
@@ -69,7 +74,14 @@ namespace FNAEngine2D
         /// </summary>
         public Sprite()
         {
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
+        }
+
+        /// <summary>
+        /// Set manually the texture (without hot reload)
+        /// </summary>
+        public void SetTexture(Texture2D texture)
+        {
+            _texture = new Content<Texture2D>(texture);
         }
 
         /// <summary>
@@ -84,15 +96,5 @@ namespace FNAEngine2D
             this.TileScreenHeight = tileScreenHeight;
         }
 
-
-
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string textureName)
-        {
-            if (!String.IsNullOrEmpty(this.TextureName) && this.TextureName.Equals(textureName, StringComparison.OrdinalIgnoreCase))
-                this.Texture = GameHost.GetContent<Texture2D>(this.TextureName);
-        }
     }
 }

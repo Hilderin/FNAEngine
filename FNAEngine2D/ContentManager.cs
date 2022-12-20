@@ -9,8 +9,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace FNAEngine2D
 {
@@ -67,7 +69,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Cache
         /// </summary>
-        private static ConcurrentDictionary<string, string> _cacheFullPathFullAssetName = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static ConcurrentDictionary<string, CacheAssetInfo> _cacheFullPathFullAssetName = new ConcurrentDictionary<string, CacheAssetInfo>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Disposable assets
@@ -94,32 +96,102 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Remove a asset from the cache
+        /// Reload the asset
         /// </summary>
-        public static void RemoveFromCache(string fullPath)
+        public void Reload(string fullPath)
         {
-            if (_cacheFullPathFullAssetName.TryRemove(fullPath.Replace('\\', '/'), out string fullAssetName))
-                _cache.TryRemove(fullAssetName, out var bidon);
+            //Asset in the cache???
+            if (_cacheFullPathFullAssetName.TryGetValue(fullPath.Replace('\\', '/'), out CacheAssetInfo assetInfo))
+            {
+                //Reloading...
+                if (_cache.TryGetValue(assetInfo.FullAssetName, out object contentObj))
+                {
+                    //Reloading data...
+                    MethodInfo method = typeof(ContentManager).GetMethod(nameof(LoadContent));
+                    MethodInfo generic = method.MakeGenericMethod(assetInfo.Type);
+
+                    object newData = generic.Invoke(this, new object[] { assetInfo.AssetName, String.Empty });
+                    contentObj.GetType().GetProperty("Data").SetValue(contentObj, newData);
+                }
+
+            }
         }
 
         /// <summary>
         /// Permet de loader un asset
         /// </summary>
-        public override T Load<T>(string assetName)
+        public Content<T> GetContent<T>(string assetName)
         {
             //Dans la cache??
             string fullAssetName = typeof(T).Name + "." + assetName;
             object asset = null;
+            string fullPath = null;
+
+            //Check the cache...
             if (_cache.TryGetValue(fullAssetName, out asset))
             {
-                if (asset is T)
+                if (asset is Content<T>)
                 {
-                    return (T)asset;
+                    return (Content<T>)asset;
                 }
             }
 
-            //Tentative de lecture sur le disque...
-            string fullPath = null;
+            asset = LoadContent<T>(assetName, ref fullPath);
+
+
+
+            //----------
+            //Creation of the content...
+            Content<T> content = new Content<T>((T)asset);
+
+
+            //On set dans la cache...
+            _cache[fullAssetName] = content;
+            
+
+            //If we have a full path, we took care of the loading and we can reload the asset...
+            if (fullPath != null)
+            {
+                //In cache...
+                _cacheFullPathFullAssetName[fullPath] = new CacheAssetInfo()
+                {
+                    Type = typeof(T),
+                    AssetName = assetName,
+                    FullAssetName = fullAssetName
+                };
+
+
+                //And we deal with disposable assets...
+                IDisposable disposableResult = asset as IDisposable;
+                if (disposableResult != null)
+                {
+                    lock (_disposableAssets)
+                    {
+                        //Si on a clearer la cache, on pourrait encore avoir l'objet en mémoire en attendant qu'on reload, on va donc le checker ici...
+                        if (_disposableAssetsPerName.TryGetValue(fullAssetName, out IDisposable oldAsset))
+                        {
+                            oldAsset.Dispose();
+                            _disposableAssetsPerName.Remove(fullAssetName);
+                        }
+
+                        _disposableAssets.Add(disposableResult);
+                        _disposableAssetsPerName[fullAssetName] = disposableResult;
+                    }
+                }
+            }
+
+            return content;
+
+        }
+
+        /// <summary>
+        /// Load content
+        /// </summary>
+        private object LoadContent<T>(string assetName, ref string fullPath)
+        {
+            object asset;
+            //------------------
+            //Loading...
             if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Texture))
             {
                 //Texture...
@@ -146,32 +218,18 @@ namespace FNAEngine2D
                 asset = base.Load<T>(assetName);
             }
 
-            //Si on doit checker le disposable, on va le faire. Si ça vient du base.Load, c'est le base.Unload qui va s'en occuper
-            if (fullPath != null)
-            {
-                //On set dans la cache...
-                _cache[fullAssetName] = asset;
-                _cacheFullPathFullAssetName[fullPath] = fullAssetName;
+            return asset;
+        }
 
-                IDisposable disposableResult = asset as IDisposable;
-                if (disposableResult != null)
-                {
-                    lock (_disposableAssets)
-                    {
-                        //Si on a clearer la cache, on pourrait encore avoir l'objet en mémoire en attendant qu'on reload, on va donc le checker ici...
-                        if (_disposableAssetsPerName.TryGetValue(fullAssetName, out IDisposable oldAsset))
-                        {
-                            oldAsset.Dispose();
-                            _disposableAssetsPerName.Remove(fullAssetName);
-                        }
+        /// <summary>
+        /// Permet de loader un asset
+        /// </summary>
+        public override T Load<T>(string assetName)
+        {
 
-                        _disposableAssets.Add(disposableResult);
-                        _disposableAssetsPerName[fullAssetName] = disposableResult;
-                    }
-                }
-            }
+            Content<T> content = GetContent<T>(assetName);
 
-            return (T)asset;
+            return content.Data;
 
         }
 
@@ -242,6 +300,18 @@ namespace FNAEngine2D
         /// </summary>
         private T LoadTexture<T>(string assetName, out string fullPath)
         {
+            if (assetName == "pixel" && typeof(T) == typeof(Texture2D))
+            {
+                fullPath = "pixel";
+
+                using (MemoryStream ms = new MemoryStream(Resource.pixelBin))
+                {
+                    object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
+                    return (T)ret;
+                }
+            }
+
+            //Texture from the disk...
             fullPath = GetAssetFullPath(assetName, TEXTURES_EXTENSIONS);
 
             using (Stream stream = File.OpenRead(fullPath))
@@ -321,6 +391,15 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Cache information
+        /// </summary>
+        private class CacheAssetInfo
+        {
+            public Type Type;
+            public string AssetName;
+            public string FullAssetName;
+        }
 
     }
 }

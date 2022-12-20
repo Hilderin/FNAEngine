@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpFont;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Sprite
         /// </summary>
-        private Sprite _sprite;
+        private Content<Sprite> _sprite;
         
         /// <summary>
         /// Information on the sprite
@@ -41,7 +42,7 @@ namespace FNAEngine2D
         /// </summary>
         public SpriteRender()
         {
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
+            
         }
 
         /// <summary>
@@ -69,9 +70,9 @@ namespace FNAEngine2D
                 _sprite = GameHost.GetContent<Sprite>(this.SpriteName);
 
                 if (this.Width == 0)
-                    this.Width = _sprite.TileScreenWidth;
+                    this.Width = _sprite.Data.TileScreenWidth;
                 if (this.Height == 0)
-                    this.Height = _sprite.TileScreenHeight;
+                    this.Height = _sprite.Data.TileScreenHeight;
             }
 
         }
@@ -81,22 +82,15 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
-            if (_sprite == null || _sprite.Texture == null)
+            if (_sprite == null || _sprite.Data.Texture == null)
                 return;
 
-            GameHost.SpriteBatch.Draw(_sprite.Texture, this.Bounds, new Rectangle(this.SpriteX * _sprite.TileWidth, this.SpriteY * _sprite.TileHeight, _sprite.TileWidth, _sprite.TileHeight), this.Color);
+            Sprite sprite = _sprite.Data;
+
+            GameHost.SpriteBatch.Draw(sprite.Texture, this.Bounds, new Rectangle(this.SpriteX * sprite.TileWidth, this.SpriteY * sprite.TileHeight, sprite.TileWidth, sprite.TileHeight), this.Color);
 
         }
 
-
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string assetName)
-        {
-            if (!String.IsNullOrEmpty(this.SpriteName) && this.SpriteName.Equals(assetName, StringComparison.OrdinalIgnoreCase))
-                _sprite = GameHost.GetContent<Sprite>(this.SpriteName);
-        }
 
 
     }

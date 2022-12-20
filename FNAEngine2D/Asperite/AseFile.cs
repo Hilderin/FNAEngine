@@ -404,14 +404,16 @@ namespace FNAEngine2D.Aseprite
                 frames.Add(spriteFrame);
             }
             spriteAnimation.Frames = frames.ToArray();
-            spriteAnimation.Sprite = new Sprite()
+
+            Sprite sprite = new Sprite()
             {
-                Texture = spriteTexture,
                 TileWidth = Header.Width,
                 TileScreenWidth = Header.Width,
                 TileHeight = Header.Height,
                 TileScreenHeight = Header.Height
             };
+            sprite.SetTexture(spriteTexture);
+            spriteAnimation.SetSprite(sprite);
 
 
             return spriteAnimation;

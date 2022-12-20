@@ -11,16 +11,16 @@ using System.Xml.Linq;
 namespace FNAEngine2D
 {
 
-    /// <summary>
-    /// Delegate lancés quand des changements se font
-    /// </summary>
-    /// <param name="assetName"></param>
-    public delegate void ContentChangedHandler(string assetName);
+    ///// <summary>
+    ///// Delegate lancés quand des changements se font
+    ///// </summary>
+    ///// <param name="assetName"></param>
+    //internal delegate void ContentChangedHandler(string assetName);
 
     /// <summary>
     /// Content Manager
     /// </summary>
-    public static class ContentHelper
+    internal static class ContentWatcher
     {
 
         /// <summary>
@@ -29,10 +29,10 @@ namespace FNAEngine2D
         private static readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png", ".json", ".aseprite" };
 
 
-        /// <summary>
-        /// Event quand des changements se font sur le content
-        /// </summary>
-        public static event ContentChangedHandler ContentChanged;
+        ///// <summary>
+        ///// Event quand des changements se font sur le content
+        ///// </summary>
+        //public static event ContentChangedHandler ContentChanged;
 
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Constructeur
         /// </summary>
-        static ContentHelper()
+        static ContentWatcher()
         {
             string assemblyLocation = Assembly.GetCallingAssembly().Location;
             if (assemblyLocation.IndexOf(@"bin\debug\", StringComparison.OrdinalIgnoreCase) > 0
@@ -127,22 +127,22 @@ namespace FNAEngine2D
 
             foreach (string fullPath in changes)
             {
-                //On clear la cache...
-                ContentManager.RemoveFromCache(fullPath);
+                //Reload the asset...
+                GameHost.InternalGameHost.ContentManager.Reload(fullPath);
 
-                if (ContentChanged != null)
-                {
-                    string assetName = fullPath.Substring(ContentFolder.Length);
+                //if (ContentChanged != null)
+                //{
+                //    string assetName = fullPath.Substring(ContentFolder.Length);
 
-                    //Retrait de l'extension...
-                    int index = assetName.LastIndexOf('.');
-                    if (index > 0)
-                    {
-                        assetName = assetName.Substring(0, index);
+                //    //Retrait de l'extension...
+                //    int index = assetName.LastIndexOf('.');
+                //    if (index > 0)
+                //    {
+                //        assetName = assetName.Substring(0, index);
 
-                        ContentChanged(assetName);
-                    }
-                }
+                //        ContentChanged(assetName);
+                //    }
+                //}
             }
 
         }

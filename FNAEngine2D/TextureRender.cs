@@ -14,7 +14,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Texture à renderer
         /// </summary>
-        private Texture2D _texture;
+        private Content<Texture2D> _texture;
 
         /// <summary>
         /// TextureName
@@ -31,7 +31,7 @@ namespace FNAEngine2D
         /// </summary>
         public TextureRender()
         {
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
+            
         }
 
         /// <summary>
@@ -72,9 +72,9 @@ namespace FNAEngine2D
                 _texture = GameHost.GetContent<Texture2D>(this.TextureName);
 
                 if (this.Width == 0)
-                    this.Width = _texture.Width;
+                    this.Width = _texture.Data.Width;
                 if (this.Height == 0)
-                    this.Height = _texture.Height;
+                    this.Height = _texture.Data.Height;
             }
         }
 
@@ -86,16 +86,7 @@ namespace FNAEngine2D
             if (_texture == null)
                 return;
 
-            GameHost.SpriteBatch.Draw(_texture, this.Bounds, this.Color);
-        }
-
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string TextureName)
-        {
-            if(!String.IsNullOrEmpty(this.TextureName) && this.TextureName.Equals(TextureName, StringComparison.OrdinalIgnoreCase))
-                _texture = GameHost.GetContent<Texture2D>(this.TextureName);
+            GameHost.SpriteBatch.Draw(_texture.Data, this.Bounds, this.Color);
         }
 
     }

@@ -13,6 +13,11 @@ namespace FNAEngine2D
     public class SpriteAnimation
     {
         /// <summary>
+        /// Sprite
+        /// </summary>
+        private Content<Sprite> _sprite;
+
+        /// <summary>
         /// SpriteName
         /// </summary>
         private string _spriteName;
@@ -25,7 +30,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Sprite
         /// </summary>
-        public Sprite Sprite { get; set; }
+        public Sprite Sprite { get { return _sprite.Data; } }
 
         /// <summary>
         /// SpriteName
@@ -40,9 +45,17 @@ namespace FNAEngine2D
                     _spriteName = value;
 
                     //Loading Sprite...
-                    this.Sprite = GameHost.GetContent<Sprite>(value);
+                    _sprite = GameHost.GetContent<Sprite>(value);
                 }
             }
+        }
+
+        /// <summary>
+        /// Set manually the sprite (without hot reload)
+        /// </summary>
+        public void SetSprite(Sprite sprite)
+        {
+            _sprite = new Content<Sprite>(sprite);
         }
 
         /// <summary>
@@ -50,16 +63,7 @@ namespace FNAEngine2D
         /// </summary>
         public SpriteAnimation()
         {
-            ContentHelper.ContentChanged += ContentManager_ContentChanged;
-        }
-
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string assetName)
-        {
-            if (!String.IsNullOrEmpty(this.SpriteName) && this.SpriteName.Equals(assetName, StringComparison.OrdinalIgnoreCase))
-                this.Sprite = GameHost.GetContent<Sprite>(this.SpriteName);
+            
         }
 
     }

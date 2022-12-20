@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework.Content;
 
 namespace FNAEngine2D
 {
@@ -15,6 +16,11 @@ namespace FNAEngine2D
     /// </summary>
     internal class InternalGameHost : Microsoft.Xna.Framework.Game
     {
+        /// <summary>
+        /// Content Manager
+        /// </summary>
+        private ContentManager _contentManager;
+
         /// <summary>
         /// Graphic Manager
         /// </summary>
@@ -106,6 +112,11 @@ namespace FNAEngine2D
         /// </summary>
         public Rectangle Bounds { get { return _gameRectangle; } }
 
+        /// <summary>
+        /// Access the content Manager
+        /// </summary>
+        public ContentManager ContentManager { get { return _contentManager; } }
+
 
         /// <summary>
         /// Constructeur
@@ -115,7 +126,8 @@ namespace FNAEngine2D
             _graphics = new GraphicsDeviceManager(this);
 
             //Création du Content Manager..
-            this.Content = new ContentManager(this.Services, ContentHelper.ContentFolder);
+            _contentManager = new ContentManager(this.Services, ContentWatcher.ContentFolder);
+            this.Content = _contentManager;
 
             //Setting de default resolution...
             SetResolution(1200, 720, 1200, 720, false);
@@ -217,7 +229,7 @@ namespace FNAEngine2D
 
             //Maintenant, on peut commencer à regarder les modifications...
 #if DEBUG
-            ContentHelper.StartWatchUpdateContent();
+            ContentWatcher.StartWatchUpdateContent();
 #endif
 
         }
@@ -234,7 +246,7 @@ namespace FNAEngine2D
 
 
             //On regarde si on a du content à reloader...
-            ContentHelper.ReloadModifiedContent();
+            ContentWatcher.ReloadModifiedContent();
 
 
             //Update des inputs...
