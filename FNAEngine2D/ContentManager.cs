@@ -1,5 +1,6 @@
 ﻿using FNAEngine2D.Aseprite;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -55,6 +56,14 @@ namespace FNAEngine2D
             ".aseprite", ".json"
         };
 
+        /// <summary>
+        /// Extensions for sound effect
+        /// </summary>
+        private static string[] SOUNDEFFECT_EXTENSIONS = new string[]
+        {
+            ".wav"
+        };
+
 
         /// <summary>
         /// Graphics device
@@ -107,7 +116,7 @@ namespace FNAEngine2D
                 if (_cache.TryGetValue(assetInfo.FullAssetName, out object contentObj))
                 {
                     //Reloading data...
-                    MethodInfo method = typeof(ContentManager).GetMethod(nameof(LoadContent));
+                    MethodInfo method = typeof(ContentManager).GetMethod(nameof(LoadContent), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
                     MethodInfo generic = method.MakeGenericMethod(assetInfo.Type);
 
                     object newData = generic.Invoke(this, new object[] { assetInfo.AssetName, String.Empty });
@@ -142,7 +151,7 @@ namespace FNAEngine2D
 
             //----------
             //Creation of the content...
-            Content<T> content = new Content<T>((T)asset);
+            Content<T> content = new Content<T>(assetName, (T)asset);
 
 
             //On set dans la cache...
@@ -211,6 +220,11 @@ namespace FNAEngine2D
             {
                 //SpriteAnimation...
                 asset = LoadSpriteAnimation(assetName, out fullPath);
+            }
+            else if (typeof(T) == typeof(SoundEffect))
+            {
+                //SoundEffect...
+                asset = LoadSoundEffect(assetName, out fullPath);
             }
             else
             {
@@ -370,6 +384,37 @@ namespace FNAEngine2D
             else
             {
                 return Deserialize<SpriteAnimation>(fullPath);
+            }
+        }
+
+        /// <summary>
+        /// Permet de loader une texture
+        /// </summary>
+        private SoundEffect LoadSoundEffect(string assetName, out string fullPath)
+        {
+           
+            //I will find the file...
+            fullPath = GetAssetFullPath(assetName, SOUNDEFFECT_EXTENSIONS);
+
+            //Little hack to bypass the cache of the default ContentManager...
+            string tempdid = Guid.NewGuid().ToString();
+            string tempAssetName = assetName + tempdid;
+            string tempPath = Path.Combine(Path.GetDirectoryName(fullPath), Path.GetFileNameWithoutExtension(fullPath) + tempdid + Path.GetExtension(fullPath));
+
+            try
+            {
+                File.Copy(fullPath, tempPath);
+
+                return base.Load<SoundEffect>(tempAssetName);
+
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(tempPath);
+                }
+                catch { }
             }
         }
 

@@ -241,6 +241,16 @@ namespace FNAEngine2D
         /// </summary>
         protected override void Update(GameTime gameTime)
         {
+
+#if DEBUG
+            //Reload the content...
+            if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
+            {
+                _rootGameObject.RemoveAll();
+                _rootGameObject.Load();
+            }
+#endif
+
             //On update le gametime pour l'avoir partout...
             GameHost.SetGameTime(gameTime);
 

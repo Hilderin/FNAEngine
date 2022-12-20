@@ -48,6 +48,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Checks if key newly down
+        /// </summary>
+        public static bool IsKeyNewDown(Keys input)
+        {
+            return _keyboardState.IsKeyDown(input) && !_lastKeyboardState.IsKeyDown(input);
+        }
+
+        /// <summary>
         /// Checks if key is currently up.
         /// </summary>
         public static bool IsKeyUp(Keys input)

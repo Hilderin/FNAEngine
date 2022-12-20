@@ -14,13 +14,27 @@ namespace FNAEngine2D
         /// <summary>
         /// Data
         /// </summary>
-        public T Data;
+        public T Data { get; set; }
+
+        /// <summary>
+        /// AssetName
+        /// </summary>
+        public string AssetName { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public Content(T data)
         {
+            this.Data = data;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Content(string assetName, T data)
+        {
+            this.AssetName = assetName;
             this.Data = data;
         }
 
