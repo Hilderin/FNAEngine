@@ -258,16 +258,16 @@ namespace FNAEngine2D
                 switch (kv.Key)
                 {
                     case "X":
-                        gameObject.TranslateX((int)val - gameObject.X);
+                        gameObject.TranslateX((float)val - gameObject.X);
                         break;
                     case "Y":
-                        gameObject.TranslateY((int)val - gameObject.Y);
+                        gameObject.TranslateY((float)val - gameObject.Y);
                         break;
                     case "Width":
-                        gameObject.ResizeWidth((int)val - gameObject.Width);
+                        gameObject.ResizeWidth((float)val - gameObject.Width);
                         break;
                     case "Height":
-                        gameObject.ResizeHeight((int)val - gameObject.Height);
+                        gameObject.ResizeHeight((float)val - gameObject.Height);
                         break;
                     default:
                         prop.SetValue(gameObject, val);
