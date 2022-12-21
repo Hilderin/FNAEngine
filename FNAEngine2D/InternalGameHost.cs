@@ -32,14 +32,19 @@ namespace FNAEngine2D
         private GraphicsDevice _graphicsDevice;
 
         /// <summary>
-        /// Sprite batch pour le renderer
+        /// Current rendering camera
         /// </summary>
-        private SpriteBatch _spriteBatch;
+        private Camera _currentCamera;
 
         /// <summary>
         /// Game actuellement en train de rouler
         /// </summary>
         private GameObject _rootGameObject;
+
+        /// <summary>
+        /// Default Camera
+        /// </summary>
+        private Camera _defaultCamera;
 
         /// <summary>
         /// Taille de l'écran
@@ -52,15 +57,14 @@ namespace FNAEngine2D
         private Rectangle _gameRectangle;
 
         /// <summary>
+        /// List of the other cameras on the scene
+        /// </summary>
+        private List<Camera> _extraCameras = new List<Camera>();
+
+        /// <summary>
         /// Indique si l'objet est initialisé
         /// </summary>
         public bool IsInitialized { get; private set; }
-
-
-        /// <summary>
-        /// Sprite batch pour le renderer
-        /// </summary>
-        public SpriteBatch SpriteBatch { get { return _spriteBatch; } }
 
         /// <summary>
         /// The scale result of merging Internal size with Screen size.
@@ -86,6 +90,20 @@ namespace FNAEngine2D
                 value.RootGameObject = value;
             }
         }
+
+        /// <summary>
+        /// Default Camera
+        /// </summary>
+        public Camera DefaultCamera
+        {
+            get { return _defaultCamera; }
+            set { _defaultCamera = value; }
+        }
+
+        /// <summary>
+        /// Current camera that is rendering
+        /// </summary>
+        public Camera CurrentCamera { get { return _currentCamera; } }
 
         /// <summary>
         /// Width
@@ -117,6 +135,11 @@ namespace FNAEngine2D
         /// </summary>
         public ContentManager ContentManager { get { return _contentManager; } }
 
+        /// <summary>
+        /// List of the other cameras on the scene
+        /// </summary>
+        public List<Camera> ExtraCameras { get { return _extraCameras; } }
+
 
         /// <summary>
         /// Constructeur
@@ -125,6 +148,9 @@ namespace FNAEngine2D
         {
             _graphics = new GraphicsDeviceManager(this);
 
+            //Default Camera = a static camera 
+            _defaultCamera = new FullScreenCamera();
+           
             //Création du Content Manager..
             _contentManager = new ContentManager(this.Services, ContentWatcher.ContentFolder);
             this.Content = _contentManager;
@@ -173,8 +199,6 @@ namespace FNAEngine2D
                 ScaleMatrix = Matrix.CreateScale(scalingFactor);
 
             }
-            
-
         }
 
 
@@ -209,12 +233,6 @@ namespace FNAEngine2D
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            ////On indique qu'on est en train de loadé le contenu
-            //GameHost.ContentLoading = true;
-
             //Chargement du contenu...
             _rootGameObject._addAuthorized = true;
             _rootGameObject.Load();
@@ -231,6 +249,8 @@ namespace FNAEngine2D
 #if DEBUG
             ContentWatcher.StartWatchUpdateContent();
 #endif
+
+            //_graphicsDevice.Viewport = new Viewport(0, 0, 100, 100);
 
         }
 
@@ -286,15 +306,35 @@ namespace FNAEngine2D
             //Render...
             if (_rootGameObject.Visible)
             {
-                _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, ScaleMatrix);
 
-                _rootGameObject.DrawWithChildren();
+                //Starting up sprite batches...
+                RenderCamera(_defaultCamera);
 
-                _spriteBatch.End();
+
+                if (_extraCameras.Count > 0)
+                {
+                    for (int index = 0; index < _extraCameras.Count; index++)
+                        RenderCamera(_extraCameras[index]);
+                }
             }
 
             //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// Render a camera
+        /// </summary>
+        private void RenderCamera(Camera camera)
+        {
+            _currentCamera = camera;
+
+            camera.BeginDraw();
+
+            //Drawing children...
+            _rootGameObject.DrawWithChildren();
+
+            camera.EndDraw();
         }
 
 

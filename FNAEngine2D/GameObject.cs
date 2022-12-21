@@ -252,6 +252,12 @@ namespace FNAEngine2D
 
 
         /// <summary>
+        /// Layer of the game object
+        /// </summary>
+        public int LayerMask { get; set; } = (int)Layers.Layer1;
+
+
+        /// <summary>
         /// Get a child
         /// </summary>
         public GameObject Get(int indexChildren)
@@ -492,7 +498,9 @@ namespace FNAEngine2D
             if (!this.Enabled)
                 return;
 
-            this.Draw();
+            //Check if object must be renderer by the camera...
+            if((GameHost.InternalGameHost.CurrentCamera.LayerMask & this.LayerMask) != 0)
+                this.Draw();
 
             if (this._childrens.Count == 0)
                 return;

@@ -35,7 +35,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Sprite batch pour le renderer
         /// </summary>
-        public static SpriteBatch SpriteBatch { get { return _internalGameHost.SpriteBatch; } }
+        public static SpriteBatch SpriteBatch { get { return _internalGameHost.CurrentCamera.SpriteBatch; } }
 
         /// <summary>
         /// Current Game
@@ -111,6 +111,21 @@ namespace FNAEngine2D
         /// </summary>
         public static Rectangle Bounds { get { return _internalGameHost.Bounds; } }
 
+
+        /// <summary>
+        /// Default Camera
+        /// </summary>
+        public static Camera DefaultCamera
+        {
+            get { return _internalGameHost.DefaultCamera; }
+            set { _internalGameHost.DefaultCamera = value; }
+        }
+
+        /// <summary>
+        /// List of the other cameras on the scene
+        /// </summary>
+        public static List<Camera> ExtraCameras { get { return _internalGameHost.ExtraCameras; } }
+
         /// <summary>
         /// InternalGameHost
         /// </summary>
@@ -125,6 +140,7 @@ namespace FNAEngine2D
         {
             _internalGameHost = new InternalGameHost();
         }
+
 
         /// <summary>
         /// Set the resolution

@@ -1,0 +1,184 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FNAEngine2D
+{
+    /// <summary>
+    /// Camera
+    /// </summary>
+    public class Camera
+    {
+        /// <summary>
+        /// A transformation matrix containing info on our position, how much we are rotated and zoomed etc.
+        /// </summary>
+        private Matrix _transformMatrix;
+
+        /// <summary>
+        /// Position of the camera
+        /// </summary>
+        private Vector2 _location;
+
+        /// <summary>
+        /// Zoom level (1 = no zoom)
+        /// </summary>
+        private float _zoom = 1f;
+
+        /// <summary>
+        /// Rotation of the screen (in radians)
+        /// </summary>
+        private float _rotation = 0f;
+
+        /// <summary>
+        /// Updated
+        /// </summary>
+        private bool _updated = true;
+
+        /// <summary>
+        /// SpriteBatch of the camera
+        /// </summary>
+        private SpriteBatch _spriteBatch;
+
+        /// <summary>
+        /// Layer of the game object
+        /// </summary>
+        public int LayerMask { get; set; } = (int)Layers.Layer1;
+
+
+        /// <summary>
+        /// Spritebatch of the camera
+        /// </summary>
+        public SpriteBatch SpriteBatch
+        { 
+            get
+            {
+                return _spriteBatch; 
+            }
+        }
+
+
+
+        /// <summary>
+        /// Location
+        /// </summary>
+        public Vector2 Location
+        {
+            get { return _location; }
+            set
+            {
+                if (_location != value)
+                {
+                    _location = value;
+                    _updated = true;
+                }
+            }
+        }
+       
+
+        /// <summary>
+        /// Zoom level (1 = no zoom)
+        /// </summary>
+        public float Zoom
+        {
+            get { return _zoom; }
+            set 
+            {
+                if (_zoom != value)
+                {
+                    _zoom = value;
+                    _updated = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Rotation of the screen (in radians)
+        /// </summary>
+        public float Rotation
+        {
+            get { return _rotation; }
+            set
+            {
+                if (_rotation != value)
+                {
+                    _rotation = value;
+                    _updated = true;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Camera()
+        {
+            
+        }
+
+        /// <summary>
+        /// Begin drawing
+        /// </summary>
+        public virtual void BeginDraw()
+        {
+            if(_spriteBatch == null)
+                _spriteBatch = new SpriteBatch(GameHost.InternalGameHost.GraphicsDevice);
+
+            _spriteBatch.Begin(SpriteSortMode.Immediate,  null, null, null, null, null, GetMatrix());
+        }
+
+        /// <summary>
+        /// End of drawing
+        /// </summary>
+        public virtual void EndDraw()
+        {
+            _spriteBatch.End();
+        }
+
+        /// <summary>
+        /// Get the camera matrx
+        /// </summary>
+        public virtual Matrix GetMatrix()
+        {
+            if (_updated)
+            {
+                //The math involved with calculated our _transformMatrix and screenRect is a little intense, so instead of calling the math whenever we need these variables,
+                //we'll calculate them once each frame and store them... when someone needs these variables we will simply return the stored variable instead of re cauclating them every time.
+
+                //Calculate the camera transform matrix:
+                //Matrix matrix = Matrix.CreateTranslation(new Vector3(-(_location.X - (GameHost.Width / 2)), -(_location.Y - (GameHost.Height / 2)), 0));
+                Matrix matrix = Matrix.CreateTranslation(new Vector3(-_location, 0));
+
+
+                if (_rotation != 0)
+                    matrix *= Matrix.CreateRotationZ(_rotation);
+
+                if (_zoom != 1)
+                    matrix *= Matrix.CreateScale(new Vector3(_zoom, _zoom, 1));
+
+                //matrix *= Matrix.CreateTranslation(new Vector3(GameHost.Width / 2, GameHost.Height / 2, 0));
+
+                //Now combine the camera's matrix with the Resolution Manager's transform matrix to get our final working matrix:
+                matrix *= GameHost.InternalGameHost.ScaleMatrix;
+
+                //Round the X and Y translation so the camera doesn't jerk as it moves:
+                matrix.M41 = (float)Math.Round(matrix.M41, 0);
+                matrix.M42 = (float)Math.Round(matrix.M42, 0);
+
+                _transformMatrix = matrix;
+                _updated = false;
+
+            }
+
+            return _transformMatrix;
+
+        }
+
+    }
+}

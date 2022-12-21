@@ -64,6 +64,7 @@
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
     <Compile Include="Asperite\Utils\Texture2DBlender.cs" />
     <Compile Include="Asperite\Utils\Texture2DUtil.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="CharacterInput.cs" />
     <Compile Include="ColliderContainer.cs" />
     <Compile Include="Collider.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Content.cs" />
     <Compile Include="ContentWatcher.cs" />
     <Compile Include="ContentManager.cs" />
+    <Compile Include="DrawingContext.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />
     <Compile Include="GameContent.cs" />
@@ -84,6 +86,7 @@
     <Compile Include="Input.cs" />
     <Compile Include="InternalGameHost.cs" />
     <Compile Include="GameHost.cs" />
+    <Compile Include="Layers.cs" />
     <Compile Include="MouseAction.cs" />
     <Compile Include="MouseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -100,6 +103,7 @@
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationRender.cs" />
     <Compile Include="SpriteAnimationFrame.cs" />
+    <Compile Include="FullScreenCamera.cs" />
     <Compile Include="TextRender.cs" />
     <Compile Include="SpriteRender.cs" />
     <Compile Include="Texture2DExtensions.cs" />
