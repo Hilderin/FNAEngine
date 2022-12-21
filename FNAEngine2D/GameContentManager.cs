@@ -297,7 +297,7 @@ namespace FNAEngine2D
                 int g = Int32.Parse(value.Substring(3, 2), System.Globalization.NumberStyles.HexNumber);
                 int b = Int32.Parse(value.Substring(5, 2), System.Globalization.NumberStyles.HexNumber);
 
-                return new Color(r, g, b, 1);
+                return new Color(r, g, b);
             }
             else
             {
