@@ -109,7 +109,7 @@ namespace FNAEngine2D
             get { return new Rectangle((int)_location.X, (int)_location.Y, (int)_size.X, (int)_size.Y); }
             set
             {
-                _location = value.GetLocation();
+                TranslateTo(value.GetLocation());
                 _size = value.GetSize();
             }
         }
@@ -120,7 +120,10 @@ namespace FNAEngine2D
         public float X
         {
             get { return _location.X; }
-            set { _location.X = value; }
+            set
+            {
+                TranslateX(value - _location.X);
+            }
         }
 
         /// <summary>
@@ -129,7 +132,10 @@ namespace FNAEngine2D
         public float Y
         {
             get { return _location.Y; }
-            set { _location.Y = value; }
+            set
+            {
+                TranslateY(value - _location.Y); 
+            }
         }
 
         /// <summary>
@@ -156,7 +162,7 @@ namespace FNAEngine2D
         public float Right
         {
             get { return _location.X + _size.X; }
-            set { _location.X = value - _size.X; }
+            set { TranslateX((value - _size.X) - _location.X); }
         }
 
         /// <summary>
@@ -165,7 +171,7 @@ namespace FNAEngine2D
         public float Bottom
         {
             get { return _location.Y + _size.Y; }
-            set { _location.Y = value - _size.Y; }
+            set { TranslateY((value - _size.Y) - _location.Y); }
         }
 
         /// <summary>
@@ -174,7 +180,7 @@ namespace FNAEngine2D
         public Vector2 Location
         {
             get { return _location; }
-            set { _location = value; }
+            set { TranslateTo(value); }
         }
 
         ///// <summary>
