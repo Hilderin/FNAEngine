@@ -149,7 +149,7 @@ namespace FNAEngine2D
             _graphics = new GraphicsDeviceManager(this);
 
             //Default Camera = a static camera 
-            _defaultCamera = new FullScreenCamera();
+            _defaultCamera = new Camera();
            
             //Création du Content Manager..
             _contentManager = new ContentManager(this.Services, ContentWatcher.ContentFolder);
