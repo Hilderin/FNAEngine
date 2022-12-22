@@ -11,8 +11,8 @@ namespace FNAEngine2D
     /// </summary>
     public class SpriteAnimationFrame
     {
-        public int SpriteX { get; set; }
-        public int SpriteY { get; set; }
+        public int ColumnIndex { get; set; }
+        public int RowIndex { get; set; }
         public int Duration { get ;set; }
     }
 }

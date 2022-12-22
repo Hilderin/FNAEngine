@@ -398,8 +398,8 @@ namespace FNAEngine2D.Aseprite
                 SpriteAnimationFrame spriteFrame = new SpriteAnimationFrame()
                 {
                     Duration = this.Frames[index].FrameDuration,
-                    SpriteX = index,
-                    SpriteY = 0
+                    ColumnIndex = index,
+                    RowIndex = 0
                 };
                 frames.Add(spriteFrame);
             }
@@ -407,10 +407,10 @@ namespace FNAEngine2D.Aseprite
 
             Sprite sprite = new Sprite()
             {
-                TileWidth = Header.Width,
-                TileScreenWidth = Header.Width,
-                TileHeight = Header.Height,
-                TileScreenHeight = Header.Height
+                ColumnWidth = Header.Width,
+                ColumnScreenWidth = Header.Width,
+                RowHeight = Header.Height,
+                RowScreenHeight = Header.Height
             };
             sprite.SetTexture(spriteTexture);
             spriteAnimation.SetSprite(sprite);

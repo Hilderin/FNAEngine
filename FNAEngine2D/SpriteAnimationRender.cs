@@ -75,9 +75,9 @@ namespace FNAEngine2D
                 _spriteAnimation = GameHost.GetContent<SpriteAnimation>(this.SpriteAnimationName);
 
                 if (this.Width == 0)
-                    this.Width = _spriteAnimation.Data.Sprite.TileScreenWidth;
+                    this.Width = _spriteAnimation.Data.Sprite.ColumnScreenWidth;
                 if (this.Height == 0)
-                    this.Height = _spriteAnimation.Data.Sprite.TileScreenHeight;
+                    this.Height = _spriteAnimation.Data.Sprite.RowScreenHeight;
             }
 
         }
@@ -139,7 +139,7 @@ namespace FNAEngine2D
 
             SpriteAnimation spriteAnimation = _spriteAnimation.Data;
 
-            GameHost.SpriteBatch.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].SpriteX * spriteAnimation.Sprite.TileWidth, spriteAnimation.Frames[_currentFrame].SpriteY * spriteAnimation.Sprite.TileHeight, spriteAnimation.Sprite.TileWidth, spriteAnimation.Sprite.TileHeight), this.Color);
+            GameHost.SpriteBatch.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].ColumnIndex * spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Frames[_currentFrame].RowIndex * spriteAnimation.Sprite.RowHeight, spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Sprite.RowHeight), this.Color);
             
         }
 

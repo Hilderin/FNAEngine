@@ -25,6 +25,11 @@ namespace FNAEngine2D
         /// </summary>
         private Vector2 _location;
 
+        ///// <summary>
+        ///// Size of the camera
+        ///// </summary>
+        //private Vector2? _size;
+
         /// <summary>
         /// Zoom level (1 = no zoom)
         /// </summary>
@@ -49,6 +54,36 @@ namespace FNAEngine2D
         /// Layer of the game object
         /// </summary>
         public int LayerMask { get; set; } = (int)Layers.Layer1;
+
+        /// <summary>
+        /// SpriteSortMode
+        /// </summary>
+        public SpriteSortMode SpriteSortMode { get; set; } = SpriteSortMode.Immediate;
+
+        /// <summary>
+        /// Blend state of textures
+        /// </summary>
+        public BlendState BlendState { get; set; } = BlendState.AlphaBlend;
+
+        /// <summary>
+        /// PointWrap is perfect for PixelArts. Use LinearWrap for better texture smoothing with scaling
+        /// </summary>
+        public SamplerState SamplerState { get; set; } = SamplerState.PointWrap;
+
+        /// <summary>
+        /// DepthStencilState
+        /// </summary>
+        public DepthStencilState DepthStencilState { get; set; } = DepthStencilState.None;
+
+        /// <summary>
+        /// RasterizerState
+        /// </summary>
+        public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
+
+        /// <summary>
+        /// Effect
+        /// </summary>
+        public Effect Effect { get; set; } = null;
 
 
         /// <summary>
@@ -79,7 +114,23 @@ namespace FNAEngine2D
                 }
             }
         }
-       
+
+        ///// <summary>
+        ///// Size
+        ///// </summary>
+        //public Vector2? Size
+        //{
+        //    get { return _size; }
+        //    set
+        //    {
+        //        if (_size != value)
+        //        {
+        //            _size = value;
+        //            _updated = true;
+        //        }
+        //    }
+        //}
+
 
         /// <summary>
         /// Zoom level (1 = no zoom)
@@ -130,7 +181,13 @@ namespace FNAEngine2D
             if(_spriteBatch == null)
                 _spriteBatch = new SpriteBatch(GameHost.InternalGameHost.GraphicsDevice);
 
-            _spriteBatch.Begin(SpriteSortMode.Immediate,  null, null, null, null, null, GetMatrix());
+            _spriteBatch.Begin(this.SpriteSortMode,
+                                this.BlendState,
+                                this.SamplerState,
+                                this.DepthStencilState,
+                                this.RasterizerState,
+                                this.Effect,
+                                GetMatrix());
         }
 
         /// <summary>
@@ -157,12 +214,15 @@ namespace FNAEngine2D
 
 
                 if (_rotation != 0)
+                {
                     matrix *= Matrix.CreateRotationZ(_rotation);
+                    matrix *= Matrix.CreateTranslation(new Vector3(GameHost.Width / 2, GameHost.Height / 2, 0));
+                }
 
                 if (_zoom != 1)
                     matrix *= Matrix.CreateScale(new Vector3(_zoom, _zoom, 1));
 
-                //matrix *= Matrix.CreateTranslation(new Vector3(GameHost.Width / 2, GameHost.Height / 2, 0));
+                
 
                 //Now combine the camera's matrix with the Resolution Manager's transform matrix to get our final working matrix:
                 matrix *= GameHost.InternalGameHost.ScaleMatrix;

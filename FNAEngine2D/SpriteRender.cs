@@ -28,14 +28,14 @@ namespace FNAEngine2D
         public Color Color { get; set; } = Color.White;
 
         /// <summary>
-        /// X in the sprite sheet
+        /// Column in the sprite sheet
         /// </summary>
-        public int SpriteX { get; set; }
+        public int ColumnIndex { get; set; }
 
         /// <summary>
-        /// Y in the sprite sheet
+        /// Row in the sprite sheet
         /// </summary>
-        public int SpriteY { get; set; }
+        public int RowIndex { get; set; }
 
         /// <summary>
         /// Empty constructor
@@ -51,8 +51,8 @@ namespace FNAEngine2D
         public SpriteRender(string spriteName, int spriteX, int spriteY): this()
         {
             this.SpriteName = spriteName;
-            this.SpriteX = spriteX;
-            this.SpriteY = spriteY;
+            this.ColumnIndex = spriteX;
+            this.RowIndex = spriteY;
             
         }
 
@@ -70,9 +70,9 @@ namespace FNAEngine2D
                 _sprite = GameHost.GetContent<Sprite>(this.SpriteName);
 
                 if (this.Width == 0)
-                    this.Width = _sprite.Data.TileScreenWidth;
+                    this.Width = _sprite.Data.ColumnScreenWidth;
                 if (this.Height == 0)
-                    this.Height = _sprite.Data.TileScreenHeight;
+                    this.Height = _sprite.Data.RowScreenHeight;
             }
 
         }
@@ -87,7 +87,7 @@ namespace FNAEngine2D
 
             Sprite sprite = _sprite.Data;
 
-            GameHost.SpriteBatch.Draw(sprite.Texture, this.Bounds, new Rectangle(this.SpriteX * sprite.TileWidth, this.SpriteY * sprite.TileHeight, sprite.TileWidth, sprite.TileHeight), this.Color);
+            GameHost.SpriteBatch.Draw(sprite.Texture, this.Bounds, new Rectangle(this.ColumnIndex * sprite.ColumnWidth, this.RowIndex * sprite.RowHeight, sprite.ColumnWidth, sprite.RowHeight), this.Color);
 
         }
 

@@ -23,24 +23,24 @@ namespace FNAEngine2D
         private string _textureName;
 
         /// <summary>
-        /// Tile Width
+        /// Width of a column
         /// </summary>
-        public int TileWidth { get; set; } = 16;
+        public int ColumnWidth { get; set; } = 16;
 
         /// <summary>
-        /// Tile Width
+        /// Height of a row
         /// </summary>
-        public int TileHeight { get; set; } = 16;
+        public int RowHeight { get; set; } = 16;
 
         /// <summary>
-        /// Tile Width on screen
+        /// Width of a column on screen
         /// </summary>
-        public int TileScreenWidth { get; set; } = 32;
+        public int ColumnScreenWidth { get; set; } = 32;
 
         /// <summary>
-        /// Tile Height on screen
+        /// Height of a row on screen
         /// </summary>
-        public int TileScreenHeight { get; set; } = 32;
+        public int RowScreenHeight { get; set; } = 32;
 
         /// <summary>
         /// Texture for the tileset
@@ -90,10 +90,10 @@ namespace FNAEngine2D
         public Sprite(string textureName, int tileWidth, int tileHeight, int tileScreenWidth, int tileScreenHeight): this()
         {
             this.TextureName = textureName;
-            this.TileWidth = tileWidth;
-            this.TileHeight = tileHeight;
-            this.TileScreenWidth = tileScreenWidth;
-            this.TileScreenHeight = tileScreenHeight;
+            this.ColumnWidth = tileWidth;
+            this.RowHeight = tileHeight;
+            this.ColumnScreenWidth = tileScreenWidth;
+            this.RowScreenHeight = tileScreenHeight;
         }
 
     }
