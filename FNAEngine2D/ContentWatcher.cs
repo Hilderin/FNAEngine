@@ -84,17 +84,21 @@ namespace FNAEngine2D
         /// </summary>
         public static void StartWatchUpdateContent()
         {
-#if DEBUG
-            FileSystemWatcher fsw = new FileSystemWatcher(ContentFolder);
-            fsw.IncludeSubdirectories = true;
+            if (GameHost.DevelopmentMode)
+            {
+                if (Directory.Exists(ContentFolder))
+                {
+                    FileSystemWatcher fsw = new FileSystemWatcher(ContentFolder);
+                    fsw.IncludeSubdirectories = true;
 
-            fsw.Changed += Fsw_Changed;
-            fsw.Created += Fsw_Changed;
-            fsw.Deleted += Fsw_Changed;
-            fsw.Renamed += Fsw_Renamed;
+                    fsw.Changed += Fsw_Changed;
+                    fsw.Created += Fsw_Changed;
+                    fsw.Deleted += Fsw_Changed;
+                    fsw.Renamed += Fsw_Renamed;
 
-            fsw.EnableRaisingEvents = true;
-#endif
+                    fsw.EnableRaisingEvents = true;
+                }
+            }
 
         }
 

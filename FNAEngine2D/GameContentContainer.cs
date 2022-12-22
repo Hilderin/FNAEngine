@@ -11,10 +11,38 @@ namespace FNAEngine2D
     /// </summary>
     public class GameContentContainer: GameObject
     {
-        /// <summary>
-        /// Asset name
-        /// </summary>
         public string AssetName { get; set; }
+
+        public Content<GameContent> GetContent { get; set; }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public GameContentContainer()
+        {
+
+        }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public GameContentContainer(string assetName)
+        {
+            this.AssetName = assetName;
+            
+        }
+
+        /// <summary>
+        /// Load content
+        /// </summary>
+        public override void Load()
+        {
+            this.GetContent = GameHost.GetContent<GameContent>(this.AssetName);
+
+            GameContentManager.ReplaceContent(this, this.GetContent.Data);
+        }
 
     }
 }

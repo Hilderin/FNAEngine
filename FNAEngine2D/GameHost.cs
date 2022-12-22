@@ -127,6 +127,16 @@ namespace FNAEngine2D
         public static List<Camera> ExtraCameras { get { return _internalGameHost.ExtraCameras; } }
 
         /// <summary>
+        /// Indicate if in dev mode
+        /// </summary>
+        public static bool DevelopmentMode { get; set; } = true;
+
+        /// <summary>
+        /// Indicate if in edit mode
+        /// </summary>
+        public static bool EditMode { get; set; }
+
+        /// <summary>
         /// InternalGameHost
         /// </summary>
         internal static InternalGameHost InternalGameHost { get { return _internalGameHost; } }

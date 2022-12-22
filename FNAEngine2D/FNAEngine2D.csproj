@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
@@ -74,6 +75,13 @@
     <Compile Include="Content.cs" />
     <Compile Include="ContentWatcher.cs" />
     <Compile Include="ContentManager.cs" />
+    <Compile Include="Desginer\ContentDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Desginer\ContentDesigner.Designer.cs">
+      <DependentUpon>ContentDesigner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GameObjectTypesLoader.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="FontManager.cs" />
@@ -131,6 +139,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Desginer\ContentDesigner.resx">
+      <DependentUpon>ContentDesigner.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>

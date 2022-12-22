@@ -73,6 +73,21 @@ namespace FNAEngine2D
         public string Name { get; set; }
 
         /// <summary>
+        /// Display name for the Designer
+        /// </summary>
+        public string DisplayName
+        {
+            get
+            {
+
+                if (String.IsNullOrEmpty(this.Name))
+                    return this.GetType().FullName;
+                else
+                    return this.Name;
+            }
+        }
+
+        /// <summary>
         /// Indicate if GameObject is enabled (is disable, GameObject is not updated or drow)
         /// </summary>
         public bool Enabled { get; set; } = true;
@@ -134,7 +149,7 @@ namespace FNAEngine2D
             get { return _location.Y; }
             set
             {
-                TranslateY(value - _location.Y); 
+                TranslateY(value - _location.Y);
             }
         }
 
@@ -284,7 +299,7 @@ namespace FNAEngine2D
         /// </summary>
         public T Insert<T>(int index, T gameObject) where T : GameObject
         {
-            
+
             if (!_addAuthorized)
                 throw new InvalidOperationException("Add or Insert not authorized before Load method.");
 
@@ -387,10 +402,11 @@ namespace FNAEngine2D
         /// </summary>
         public GameObject Find(Func<GameObject, bool> findFunc)
         {
-            GameObject ret = _childrens.Find(o => findFunc(o));
-            if (ret == null)
+
+            if (_childrens.Count > 0)
             {
-                if (_childrens.Count > 0)
+                GameObject ret = _childrens.Find(o => findFunc(o));
+                if (ret == null)
                 {
                     for (int index = 0; index < _childrens.Count; index++)
                     {
@@ -399,20 +415,95 @@ namespace FNAEngine2D
                             break;
                     }
                 }
-
+                return ret;
             }
-            return ret;
+            else
+            {
+                return null;
+            }
+
         }
+
 
         /// <summary>
         /// Find a GameObjet
         /// </summary>
-        public T Find<T>(Func<T, bool> findFunc) where T: GameObject
+        public T Find<T>(Func<T, bool> findFunc) where T : GameObject
         {
             return (T)Find(o => typeof(T).IsAssignableFrom(o.GetType()) && findFunc((T)o));
 
         }
 
+
+
+        /// <summary>
+        /// Find a GameObject
+        /// </summary>
+        public List<GameObject> FindAll(Func<GameObject, bool> findFunc)
+        {
+            List<GameObject> list = new List<GameObject>();
+
+            FindAllInternal(findFunc, list);
+
+            return list;
+        }
+
+        /// <summary>
+        /// Find a GameObject
+        /// </summary>
+        private void FindAllInternal(Func<GameObject, bool> findFunc, List<GameObject> list)
+        {
+            if (_childrens.Count > 0)
+            {
+                for (int index = 0; index < _childrens.Count; index++)
+                {
+                    if (findFunc(_childrens[index]))
+                        list.Add(_childrens[index]);
+
+                    _childrens[index].FindAllInternal(findFunc, list);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Find a GameObject
+        /// </summary>
+        public List<T> FindAll<T>() where T : GameObject
+        {
+            return FindAll<T>(null);
+        }
+
+        /// <summary>
+        /// Find a GameObject
+        /// </summary>
+        public List<T> FindAll<T>(Func<T, bool> findFunc) where T : GameObject
+        {
+            List<T> list = new List<T>();
+
+            FindAllInternal(findFunc, list);
+
+            return list;
+        }
+
+        /// <summary>
+        /// Find a GameObject
+        /// </summary>
+        private void FindAllInternal<T>(Func<T, bool> findFunc, List<T> list) where T : GameObject
+        {
+            if (_childrens.Count > 0)
+            {
+                for (int index = 0; index < _childrens.Count; index++)
+                {
+                    if (typeof(T).IsAssignableFrom(_childrens[index].GetType()))
+                    {
+                        if (findFunc == null || findFunc((T)_childrens[index]))
+                            list.Add((T)_childrens[index]);
+                    }
+
+                    _childrens[index].FindAllInternal(findFunc, list);
+                }
+            }
+        }
 
         /// <summary>
         /// Execute an action for each GameObjet in childrens
@@ -474,9 +565,8 @@ namespace FNAEngine2D
                 return;
 
             //Update GameContent if needed...
-#if DEBUG
-            GameContentManager.ReloadModifiedContent(this);
-#endif
+            if (GameHost.DevelopmentMode)
+                GameContentManager.ReloadModifiedContent(this);
 
             this.Update();
 
@@ -505,7 +595,7 @@ namespace FNAEngine2D
                 return;
 
             //Check if object must be renderer by the camera...
-            if((GameHost.InternalGameHost.CurrentCamera.LayerMask & this.LayerMask) != 0)
+            if ((GameHost.InternalGameHost.CurrentCamera.LayerMask & this.LayerMask) != 0)
                 this.Draw();
 
             if (this._childrens.Count == 0)
@@ -845,5 +935,12 @@ namespace FNAEngine2D
         }
 
 
+        /// <summary>
+        /// Override of ToString to help in debug.
+        /// </summary>
+        public override string ToString()
+        {
+            return this.DisplayName;
+        }
     }
 }

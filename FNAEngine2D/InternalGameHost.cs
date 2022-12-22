@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework.Content;
+using FNAEngine2D.Desginer;
+using System.Runtime.InteropServices;
+using System.ComponentModel.Design;
 
 namespace FNAEngine2D
 {
@@ -60,6 +63,11 @@ namespace FNAEngine2D
         /// List of the other cameras on the scene
         /// </summary>
         private List<Camera> _extraCameras = new List<Camera>();
+
+        /// <summary>
+        /// Content designer
+        /// </summary>
+        private ContentDesigner _designer = null;
 
         /// <summary>
         /// Indique si l'objet est initialisé
@@ -246,9 +254,8 @@ namespace FNAEngine2D
             //GameHost.ContentLoading = false;
 
             //Maintenant, on peut commencer à regarder les modifications...
-#if DEBUG
-            ContentWatcher.StartWatchUpdateContent();
-#endif
+            if (GameHost.DevelopmentMode)
+                ContentWatcher.StartWatchUpdateContent();
 
             //_graphicsDevice.Viewport = new Viewport(0, 0, 100, 100);
 
@@ -262,14 +269,40 @@ namespace FNAEngine2D
         protected override void Update(GameTime gameTime)
         {
 
-#if DEBUG
-            //Reload the content...
-            if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
+            //---------------
+            // DEV MODE....
+            if (GameHost.DevelopmentMode)
             {
-                _rootGameObject.RemoveAll();
-                _rootGameObject.Load();
+
+                //Reload the content...
+                if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
+                {
+                    _rootGameObject.RemoveAll();
+                    _rootGameObject.Load();
+
+                    if (_designer != null && !_designer.IsDisposed)
+                        _designer.Reload();
+                }
+
+                //Designer...
+                if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
+                {
+                    if (_designer == null || _designer.IsDisposed)
+                    {
+                        _designer = new ContentDesigner();
+                    }
+
+                    //Restore/disply window...
+                    if (_designer.WindowState == FormWindowState.Minimized)
+                        _designer.WindowState = FormWindowState.Normal;
+
+                    _designer.Show();
+                    _designer.Focus();
+
+                    MouseManager.ShowMouse();
+                }
             }
-#endif
+
 
             //On update le gametime pour l'avoir partout...
             GameHost.SetGameTime(gameTime);

@@ -352,8 +352,15 @@ namespace FNAEngine2D
         /// </summary>
         private GameContent LoadGameContent(string assetName, out string fullPath)
         {
-            fullPath = GetAssetFullPath(assetName, GAMECONTENT_EXTENSIONS);
-            return Deserialize<GameContent>(fullPath);
+            
+            fullPath = Path.Combine(this.RootDirectory, assetName + ".json").Replace('\\', '/');
+
+            if(File.Exists(fullPath))
+                return Deserialize<GameContent>(fullPath);
+            else
+                //GameContent does not exists, we dont want to crash, si we can create a empty GameContent from the Editor...
+                return new GameContent();
+            
         }
 
         /// <summary>

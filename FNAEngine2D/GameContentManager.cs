@@ -16,16 +16,6 @@ namespace FNAEngine2D
     public static class GameContentManager
     {
         /// <summary>
-        /// Cache for types
-        /// </summary>
-        private static Dictionary<string, Type> _cacheTypes = new Dictionary<string, Type>();
-
-        /// <summary>
-        /// Assemblies to check
-        /// </summary>
-        private static List<Assembly> _assemblies = new List<Assembly>();
-
-        /// <summary>
         /// Game objects per asset names
         /// </summary>
         private static Dictionary<string, List<GameObject>> _gameObjectsPerAssetName = new Dictionary<string, List<GameObject>>();
@@ -41,12 +31,7 @@ namespace FNAEngine2D
         /// </summary>
         static GameContentManager()
         {
-            //FNAEngine2D assembly...
-            _assemblies.Add(typeof(GameContentManager).Assembly);
-
-            //Game assembly
-            _assemblies.Add(Assembly.GetEntryAssembly());
-
+            
         }
 
 
@@ -95,7 +80,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Apply game content in the game object
         /// </summary>
-        public static void ReplaceContent(GameObject gameObject, GameContent gameContent)
+        public static void ReplaceContent(GameContentContainer container, GameContent gameContent)
         {
             //We have content?
             if (gameContent.Objects == null || gameContent.Objects.Count == 0)
@@ -107,8 +92,8 @@ namespace FNAEngine2D
                 GameContentObject childToCreate = gameContent.Objects[index];
 
                 GameObject childExist = null;
-                if(gameObject.NbChildren > index)
-                    childExist = gameObject.Get(index);
+                if(container.NbChildren > index)
+                    childExist = container.Get(index);
 
                 GameObject objToUse = null;
                 bool isNew = false;
@@ -122,7 +107,7 @@ namespace FNAEngine2D
                 {
                     //Create a new one...
                     if(childExist != null)
-                        gameObject.Remove(childExist);
+                        container.Remove(childExist);
 
                     objToUse = CreateGameObject(childToCreate);
                     isNew = true;
@@ -133,7 +118,7 @@ namespace FNAEngine2D
 
                 if (isNew)
                 {
-                    gameObject.Insert(index, objToUse);
+                    container.Insert(index, objToUse);
                 }
                 else
                 {
@@ -143,8 +128,8 @@ namespace FNAEngine2D
             }
 
             //Removing extra objets...
-            while (gameObject.NbChildren > gameContent.Objects.Count)
-                gameObject.RemoveAt(gameContent.Objects.Count);
+            while (container.NbChildren > gameContent.Objects.Count)
+                container.RemoveAt(gameContent.Objects.Count);
 
 
         }
@@ -155,29 +140,32 @@ namespace FNAEngine2D
         /// </summary>
         internal static void ReloadModifiedContent(GameObject gameObject)
         {
-#if DEBUG
 
-            try
+            if (GameHost.DevelopmentMode)
             {
-                if (_gameObjectsToReload.Count == 0)
-                    return;
 
-                if (_gameObjectsToReload.TryGetValue(gameObject, out List<string> assetNames))
+                try
                 {
-                    foreach (string assetName in assetNames)
+                    if (_gameObjectsToReload.Count == 0)
+                        return;
+
+                    if (_gameObjectsToReload.TryGetValue(gameObject, out List<string> assetNames))
                     {
-                        Apply(gameObject, assetName, true);
+                        foreach (string assetName in assetNames)
+                        {
+                            Apply(gameObject, assetName, true);
+                        }
                     }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _gameObjectsToReload.Remove(gameObject);
             }
 
-            _gameObjectsToReload.Remove(gameObject);
-#endif
         }
 
         /// <summary>
@@ -203,7 +191,7 @@ namespace FNAEngine2D
         private static GameObject CreateGameObject(GameContentObject obj)
         {
 
-            Type type = GetGameObjectType(obj.ClassName);
+            Type type = GameObjectTypesLoader.GetGameObjectType(obj.ClassName);
 
             return (GameObject)Activator.CreateInstance(type);
 
@@ -317,51 +305,7 @@ namespace FNAEngine2D
             }
         }
 
-        /// <summary>
-        /// Get game object type from class name
-        /// </summary>
-        private static Type GetGameObjectType(string className)
-        {
-            Type type;
-
-            if (!_cacheTypes.TryGetValue(className, out type))
-            {
-                foreach (Assembly assembly in _assemblies)
-                {
-                    type = assembly.GetType(className, false);
-
-                    if (type != null)
-                        break;
-
-                    foreach (Type assemblyType in assembly.GetTypes())
-                    {
-                        if (assemblyType.Name == className)
-                        {
-                            type = assemblyType;
-                            break;
-                        }
-                    }
-
-                    if (type != null)
-                        break;
-                }
-
-                _cacheTypes[className] = type;
-
-            }
-
-
-            if (type == null)
-                throw new InvalidCastException("Type not found '" + className + "'.");
-
-            //Is it a GameObject?
-            if(!typeof(GameObject).IsAssignableFrom(type))
-                throw new InvalidCastException("Type '" + className + "' is not a GameObject.");
-
-            return type;
-
-            
-        }
+        
 
         /// <summary>
         /// Changement du content
