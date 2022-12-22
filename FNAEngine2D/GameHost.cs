@@ -115,10 +115,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Default Camera
         /// </summary>
-        public static Camera DefaultCamera
+        public static Camera MainCamera
         {
-            get { return _internalGameHost.DefaultCamera; }
-            set { _internalGameHost.DefaultCamera = value; }
+            get { return _internalGameHost.MainCamera; }
+            set { _internalGameHost.MainCamera = value; }
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace FNAEngine2D
         /// </summary>
         public static void Quit()
         {
-            _internalGameHost.Exit();
+            _internalGameHost.Quit();
         }
 
     }

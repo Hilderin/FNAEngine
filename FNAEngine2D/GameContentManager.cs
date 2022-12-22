@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -222,17 +223,29 @@ namespace FNAEngine2D
                 object val;
                 try
                 {
-                    if (prop.PropertyType.IsEnum)
+                    //If already the good type, we keep it!
+                    if (kv.Value.GetType() == prop.PropertyType)
                     {
-                        val = Enum.Parse(prop.PropertyType, kv.Value.ToString());
-                    }
-                    else if (prop.PropertyType == typeof(Color))
-                    {
-                        val = CreateColor(kv.Value.ToString());
+                        val = kv.Value;
                     }
                     else
                     {
-                        val = Convert.ChangeType(kv.Value, prop.PropertyType);
+                        if (prop.PropertyType.IsEnum)
+                        {
+                            val = Enum.Parse(prop.PropertyType, kv.Value.ToString());
+                        }
+                        else if (prop.PropertyType == typeof(Color))
+                        {
+                            val = CreateColor(kv.Value.ToString());
+                        }
+                        else if (prop.PropertyType == typeof(Vector2))
+                        {
+                            val = CreateVector2(kv.Value.ToString());
+                        }
+                        else
+                        {
+                            val = Convert.ChangeType(kv.Value, prop.PropertyType);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -265,6 +278,55 @@ namespace FNAEngine2D
 
         }
 
+
+        /// <summary>
+        /// Get the GameContentObject from a GameObject
+        /// </summary>
+        public static GameContentObject GetGameContentObject(GameObject gameObject)
+        {
+            Type type = gameObject.GetType();
+
+
+            GameContentObject gameContentObject = new GameContentObject();
+
+
+            gameContentObject["ClassName"] = type.Name;
+
+
+            //Copy values...
+            foreach(PropertyInfo prop in type.GetProperties())
+            {
+                object value = prop.GetValue(gameObject);
+
+                BrowsableAttribute browsableAttr = prop.GetCustomAttribute<BrowsableAttribute>();
+                if (browsableAttr != null && !browsableAttr.Browsable)
+                    //Not visible to the user, we skip..
+                    continue;
+
+                DefaultValueAttribute defaultValueAttr = prop.GetCustomAttribute<DefaultValueAttribute>();
+                if (defaultValueAttr != null)
+                {
+                    if (defaultValueAttr.Value == null)
+                    {
+                        //Default value, we skip..
+                        if (value == null)
+                            continue;
+                    }
+                    else if (defaultValueAttr.Value.Equals(value))
+                    {
+                        //Default value, we skip..
+                        continue;
+                    }
+                }
+
+                gameContentObject[prop.Name] = value;
+
+            }
+
+            return gameContentObject;
+
+        }
+
         /// <summary>
         /// Color creation...
         /// </summary>
@@ -278,8 +340,8 @@ namespace FNAEngine2D
             if (value.StartsWith("#"))
             {
                 //Hex...
-                if(value.Length != 7)
-                    throw new FormatException("Invalid color: " + value + ", expected \"r, g, b\" or \"r, g, b, a\" or #RRGGBB.");
+                if (value.Length != 7)
+                    throw new FormatException("Invalid color: " + value + ", expected \"r, g, b\" or \"r, g, b, a\" or #RRGGBB, actual: " + value);
 
                 int r = Int32.Parse(value.Substring(1, 2), System.Globalization.NumberStyles.HexNumber);
                 int g = Int32.Parse(value.Substring(3, 2), System.Globalization.NumberStyles.HexNumber);
@@ -293,7 +355,7 @@ namespace FNAEngine2D
                 string[] parts = value.Trim().Replace(" ", String.Empty).Split(',');
 
                 if (parts.Length != 3 && parts.Length != 4)
-                    throw new FormatException("Invalid color: " + value + ", expected \"r, g, b\" or \"r, g, b, a\" or #RRGGBB.");
+                    throw new FormatException("Invalid color: " + value + ", expected \"r, g, b\" or \"r, g, b, a\" or #RRGGBB, actual: " + value);
 
                 int r = Int32.Parse(parts[0]);
                 int g = Int32.Parse(parts[1]);
@@ -305,7 +367,20 @@ namespace FNAEngine2D
             }
         }
 
-        
+        /// <summary>
+        /// Vector2 creation...
+        /// </summary>
+        private static Vector2 CreateVector2(string value)
+        {
+            string[] parts = value.Trim().Replace(" ", String.Empty).Split(',');
+
+            if (parts.Length != 2)
+                throw new FormatException("Invalid Vector2: " + value + ", expected \"x, y\", actual: " + value);
+
+            return new Vector2(float.Parse(parts[0]), float.Parse(parts[1]));
+        }
+
+
 
         /// <summary>
         /// Changement du content

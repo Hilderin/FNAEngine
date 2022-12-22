@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -19,11 +20,14 @@ namespace FNAEngine2D
         /// <summary>
         /// TextureName
         /// </summary>
-        public string TextureName { get; set; }
+        [Category("Layout")]
+        [DefaultValue("")]
+        public string TextureName { get; set; } = String.Empty;
 
         /// <summary>
         /// Color
         /// </summary>
+        [Category("Layout")]
         public Color Color { get; set; } = Color.White;
 
         /// <summary>

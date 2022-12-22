@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.Desginer;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -58,7 +60,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Nom de la font
         /// </summary>
-        private string _fontName;
+        private string _fontName = String.Empty;
 
         /// <summary>
         /// Size de la font
@@ -68,12 +70,29 @@ namespace FNAEngine2D
         /// <summary>
         /// Text
         /// </summary>
-        private string _text;
+        private string _text = String.Empty;
+
+        /// <summary>
+        /// Rotation
+        /// </summary>
+        [Category("Text")]
+        [BrowsableAttribute(true)]
+        [EditorAttribute(typeof(AngleEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [DefaultValue(0f)]
+        public float Rotation { get; set; } = 0f;
+
+        /// <summary>
+        /// Rotation
+        /// </summary>
+        [Category("Text")]
+        public Vector2 RotationOrigin { get; set; } = Vector2.Zero;
 
 
         /// <summary>
         /// Nom de la font
         /// </summary>
+        [Category("Text")]
+        [DefaultValue("")]
         public string FontName
         {
             get { return _fontName; }
@@ -90,6 +109,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Font size
         /// </summary>
+        [Category("Text")]
+        [DefaultValue(12)]
         public int FontSize
         {
             get { return _fontSize; }
@@ -106,22 +127,29 @@ namespace FNAEngine2D
         /// <summary>
         /// Alignment horizontal
         /// </summary>
+        [Category("Text")]
+        [DefaultValue(TextHorizontalAlignment.Left)]
         public TextHorizontalAlignment HorizontalAlignment { get; set; } = TextHorizontalAlignment.Left;
 
         /// <summary>
         /// Alignment vertical
         /// </summary>
+        [Category("Text")]
+        [DefaultValue(TextVerticalAlignment.Top)]
         public TextVerticalAlignment VerticalAlignment { get; set; } = TextVerticalAlignment.Top;
 
         /// <summary>
         /// Couleur
         /// </summary>
+        [Category("Text")]
         public Color Color { get; set; } = Color.Black;
 
 
         /// <summary>
         /// Texte à afficher
         /// </summary>
+        [Category("Text")]
+        [DefaultValue("")]
         public string Text
         {
             get { return _text; }
@@ -182,6 +210,8 @@ namespace FNAEngine2D
                 _font = null;
             else
                 _font = new Font(_fontName, FontSize);
+
+            _textUpdated = true;
         }
 
         /// <summary>

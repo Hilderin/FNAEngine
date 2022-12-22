@@ -60,6 +60,14 @@ namespace FNAEngine2D
         /// </summary>
         public static bool _contentToReload = false;
 
+
+        /// <summary>
+        /// Indicate if we should watch the modifications
+        /// </summary>
+        public static bool Enabled { get; set; } = true;
+
+
+
         /// <summary>
         /// Constructeur
         /// </summary>
@@ -172,6 +180,10 @@ namespace FNAEngine2D
         /// </summary>
         private static void ProcessChange(string fullPath)
         {
+            if (!Enabled)
+                return;
+
+
             lock (ListChanges)
             {
                 _lastUpdatedContent = DateTime.Now;

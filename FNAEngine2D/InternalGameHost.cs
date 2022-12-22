@@ -47,7 +47,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Default Camera
         /// </summary>
-        private Camera _defaultCamera;
+        private Camera _mainCamera;
 
         /// <summary>
         /// Taille de l'écran
@@ -102,10 +102,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Default Camera
         /// </summary>
-        public Camera DefaultCamera
+        public Camera MainCamera
         {
-            get { return _defaultCamera; }
-            set { _defaultCamera = value; }
+            get { return _mainCamera; }
+            set { _mainCamera = value; }
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace FNAEngine2D
             _graphics = new GraphicsDeviceManager(this);
 
             //Default Camera = a static camera 
-            _defaultCamera = new Camera();
+            _mainCamera = new Camera();
            
             //Création du Content Manager..
             _contentManager = new ContentManager(this.Services, ContentWatcher.ContentFolder);
@@ -209,6 +209,37 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Quit the game
+        /// </summary>
+        public void Quit()
+        {
+            //Check if modification in the designer before closing
+            if (_designer != null && !_designer.IsDisposed)
+            {
+                if (!_designer.ConfirmBeforeClose())
+                    return;
+
+                _designer.Close();
+                _designer = null;
+            }
+
+            this.Exit();
+        }
+
+        /// <summary>
+        /// Trap the Exit
+        /// </summary>
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            //Check if modification in the designer before closing
+            if (_designer != null && !_designer.IsDisposed)
+            {
+                if (!_designer.ConfirmBeforeClose(false))
+                    return;
+            }
+
+        }
 
 
         /// <summary>
@@ -341,7 +372,7 @@ namespace FNAEngine2D
             {
 
                 //Starting up sprite batches...
-                RenderCamera(_defaultCamera);
+                RenderCamera(_mainCamera);
 
 
                 if (_extraCameras.Count > 0)

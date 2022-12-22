@@ -32,8 +32,7 @@
             this.cboGameContentContainer = new System.Windows.Forms.ComboBox();
             this.lblContainer = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btnRevert = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.propertyGrid = new System.Windows.Forms.PropertyGrid();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -52,14 +51,15 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboGameContentContainer.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.cboGameContentContainer.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.cboGameContentContainer.DisplayMember = "DisplayName";
+            this.cboGameContentContainer.DisplayMember = "AssetName";
             this.cboGameContentContainer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboGameContentContainer.FormattingEnabled = true;
             this.cboGameContentContainer.Location = new System.Drawing.Point(1, 16);
             this.cboGameContentContainer.Name = "cboGameContentContainer";
             this.cboGameContentContainer.Size = new System.Drawing.Size(330, 21);
             this.cboGameContentContainer.TabIndex = 1;
-            this.cboGameContentContainer.ValueMember = "DisplayName";
+            this.cboGameContentContainer.ValueMember = "AssetName";
+            this.cboGameContentContainer.SelectedIndexChanged += new System.EventHandler(this.cboGameContentContainer_SelectedIndexChanged);
             // 
             // lblContainer
             // 
@@ -79,25 +79,16 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "GameObjects";
             // 
-            // button1
+            // btnSave
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(261, 664);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(73, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "&Save";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // btnRevert
-            // 
-            this.btnRevert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRevert.Location = new System.Drawing.Point(-4, 664);
-            this.btnRevert.Name = "btnRevert";
-            this.btnRevert.Size = new System.Drawing.Size(75, 23);
-            this.btnRevert.TabIndex = 5;
-            this.btnRevert.Text = "&Revert";
-            this.btnRevert.UseVisualStyleBackColor = true;
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Location = new System.Drawing.Point(261, 664);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(73, 23);
+            this.btnSave.TabIndex = 4;
+            this.btnSave.Text = "&Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // label2
             // 
@@ -188,14 +179,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(339, 691);
-            this.Controls.Add(this.btnRevert);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.splitContainer);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Location = new System.Drawing.Point(0, 100);
             this.Name = "ContentDesigner";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Content designer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ContentDesigner_FormClosing);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);
@@ -210,8 +201,7 @@
         private System.Windows.Forms.ComboBox cboGameContentContainer;
         private System.Windows.Forms.Label lblContainer;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btnRevert;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PropertyGrid propertyGrid;
         private System.Windows.Forms.SplitContainer splitContainer;

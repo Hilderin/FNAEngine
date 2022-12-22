@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -324,24 +325,50 @@ namespace FNAEngine2D
                     return (T)ret;
                 }
             }
-
-            //Texture from the disk...
-            fullPath = GetAssetFullPath(assetName, TEXTURES_EXTENSIONS);
-
-            using (Stream stream = File.OpenRead(fullPath))
+            else if (assetName == "pixel_magenta" && typeof(T) == typeof(Texture2D))
             {
-                if (Path.GetExtension(fullPath).Equals(".aseprite", StringComparison.OrdinalIgnoreCase))
-                {
-                    //Aseprite file...
-                    AseFile aseFile = new AseFile(stream);
+                fullPath = "pixel_magenta";
 
-                    //We take the first frame
-                    object ret = aseFile.GetFrame(0);
+                using (MemoryStream ms = new MemoryStream(Resource.pixel_magenta))
+                {
+                    object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
                     return (T)ret;
                 }
-                else
+            }
+
+
+            try
+            {
+                //Texture from the disk...
+                fullPath = GetAssetFullPath(assetName, TEXTURES_EXTENSIONS);
+
+                using (Stream stream = File.OpenRead(fullPath))
                 {
-                    object ret = Texture2D.FromStream(GetGraphicsDevice(), stream);
+                    if (Path.GetExtension(fullPath).Equals(".aseprite", StringComparison.OrdinalIgnoreCase))
+                    {
+                        //Aseprite file...
+                        AseFile aseFile = new AseFile(stream);
+
+                        //We take the first frame
+                        object ret = aseFile.GetFrame(0);
+                        return (T)ret;
+                    }
+                    else
+                    {
+                        object ret = Texture2D.FromStream(GetGraphicsDevice(), stream);
+                        return (T)ret;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("LoadTexture - Error loading '" + assetName + "': " + ex.Message);
+
+                using (MemoryStream ms = new MemoryStream(Resource.pixel_magenta))
+                {
+                    fullPath = Path.Combine(this.RootDirectory, assetName + ".jpg").Replace('\\', '/');
+
+                    object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
                     return (T)ret;
                 }
             }
@@ -355,11 +382,19 @@ namespace FNAEngine2D
             
             fullPath = Path.Combine(this.RootDirectory, assetName + ".json").Replace('\\', '/');
 
-            if(File.Exists(fullPath))
-                return Deserialize<GameContent>(fullPath);
-            else
-                //GameContent does not exists, we dont want to crash, si we can create a empty GameContent from the Editor...
+            try
+            {
+                if (File.Exists(fullPath))
+                    return Deserialize<GameContent>(fullPath);
+                else
+                    //GameContent does not exists, we dont want to crash, si we can create a empty GameContent from the Editor...
+                    return new GameContent();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("LoadGameContent - Error loading '" + assetName + "': " + ex.Message);
                 return new GameContent();
+            }
             
         }
 
@@ -369,7 +404,16 @@ namespace FNAEngine2D
         private Sprite LoadSprite(string assetName, out string fullPath)
         {
             fullPath = GetAssetFullPath(assetName, SPRITE_EXTENSIONS);
-            return Deserialize<Sprite>(fullPath);
+
+            try
+            {
+                return Deserialize<Sprite>(fullPath);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("LoadSprite - Error loading '" + assetName + "': " + ex.Message);
+                return new Sprite("pixel_magenta", 1, 1, 1, 1);
+            }
         }
 
         /// <summary>
@@ -377,20 +421,30 @@ namespace FNAEngine2D
         /// </summary>
         private SpriteAnimation LoadSpriteAnimation(string assetName, out string fullPath)
         {
-            fullPath = GetAssetFullPath(assetName, SPRITEANIMATION_EXTENSIONS);
-            if (Path.GetExtension(fullPath).Equals(".aseprite", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                //Aseprite file...
-                using (Stream stream = File.OpenRead(fullPath))
+                fullPath = GetAssetFullPath(assetName, SPRITEANIMATION_EXTENSIONS);
+                if (Path.GetExtension(fullPath).Equals(".aseprite", StringComparison.OrdinalIgnoreCase))
                 {
-                    AseFile aseFile = new AseFile(stream);
+                    //Aseprite file...
+                    using (Stream stream = File.OpenRead(fullPath))
+                    {
+                        AseFile aseFile = new AseFile(stream);
 
-                    return aseFile.GetSpriteAnimation();
+                        return aseFile.GetSpriteAnimation();
+                    }
+                }
+                else
+                {
+                    return Deserialize<SpriteAnimation>(fullPath);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return Deserialize<SpriteAnimation>(fullPath);
+                Debug.WriteLine("LoadSpriteAnimation - Error loading '" + assetName + "': " + ex.Message);
+
+                fullPath = Path.Combine(this.RootDirectory, assetName + ".json").Replace('\\', '/');
+                return new SpriteAnimation();
             }
         }
 
@@ -399,29 +453,53 @@ namespace FNAEngine2D
         /// </summary>
         private SoundEffect LoadSoundEffect(string assetName, out string fullPath)
         {
-           
-            //I will find the file...
-            fullPath = GetAssetFullPath(assetName, SOUNDEFFECT_EXTENSIONS);
-
-            //Little hack to bypass the cache of the default ContentManager...
-            string tempdid = Guid.NewGuid().ToString();
-            string tempAssetName = assetName + tempdid;
-            string tempPath = Path.Combine(Path.GetDirectoryName(fullPath), Path.GetFileNameWithoutExtension(fullPath) + tempdid + Path.GetExtension(fullPath));
 
             try
             {
-                File.Copy(fullPath, tempPath);
 
-                return base.Load<SoundEffect>(tempAssetName);
+                if (assetName == "empty_sfx")
+                {
+                    fullPath = "empty_sfx";
+                    using (MemoryStream ms = new MemoryStream(Resource.empty_sfx))
+                    {
+                        return SoundEffect.FromStream(ms);
+                    }
+                }
 
-            }
-            finally
-            {
+                //I will find the file...
+                fullPath = GetAssetFullPath(assetName, SOUNDEFFECT_EXTENSIONS);
+
+                //Little hack to bypass the cache of the default ContentManager...
+                string tempdid = Guid.NewGuid().ToString();
+                string tempAssetName = assetName + tempdid;
+                string tempPath = Path.Combine(Path.GetDirectoryName(fullPath), Path.GetFileNameWithoutExtension(fullPath) + tempdid + Path.GetExtension(fullPath));
+
                 try
                 {
-                    File.Delete(tempPath);
+                    File.Copy(fullPath, tempPath);
+
+                    return base.Load<SoundEffect>(tempAssetName);
+
                 }
-                catch { }
+                finally
+                {
+                    try
+                    {
+                        File.Delete(tempPath);
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("LoadSoundEffect - Error loading '" + assetName + "': " + ex.Message);
+
+                fullPath = Path.Combine(this.RootDirectory, assetName + ".wav").Replace('\\', '/');
+
+                using (MemoryStream ms = new MemoryStream(Resource.empty_sfx))
+                {
+                    return SoundEffect.FromStream(ms);
+                }
             }
         }
 

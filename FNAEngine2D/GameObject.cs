@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.Desginer;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -57,24 +59,31 @@ namespace FNAEngine2D
         /// </summary>
         private Vector2 _size;
 
+
+
         /// <summary>
         /// RootGameObject
         /// </summary>
+        [Browsable(false)]
         public GameObject RootGameObject;
 
         /// <summary>
         /// Parent GameObject
         /// </summary>
+        [Browsable(false)]
         public GameObject Parent;
 
         /// <summary>
         /// Name of the object
         /// </summary>
-        public string Name { get; set; }
+        [Category("Design")]
+        [DefaultValue("")]
+        public string Name { get; set; } = String.Empty;
 
         /// <summary>
         /// Display name for the Designer
         /// </summary>
+        [BrowsableAttribute(false)]
         public string DisplayName
         {
             get
@@ -90,16 +99,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Indicate if GameObject is enabled (is disable, GameObject is not updated or drow)
         /// </summary>
+        [Category("Behavior")]
+        [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Indique si l'objet est paused
         /// </summary>
+        [Category("Behavior")]
+        [DefaultValue(false)]
         public bool Paused { get; set; }
 
         /// <summary>
         /// Visibity of the object
         /// </summary>
+        [Category("Behavior")]
+        [DefaultValue(true)]
         public bool Visible
         {
             get { return _visible; }
@@ -119,6 +134,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Bounds
         /// </summary>
+        [Browsable(false)]
         public Rectangle Bounds
         {
             get { return new Rectangle((int)_location.X, (int)_location.Y, (int)_size.X, (int)_size.Y); }
@@ -132,6 +148,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Position X
         /// </summary>
+        [Browsable(false)]
         public float X
         {
             get { return _location.X; }
@@ -144,6 +161,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Position Y
         /// </summary>
+        [Browsable(false)]
         public float Y
         {
             get { return _location.Y; }
@@ -156,6 +174,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Width
         /// </summary>
+        [Browsable(false)]
         public float Width
         {
             get { return _size.X; }
@@ -165,6 +184,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Height
         /// </summary>
+        [Browsable(false)]
         public float Height
         {
             get { return (int)_size.Y; }
@@ -174,6 +194,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Right
         /// </summary>
+        [Browsable(false)]
         public float Right
         {
             get { return _location.X + _size.X; }
@@ -183,6 +204,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Bottom
         /// </summary>
+        [Browsable(false)]
         public float Bottom
         {
             get { return _location.Y + _size.Y; }
@@ -192,6 +214,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Location
         /// </summary>
+        [Category("Layout")]
         public Vector2 Location
         {
             get { return _location; }
@@ -223,6 +246,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Size
         /// </summary>
+        [Category("Layout")]
         public Vector2 Size
         {
             get { return _size; }
@@ -233,6 +257,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Center en X
         /// </summary>
+        [Browsable(false)]
         public float CenterX
         {
             get { return _location.X + (_size.X / 2); }
@@ -241,31 +266,24 @@ namespace FNAEngine2D
         /// <summary>
         /// Center en Y
         /// </summary>
+        [Browsable(false)]
         public float CenterY
         {
             get { return _location.Y + (_size.Y / 2); }
         }
 
 
-        /// <summary>
-        /// Scale
-        /// </summary>
-        public float Scale = 1f;
+        ///// <summary>
+        ///// Scale
+        ///// </summary>
+        //public float Scale = 1f;
 
-        /// <summary>
-        /// Rotation
-        /// </summary>
-        public float Rotation = 0f;
-
-        /// <summary>
-        /// Rotation
-        /// </summary>
-        public Vector2 RotationOrigin;
-
+        
 
         /// <summary>
         /// Count des childrens
         /// </summary>
+        [Browsable(false)]
         public int NbChildren
         {
             get { return _childrens.Count; }
@@ -275,7 +293,33 @@ namespace FNAEngine2D
         /// <summary>
         /// Layer of the game object
         /// </summary>
-        public int LayerMask { get; set; } = (int)Layers.Layer1;
+        [Category("Behavior")]
+        [DefaultValue(Layers.Layer1)]
+        public Layers LayerMask { get; set; } = Layers.Layer1;
+
+        /// <summary>
+        /// Count des childrens
+        /// </summary>
+        [Category("Layout")]
+        [DefaultValue(0)]
+        public int ChildIndex
+        {
+            get
+            {
+                if (this.Parent != null)
+                    return this.Parent._childrens.IndexOf(this);
+                else
+                    return -1;
+            }
+            set
+            {
+                if (this.Parent != null)
+                {
+                    this.Parent._childrens.Remove(this);
+                    this.Parent._childrens.Insert(value, this);
+                }
+            }
+        }
 
 
         /// <summary>

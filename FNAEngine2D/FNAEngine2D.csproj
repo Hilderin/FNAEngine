@@ -75,6 +75,10 @@
     <Compile Include="Content.cs" />
     <Compile Include="ContentWatcher.cs" />
     <Compile Include="ContentManager.cs" />
+    <Compile Include="Desginer\AngleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Desginer\AngleEditor.cs" />
     <Compile Include="Desginer\ContentDesigner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,7 +153,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\empty_sfx.bin" />
     <None Include="Resources\pixel.bin" />
+    <None Include="Resources\pixel_magenta.bin" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

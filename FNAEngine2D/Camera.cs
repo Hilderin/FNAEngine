@@ -53,7 +53,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Layer of the game object
         /// </summary>
-        public int LayerMask { get; set; } = (int)Layers.Layer1;
+        public Layers LayerMask { get; set; } = Layers.All;
 
         /// <summary>
         /// SpriteSortMode
