@@ -43,7 +43,7 @@ This projet uses:
 
 I just begun working with FNA-XNA, there's so must that can be added and upgraded.
 
-My plan is to upgrade my Pong game with different goodies and upgrade the engine at the same time.
+My plan is to upgrade my Pong and Platformer games with different goodies and upgrade the engine at the same time.
 
 
 

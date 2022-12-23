@@ -60,7 +60,11 @@ namespace FNAEngine2D
         /// </summary>
         public void DrawString(string text, Vector2 position, Color color, float rotation, Vector2 origin, float layerDepth)
         {
-            GameHost.SpriteBatch.DrawString(_font, text, position, color, rotation, origin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, layerDepth);
+            //There's a lot more calculation in the full overload of Velentr.Font.DrawString, so, if we can avoid it...
+            if (rotation == 0 && origin == Vector2.Zero && layerDepth == 0f)
+                GameHost.SpriteBatch.DrawString(_font, text, position, color);
+            else
+                GameHost.SpriteBatch.DrawString(_font, text, position, color, rotation, origin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, layerDepth);
         }
 
     }

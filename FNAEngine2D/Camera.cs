@@ -73,7 +73,7 @@ namespace FNAEngine2D
         /// <summary>
         /// DepthStencilState
         /// </summary>
-        public DepthStencilState DepthStencilState { get; set; } = DepthStencilState.None;
+        public DepthStencilState DepthStencilState { get; set; } = DepthStencilState.Default;
 
         /// <summary>
         /// RasterizerState
