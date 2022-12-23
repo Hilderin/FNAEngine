@@ -34,7 +34,7 @@ namespace FNAEngine2D
             _lastMouseState = _mouseState;
             _mouseState = Mouse.GetState();
 
-            _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / GameHost.InternalGameHost.ScreenScale) + GameHost.MainCamera.Location;
+            _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / GameHost.InternalGame.ScreenScale) + GameHost.MainCamera.Location;
 
             _consumedKeyPressed.Clear();
         }

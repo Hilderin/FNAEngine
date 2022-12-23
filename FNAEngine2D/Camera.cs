@@ -179,7 +179,7 @@ namespace FNAEngine2D
         public virtual void BeginDraw()
         {
             if(_spriteBatch == null)
-                _spriteBatch = new SpriteBatch(GameHost.InternalGameHost.GraphicsDevice);
+                _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
 
             _spriteBatch.Begin(this.SpriteSortMode,
                                 this.BlendState,
@@ -225,7 +225,7 @@ namespace FNAEngine2D
                 
 
                 //Now combine the camera's matrix with the Resolution Manager's transform matrix to get our final working matrix:
-                matrix *= GameHost.InternalGameHost.ScaleMatrix;
+                matrix *= GameHost.InternalGame.ScaleMatrix;
 
                 //Round the X and Y translation so the camera doesn't jerk as it moves:
                 matrix.M41 = (float)Math.Round(matrix.M41, 0);

@@ -18,7 +18,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Information on tileset
         /// </summary>
-        [EditorAttribute(typeof(TileSetEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [EditorAttribute(typeof(TileSetUITypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public TileSet TileSet { get; set; }
 
 
@@ -93,9 +93,9 @@ namespace FNAEngine2D
 
             Color color = Color.White;
 
-            if (GameHost.EditMode)
+            if (EditModeHelper.EditMode)
             {
-                if (TileSetEditorForm.Current != null && TileSetEditorForm.Current.GameObject != this)
+                if (EditModeHelper.IsTileSetEditorOpened && EditModeHelper.SelectedGameObject != this)
                     color = Color.DimGray;
             }
 

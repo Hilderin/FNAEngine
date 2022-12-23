@@ -1,6 +1,6 @@
 ﻿namespace FNAEngine2D.Desginer
 {
-    partial class TileSetEditorForm
+    partial class TileSetEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TileSetEditorForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TileSetEditor));
             this.lblTexture = new System.Windows.Forms.Label();
             this.txtTexture = new System.Windows.Forms.TextBox();
             this.txtTileSize = new System.Windows.Forms.TextBox();
@@ -120,7 +120,7 @@
             this.picTileSet.TabStop = false;
             this.picTileSet.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picTileSet_MouseClick);
             // 
-            // TileSetEditorForm
+            // TileSetEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -133,9 +133,9 @@
             this.Controls.Add(this.txtTexture);
             this.Controls.Add(this.lblTexture);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "TileSetEditorForm";
+            this.Name = "TileSetEditor";
             this.Text = "TileSet Editor";
-            this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TileSetEditor_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TileSetEditorForm_FormClosed);
             this.panTileSet.ResumeLayout(false);
             this.panTileSet.PerformLayout();

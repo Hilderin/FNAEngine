@@ -689,7 +689,7 @@ namespace FNAEngine2D
                 return;
 
             //Check if object must be renderer by the camera...
-            if ((GameHost.InternalGameHost.CurrentCamera.LayerMask & this.LayerMask) != 0)
+            if ((GameHost.InternalGame.CurrentCamera.LayerMask & this.LayerMask) != 0)
                 this.Draw();
 
             if (this._childrens.Count == 0)

@@ -10,7 +10,7 @@ namespace FNAEngine2D.Aseprite.Utils
         /// </summary>
         public static Texture2D CreateTexture(int width, int height)
         {
-            return new Texture2D(GameHost.InternalGameHost.GraphicsDevice, width, height, false, SurfaceFormat.Color);
+            return new Texture2D(GameHost.InternalGame.GraphicsDevice, width, height, false, SurfaceFormat.Color);
         }
 
         /// <summary>

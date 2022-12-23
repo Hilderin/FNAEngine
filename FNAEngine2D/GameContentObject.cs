@@ -24,6 +24,11 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Props of the GameObject
+        /// </summary>
+        public Dictionary<string, object> Props { get; set; }
+
 
     }
 }

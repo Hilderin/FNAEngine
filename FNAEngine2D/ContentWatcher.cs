@@ -140,7 +140,7 @@ namespace FNAEngine2D
             foreach (string fullPath in changes)
             {
                 //Reload the asset...
-                GameHost.InternalGameHost.ContentManager.Reload(fullPath);
+                GameHost.InternalGame.ContentManager.Reload(fullPath);
 
                 //if (ContentChanged != null)
                 //{

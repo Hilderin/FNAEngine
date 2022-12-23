@@ -24,7 +24,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Internal GameHost
         /// </summary>
-        private static InternalGameHost _internalGameHost;
+        private static InternalGame _internalGameHost;
 
         /// <summary>
         /// Run done?
@@ -134,12 +134,16 @@ namespace FNAEngine2D
         /// <summary>
         /// Indicate if in edit mode
         /// </summary>
-        public static bool EditMode { get; set; }
+        public static bool EditMode
+        {
+            get { return EditModeHelper.EditMode; }
+            set { EditModeHelper.EditMode = value; }
+        }
 
         /// <summary>
-        /// InternalGameHost
+        /// InternalGame
         /// </summary>
-        internal static InternalGameHost InternalGameHost { get { return _internalGameHost; } }
+        internal static InternalGame InternalGame { get { return _internalGameHost; } }
 
 
 
@@ -148,7 +152,7 @@ namespace FNAEngine2D
         /// </summary>
         static GameHost()
         {
-            _internalGameHost = new InternalGameHost();
+            _internalGameHost = new InternalGame();
         }
 
 

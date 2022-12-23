@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -15,11 +16,6 @@ namespace FNAEngine2D.Desginer
 {
     public partial class ContentDesigner : Form
     {
-
-        /// <summary>
-        /// Current ContentDesigner
-        /// </summary>
-        public static ContentDesigner Current;
 
         /// <summary>
         /// Types of all game object
@@ -48,12 +44,6 @@ namespace FNAEngine2D.Desginer
 
 
         /// <summary>
-        /// Current game object in edition
-        /// </summary>
-        public GameObject CurrentGameObject { get { return (GameObject)propertyGrid.SelectedObject; } }
-
-
-        /// <summary>
         /// Constructor
         /// </summary>
         public ContentDesigner()
@@ -61,29 +51,26 @@ namespace FNAEngine2D.Desginer
             InitializeComponent();
 
             //Enabling the edit mode...
-            GameHost.EditMode = true;
+            EditModeHelper.EditMode = true;
 
-            //Current ContentDesigner...
-            Current = this;
+            btnPausePlay.Text = EditModeHelper.IsGameRunning ? "&Pause" : "&Play";
 
 
             //Populate game object types...
-            _gameObjectTypes = GameObjectTypesLoader.GetGameObjectTypes();
-
-            foreach (Type type in _gameObjectTypes)
+            _gameObjectTypes = new List<Type>();
+            foreach (Type type in GameObjectTypesLoader.GetGameObjectTypes())
             {
-                ListViewItem item = new ListViewItem(type.FullName);
-                lstGameObjectTypes.Items.Add(item);
+                //Certain types cannot be used in the designer...
+                if (type != typeof(TileGameObject) && type != typeof(GameContentContainer))
+                {
+                    ListViewItem item = new ListViewItem(type.FullName);
+                    lstGameObjectTypes.Items.Add(item);
+                    _gameObjectTypes.Add(type);
+                }
             }
 
             //Load the components...
             Reload();
-
-        }
-
-
-        public void ReloadContentContainer()
-        {
 
         }
 
@@ -165,8 +152,8 @@ namespace FNAEngine2D.Desginer
                     _gameObjects.Add(_currentContainer.Get(index));
                 }
             }
-            
-                
+
+
 
             cboGameObjects.DataSource = _gameObjects;
 
@@ -174,11 +161,13 @@ namespace FNAEngine2D.Desginer
             {
                 cboGameContentContainer.SelectedItem = _gameObjects[0];
                 propertyGrid.SelectedObject = _gameObjects[0];
+                EditModeHelper.SelectedGameObject = _gameObjects[0];
             }
             else
             {
                 //No selected object...
                 propertyGrid.SelectedObject = null;
+                EditModeHelper.SelectedGameObject = null;
             }
         }
 
@@ -282,12 +271,26 @@ namespace FNAEngine2D.Desginer
             if (cboGameObjects.SelectedItem != null)
             {
                 propertyGrid.SelectedObject = cboGameObjects.SelectedItem;
+                EditModeHelper.SelectedGameObject = (GameObject)cboGameObjects.SelectedItem;
 
-                if (TileSetEditorForm.Current != null && cboGameObjects.SelectedItem is TileSetRender)
+                if (EditModeHelper.IsTileSetEditorOpened)
                 {
-                    TileSetEditorForm.Current.Close();
-                    TileSetEditorForm newForm = new TileSetEditorForm(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
-                    newForm.Show();
+                    if (cboGameObjects.SelectedItem is TileSetRender)
+                        //Reopenning the tileset editor for the new tileset...
+                        EditModeHelper.ShowTileSetEditor(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
+                    else
+                        EditModeHelper.HideTileSetEditor();
+                }
+            }
+            else
+            {
+                //No selection...
+                propertyGrid.SelectedObject = null;
+                EditModeHelper.SelectedGameObject = null;
+
+                if (EditModeHelper.IsTileSetEditorOpened)
+                {
+                    EditModeHelper.HideTileSetEditor();
                 }
             }
         }
@@ -361,7 +364,7 @@ namespace FNAEngine2D.Desginer
 
 
                 //Saving....
-                string fullPath = Path.Combine(GameHost.InternalGameHost.ContentManager.RootDirectory, _currentContainer.AssetName + ".json").Replace('\\', '/');
+                string fullPath = Path.Combine(GameHost.InternalGame.ContentManager.RootDirectory, _currentContainer.AssetName + ".json").Replace('\\', '/');
 
                 //Disable watching to prevent double reloading...
                 ContentWatcher.Enabled = false;
@@ -448,16 +451,8 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void ContentDesigner_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Current = null;
-
-            if (TileSetEditorForm.Current != null)
-            {
-                TileSetEditorForm.Current.Close();
-                TileSetEditorForm.Current = null;
-            }
-
             //Disabling the edit mode...
-            GameHost.EditMode = false;
+            EditModeHelper.EditMode = false;
         }
 
         /// <summary>
@@ -465,9 +460,42 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void btnPausePlay_Click(object sender, EventArgs e)
         {
-            GameHost.EditMode = !GameHost.EditMode;
+            EditModeHelper.IsGameRunning = !EditModeHelper.IsGameRunning;
+            btnPausePlay.Text = EditModeHelper.IsGameRunning ? "&Pause" : "&Play";
 
-            btnPausePlay.Text = GameHost.EditMode ? "&Play" : "&Pause";
+            //Win32.SetForegroundWindow(GameHost.InternalGame.GameWindowHandle);
+
+            
+        }
+
+        /// <summary>
+        /// Activation of the window
+        /// </summary>
+        private void ContentDesigner_Activated(object sender, EventArgs e)
+        {
+            //Reopening the designer forms and refocusing on ourself...
+            if(DateTime.Now.Subtract(GameHost.InternalGame.LastTimeActivated).TotalMilliseconds > 300)
+                EditModeHelper.ShowDesigner(this.Handle);
+
+        }
+
+        /// <summary>
+        /// Process dialog keys
+        /// </summary>
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            if (keyData == Keys.F12)
+            {
+                //Hide the designer...
+                EditModeHelper.HideDesigner();
+
+                //Refocusing on 
+                Win32.SetForegroundWindow(GameHost.InternalGame.GameWindowHandle);
+
+                return true;
+            }
+
+            return base.ProcessDialogKey(keyData);
         }
     }
 }

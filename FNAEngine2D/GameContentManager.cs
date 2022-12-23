@@ -350,6 +350,8 @@ namespace FNAEngine2D
 
             }
 
+            //gameContentObject.Props = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(gameObject));
+
             return gameContentObject;
 
         }

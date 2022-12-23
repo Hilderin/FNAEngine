@@ -43,8 +43,8 @@ namespace FNAEngine2D
             MouseManager.IsMouseVisible = true;
 
             //Si on a un gamehost, on va le setter...
-            if (GameHost.InternalGameHost != null && GameHost.InternalGameHost.IsInitialized)
-                GameHost.InternalGameHost.IsMouseVisible = true;
+            if (GameHost.InternalGame != null && GameHost.InternalGame.IsInitialized)
+                GameHost.InternalGame.IsMouseVisible = true;
         }
 
 
@@ -56,8 +56,8 @@ namespace FNAEngine2D
             MouseManager.IsMouseVisible = false;
 
             //Si on a un gamehost, on va le setter...
-            if (GameHost.InternalGameHost != null && GameHost.InternalGameHost.IsInitialized)
-                GameHost.InternalGameHost.IsMouseVisible = false;
+            if (GameHost.InternalGame != null && GameHost.InternalGame.IsInitialized)
+                GameHost.InternalGame.IsMouseVisible = false;
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace FNAEngine2D
 
             List<IMouseEventHandler> newOverGameObjects = new List<IMouseEventHandler>(_lastOverGameObjects.Count);
 
-            ProcessGameObject(GameHost.InternalGameHost.RootGameObject, mousePosition, newOverGameObjects);
+            ProcessGameObject(GameHost.InternalGame.RootGameObject, mousePosition, newOverGameObjects);
 
             if (newOverGameObjects.Count > 0 || _lastOverGameObjects.Count > 0)
             {

@@ -17,7 +17,7 @@ namespace FNAEngine2D
     /// <summary>
     /// Game interne XNA avec le Initialize, LoadContent, Update et Draw
     /// </summary>
-    internal class InternalGameHost : Microsoft.Xna.Framework.Game
+    internal class InternalGame : Microsoft.Xna.Framework.Game
     {              
         /// <summary>
         /// Content Manager
@@ -63,11 +63,6 @@ namespace FNAEngine2D
         /// List of the other cameras on the scene
         /// </summary>
         private List<Camera> _extraCameras = new List<Camera>();
-
-        /// <summary>
-        /// Content designer
-        /// </summary>
-        private ContentDesigner _designer = null;
 
         /// <summary>
         /// Indique si l'objet est initialisé
@@ -148,11 +143,14 @@ namespace FNAEngine2D
         /// </summary>
         public List<Camera> ExtraCameras { get { return _extraCameras; } }
 
+        public IntPtr GameWindowHandle { get; set; }
+        public DateTime LastTimeActivated { get; set; }
+
 
         /// <summary>
         /// Constructeur
         /// </summary>
-        public InternalGameHost() //This is the constructor, this function is called whenever the game class is created.
+        public InternalGame() //This is the constructor, this function is called whenever the game class is created.
         {
             _graphics = new GraphicsDeviceManager(this);
 
@@ -215,14 +213,8 @@ namespace FNAEngine2D
         public void Quit()
         {
             //Check if modification in the designer before closing
-            if (_designer != null && !_designer.IsDisposed)
-            {
-                if (!_designer.ConfirmBeforeClose())
-                    return;
-
-                _designer.Close();
-                _designer = null;
-            }
+            if (!EditModeHelper.Quit())
+                return;
 
             this.Exit();
         }
@@ -233,11 +225,7 @@ namespace FNAEngine2D
         protected override void OnExiting(object sender, EventArgs args)
         {
             //Check if modification in the designer before closing
-            if (_designer != null && !_designer.IsDisposed)
-            {
-                if (!_designer.ConfirmBeforeClose(false))
-                    return;
-            }
+            EditModeHelper.Quit(false);
 
         }
 
@@ -265,6 +253,7 @@ namespace FNAEngine2D
             //Setup the mouse...
             this.IsMouseVisible = MouseManager.IsMouseVisible;
 
+
         }
 
         /// <summary>
@@ -288,6 +277,9 @@ namespace FNAEngine2D
             if (GameHost.DevelopmentMode)
                 ContentWatcher.StartWatchUpdateContent();
 
+
+            
+
             //_graphicsDevice.Viewport = new Viewport(0, 0, 100, 100);
 
         }
@@ -298,12 +290,17 @@ namespace FNAEngine2D
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         protected override void Update(GameTime gameTime)
-        {
+        {   
 
             //---------------
             // DEV MODE....
             if (GameHost.DevelopmentMode)
             {
+                //We will need the current main windows Win32
+                if (GameWindowHandle == IntPtr.Zero)
+                    GameWindowHandle = WindowHelper.GetMainWindowHandle();
+                if (this.IsActive)
+                    LastTimeActivated = DateTime.Now;
 
                 //Reload the content...
                 if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
@@ -311,41 +308,22 @@ namespace FNAEngine2D
                     _rootGameObject.RemoveAll();
                     _rootGameObject.Load();
 
-                    if (_designer != null && !_designer.IsDisposed)
-                        _designer.Reload();
+                    EditModeHelper.ReloadDesigner();
                 }
 
                 //Designer...
                 if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
                 {
-                    if (GameHost.EditMode)
+                    if (EditModeHelper.EditMode)
                     {
                         //We must close the designer...
-                        if(_designer != null && !_designer.IsDisposed)
-                        {
-                            if (_designer.ConfirmBeforeClose())
-                            {
-                                _designer.Close();
-                                _designer = null;
-                            }
-                        }
+                        EditModeHelper.HideDesigner();
                     }
                     else
                     {
                         //Opening the designer...
-                        if (_designer == null || _designer.IsDisposed)
-                        {
-                            _designer = new ContentDesigner();
-                        }
-
-                        //Restore/disply window...
-                        if (_designer.WindowState == FormWindowState.Minimized)
-                            _designer.WindowState = FormWindowState.Normal;
-
-                        _designer.Show();
-                        _designer.Focus();
-
-                        MouseManager.ShowMouse();
+                        EditModeHelper.ShowDesigner();
+                        
                     }
                 }
             }
@@ -367,7 +345,7 @@ namespace FNAEngine2D
 
 
             //In edit mode, we dont update the objects normally...
-            if (GameHost.EditMode)
+            if (EditModeHelper.EditMode && !EditModeHelper.IsGameRunning)
             {
                 EditModeHelper.ProcessUpdateEditMode();
             }
@@ -411,6 +389,31 @@ namespace FNAEngine2D
 
             //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// On activation for the form...
+        /// </summary>
+        protected override void OnActivated(object sender, EventArgs args)
+        {
+            if (EditModeHelper.EditMode)
+            {
+                //Reopening the designer forms and refocusing on ourself...
+                EditModeHelper.ShowDesigner(this.GameWindowHandle);
+            }
+
+            base.OnActivated(sender, args);
+        }
+
+        /// <summary>
+        /// On desactivation of the form
+        /// </summary>
+        protected override void OnDeactivated(object sender, EventArgs args)
+        {
+            //if (GameHost.EditMode)
+            //    EditModeHelper.HideDesigner();
+
+            base.OnDeactivated(sender, args);
         }
 
         /// <summary>
