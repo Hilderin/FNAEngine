@@ -12,17 +12,19 @@ namespace FNAEngine2D.Desginer
     internal class AngleControl : System.Windows.Forms.UserControl
     {
         // Stores the angle.
-        public double angle;
+        public float angle;
+        public float angleDeg;
         // Stores the rotation offset.
-        private int rotation = 0;
+        //private int rotation = 0;
         // Control state tracking variables.
         private int dbx = -10;
         private int dby = -10;
         private int overButton = -1;
 
-        public AngleControl(double initial_angle)
+        public AngleControl(float initial_angle)
         {
             this.angle = initial_angle;
+            this.angleDeg = GameMath.RadToDeg(initial_angle);
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         }
@@ -39,17 +41,18 @@ namespace FNAEngine2D.Desginer
             e.Graphics.FillEllipse(new SolidBrush(Color.SlateGray), originX - 1, originY - 1, 3, 3);
 
             // Draw angle markers.
-            int startangle = (270 - rotation) % 360;
-            e.Graphics.DrawString(startangle.ToString(), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 10, 10);
-            startangle = (startangle + 90) % 360;
-            e.Graphics.DrawString(startangle.ToString(), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), this.Width - 18, (this.Height / 2) - 6);
-            startangle = (startangle + 90) % 360;
-            e.Graphics.DrawString(startangle.ToString(), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 6, this.Height - 18);
-            startangle = (startangle + 90) % 360;
-            e.Graphics.DrawString(startangle.ToString(), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), 10, (this.Height / 2) - 6);
+            //int startangle = (270 - rotation) % 360;
+            e.Graphics.DrawString("0", new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 5, 14);
+            //startangle = (startangle + 90) % 360;
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(90), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), this.Width - 20, (this.Height / 2) - 6);
+            //startangle = (startangle + 90) % 360;
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(180), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 6, this.Height - 18);
+            //startangle = (startangle + 90) % 360;
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(270), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), 4, (this.Height / 2) - 6);
 
             // Draw line along the current angle.
-            double radians = ((((angle + rotation) + 360) % 360) * Math.PI) / (double)180;
+            //double radians = ((((angleDeg + rotation) + 360) % 360) * Math.PI) / (double)180;
+            double radians = GameMath.DegToRad(angleDeg) - GameMath.DegToRad(90);
             e.Graphics.DrawLine(new Pen(new SolidBrush(Color.Red), 1), originX, originY,
                 originX + (int)((double)originX * (double)Math.Cos(radians)),
                 originY + (int)((double)originY * (double)Math.Sin(radians)));
@@ -101,13 +104,19 @@ namespace FNAEngine2D.Desginer
             // Handle rotation adjustment button clicks.
             if (e.X >= this.Width - 28 && e.X <= this.Width - 2 && e.Y >= this.Height - 14 && e.Y <= this.Height - 2)
             {
+                
+                angle = GameMath.DegToRad(angleDeg);
+
                 if (e.X <= this.Width - 16)
-                    rotation -= 90;
+                    angleDeg = (angleDeg - 90) % 360;
                 else if (e.X >= this.Width - 14)
-                    rotation += 90;
-                if (rotation < 0)
-                    rotation += 360;
-                rotation = rotation % 360;
+                    angleDeg = (angleDeg + 90) % 360;
+                
+                if (angleDeg < 0)
+                    angleDeg += 360;
+
+                angle = GameMath.DegToRad(angleDeg);
+
                 dbx = -10;
                 dby = -10;
             }
@@ -159,7 +168,8 @@ namespace FNAEngine2D.Desginer
                 tmy = (this.Height / 2) + (int)((double)(my - (this.Height / 2)) * widthToHeightRatio);
 
             // Retrieve updated angle based on rise over run.
-            angle = (GetAngle(this.Width / 2, this.Height / 2, mx, tmy) - rotation) % 360;
+            angleDeg = (float)((GetAngle(this.Width / 2, this.Height / 2, mx, tmy) + 90) % 360);
+            angle = GameMath.DegToRad(angleDeg);
         }
 
         private double GetAngle(int x1, int y1, int x2, int y2)

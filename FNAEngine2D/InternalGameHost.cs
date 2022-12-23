@@ -18,7 +18,7 @@ namespace FNAEngine2D
     /// Game interne XNA avec le Initialize, LoadContent, Update et Draw
     /// </summary>
     internal class InternalGameHost : Microsoft.Xna.Framework.Game
-    {
+    {              
         /// <summary>
         /// Content Manager
         /// </summary>
@@ -318,19 +318,35 @@ namespace FNAEngine2D
                 //Designer...
                 if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
                 {
-                    if (_designer == null || _designer.IsDisposed)
+                    if (GameHost.EditMode)
                     {
-                        _designer = new ContentDesigner();
+                        //We must close the designer...
+                        if(_designer != null && !_designer.IsDisposed)
+                        {
+                            if (_designer.ConfirmBeforeClose())
+                            {
+                                _designer.Close();
+                                _designer = null;
+                            }
+                        }
                     }
+                    else
+                    {
+                        //Opening the designer...
+                        if (_designer == null || _designer.IsDisposed)
+                        {
+                            _designer = new ContentDesigner();
+                        }
 
-                    //Restore/disply window...
-                    if (_designer.WindowState == FormWindowState.Minimized)
-                        _designer.WindowState = FormWindowState.Normal;
+                        //Restore/disply window...
+                        if (_designer.WindowState == FormWindowState.Minimized)
+                            _designer.WindowState = FormWindowState.Normal;
 
-                    _designer.Show();
-                    _designer.Focus();
+                        _designer.Show();
+                        _designer.Focus();
 
-                    MouseManager.ShowMouse();
+                        MouseManager.ShowMouse();
+                    }
                 }
             }
 
@@ -349,12 +365,23 @@ namespace FNAEngine2D
             //Processing des mouses events...
             MouseManager.ProcessMouseEvents();
 
-            //Call du update du current game...
-            _rootGameObject.UpdateWithChildren();
+
+            //In edit mode, we dont update the objects normally...
+            if (GameHost.EditMode)
+            {
+                EditModeHelper.ProcessUpdateEditMode();
+            }
+            else
+            {
+                //Call du update du current game...
+                _rootGameObject.UpdateWithChildren();
+            }
 
             //Update the things FNA handles for us underneath the hood:
             base.Update(gameTime);
         }
+
+
 
         /// <summary>
         /// This is called when the game is ready to draw to the screen, it's also called each frame.

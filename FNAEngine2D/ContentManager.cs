@@ -27,7 +27,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Extensions for textures
         /// </summary>
-        private static string[] TEXTURES_EXTENSIONS = new string[]
+        public static string[] TEXTURES_EXTENSIONS = new string[]
         {
             ".aseprite", ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tga", ".tif", ".tiff"        //, ".dds"
         };
@@ -271,7 +271,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir le path de l'asset
         /// </summary>
-        private string GetAssetFullPath(string assetName, string[] acceptedExtensions)
+        public string GetAssetFullPath(string assetName, string[] acceptedExtensions)
         {
             /* On some platforms, name and slash direction matter.
 			 * We store the asset by a /-separating key rather than

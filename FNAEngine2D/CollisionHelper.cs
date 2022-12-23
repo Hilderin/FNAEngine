@@ -113,8 +113,7 @@ namespace FNAEngine2D
                                 else
                                     direction = CollisionDirection.MovingColliderOnBottom;
                             }
-
-                            if (movingColliderLocation.X <= collidesWithRectRight && movingColliderLocation.X >= collidesWithLocation.X)
+                            else if (movingColliderLocation.X <= collidesWithRectRight && movingColliderLocation.X >= collidesWithLocation.X)
                             {
                                 //On a aussi une collision sur la droite...
                                 if (collidesWithRectRight - movingColliderLocation.X < collidesWithRectBottom - movingColliderLocation.Y)
@@ -125,6 +124,7 @@ namespace FNAEngine2D
                             }
                             else
                             {
+                                //Vraiment juste en bas...
                                 direction = CollisionDirection.MovingColliderOnBottom;
                             }
                         }

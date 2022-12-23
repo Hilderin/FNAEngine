@@ -19,11 +19,11 @@ namespace FNAEngine2D
         /// </summary>
         public static float RadToDeg(float radians)
         {
-            float degrees = (180 / MathHelper.Pi) * radians;
-            while (degrees > 360)
-                degrees -= 360;
-            while (degrees < -360)
-                degrees += 360;
+            float degrees = (180 / MathHelper.Pi) * radians % 360;
+            //while (degrees > 360)
+            //    degrees -= 360;
+            //while (degrees < -360)
+            //    degrees += 360;
             return degrees;
         }
 

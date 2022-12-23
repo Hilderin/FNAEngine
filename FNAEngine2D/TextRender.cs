@@ -211,7 +211,7 @@ namespace FNAEngine2D
             else
                 _font = new Font(_fontName, FontSize);
 
-            _textUpdated = true;
+            Update();
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace FNAEngine2D
                     break;
             }
 
-            GameHost.SpriteBatch.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
+            GameHost.SpriteBatch.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.LayerDepth);
             //_font.DrawString(this.Text, this.Position, this.Color, this.Rotation, this.RotationOrigin);
         }
 

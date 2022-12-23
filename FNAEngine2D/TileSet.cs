@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,11 +25,6 @@ namespace FNAEngine2D
         private string _textureName;
 
         /// <summary>
-        /// Tileset
-        /// </summary>
-        public string TileSetName { get; set; }
-
-        /// <summary>
         /// Tile data
         /// </summary>
         public Tile[][] Tiles { get; set; }
@@ -45,7 +42,19 @@ namespace FNAEngine2D
         /// <summary>
         /// Texture for the tileset
         /// </summary>
-        public Texture2D Texture { get { return _texture.Data; } }
+        [Browsable(false)]
+        [JsonIgnore]
+        public Texture2D Texture
+        { 
+            get
+            {
+                if (_texture != null)
+                    return _texture.Data;
+                else
+                    return null;
+            }
+            
+        }
 
         /// <summary>
         /// TextureName
@@ -71,12 +80,31 @@ namespace FNAEngine2D
         /// <summary>
         /// Constructor
         /// </summary>
+        public TileSet()
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public TileSet(string textureName, int tileSize, int tileScreenSize, Tile[][] tiles)
         {
             this.TextureName = textureName;
             this.TileSize = tileSize;
             this.TileScreenSize = tileScreenSize;
             this.Tiles = tiles;
+        }
+
+        /// <summary>
+        /// Override of the ToString to display the TileSet name
+        /// </summary>
+        public override string ToString()
+        {
+            if (String.IsNullOrEmpty(_textureName))
+                return "TileSet";
+
+            return _textureName;
         }
 
 

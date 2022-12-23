@@ -59,6 +59,10 @@ namespace FNAEngine2D
         /// </summary>
         private Vector2 _size;
 
+        /// <summary>
+        /// Collidable object
+        /// </summary>
+        private bool _collidable = false;
 
 
         /// <summary>
@@ -95,6 +99,13 @@ namespace FNAEngine2D
                     return this.Name;
             }
         }
+
+        /// <summary>
+        /// LayerDepth of the object
+        /// </summary>
+        [Category("Layout")]
+        [DefaultValue(0f)]
+        public float LayerDepth { get; set; } = 0f;
 
         /// <summary>
         /// Indicate if GameObject is enabled (is disable, GameObject is not updated or drow)
@@ -178,7 +189,7 @@ namespace FNAEngine2D
         public float Width
         {
             get { return _size.X; }
-            set { _size.X = value; }
+            set { ResizeWidth(value - _size.X); }
         }
 
         /// <summary>
@@ -188,7 +199,7 @@ namespace FNAEngine2D
         public float Height
         {
             get { return (int)_size.Y; }
-            set { _size.Y = value; }
+            set { ResizeHeight(value - _size.Y); }
         }
 
         /// <summary>
@@ -320,6 +331,45 @@ namespace FNAEngine2D
                 }
             }
         }
+
+
+        /// <summary>
+        /// Collidable object
+        /// </summary>
+        [Category("Behavior")]
+        [DefaultValue(false)]
+        public bool Collidable
+        {
+            get { return _collidable; }
+            set
+            {
+                if (_collidable != value)
+                {
+                    if (value)
+                        EnableCollider();
+                    else
+                        DisableCollider();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public GameObject()
+        {
+        }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public GameObject(Rectangle bounds)
+        {
+            this.Bounds = bounds;
+        }
+
 
 
         /// <summary>
@@ -806,6 +856,8 @@ namespace FNAEngine2D
         /// </summary>
         public GameObject EnableCollider()
         {
+            _collidable = true;
+
             //Already enabled?
             if (_collider != null)
                 return this;
@@ -826,6 +878,31 @@ namespace FNAEngine2D
 
             return this;
         }
+
+
+        /// <summary>
+        /// Disable the collider
+        /// </summary>
+        public GameObject DisableCollider()
+        {
+            _collidable = false;
+
+            //Already disabled?
+            if (_collider == null)
+                return this;
+
+            //RootGameObject is never really added anywhere...
+            if (this == GameHost.RootGameObject)
+                throw new InvalidOperationException("Impossible to enable collider on root game object.");
+
+
+            GetColliderContainer().Remove(_collider);
+
+            _collider = null;
+
+            return this;
+        }
+
 
         /// <summary>
         /// Permet d'obtenir la première collision
@@ -859,6 +936,19 @@ namespace FNAEngine2D
         public Collision GetCollision(float nextX, float nextY, Type[] types)
         {
             return GetCollision(new Vector2(nextX, nextY), types);
+        }
+
+        /// <summary>
+        /// Permet d'obtenir la première collision
+        /// </summary>
+        public Collision GetCollision(Vector2 position, Vector2 size, Type[] types)
+        {
+            ColliderContainer container = GetColliderContainer();
+
+            if (container.IsEmpty)
+                return null;
+
+            return container.GetCollision(position, size, _collider, types);
         }
 
         ///// <summary>

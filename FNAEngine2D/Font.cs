@@ -58,9 +58,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Render le text
         /// </summary>
-        public void DrawString(string text, Vector2 position, Color color, float rotation, Vector2 origin)
+        public void DrawString(string text, Vector2 position, Color color, float rotation, Vector2 origin, float layerDepth)
         {
-            GameHost.SpriteBatch.DrawString(_font, text, position, color, rotation, origin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0f);
+            GameHost.SpriteBatch.DrawString(_font, text, position, color, rotation, origin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, layerDepth);
         }
 
     }

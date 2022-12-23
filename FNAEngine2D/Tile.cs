@@ -11,16 +11,16 @@ namespace FNAEngine2D
     /// </summary>
     public class Tile
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int Col { get; set; }
+        public int Row { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public Tile(int x, int y)
+        public Tile(int col, int row)
         {
-            X = x;
-            Y = y;
+            Col = col;
+            Row = row;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace FNAEngine2D
         /// </summary>
         public override string ToString()
         {
-            return this.X.ToString() + ", " + this.Y.ToString();
+            return this.Col.ToString() + ", " + this.Row.ToString();
         }
     }
 }

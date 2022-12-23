@@ -37,14 +37,14 @@ namespace FNAEngine2D.Desginer
             if (edSvc != null)
             {
                 // Display an angle selection control and retrieve the value.
-                AngleControl angleControl = new AngleControl(Convert.ToDouble(value));
+                AngleControl angleControl = new AngleControl(Convert.ToSingle(value));
                 edSvc.DropDownControl(angleControl);
 
                 // Return the value in the appropraite data format.
                 if (value.GetType() == typeof(double))
-                    return angleControl.angle;
+                    return (double)angleControl.angle;
                 else if (value.GetType() == typeof(float))
-                    return (float)angleControl.angle;
+                    return angleControl.angle;
                 else if (value.GetType() == typeof(int))
                     return (int)angleControl.angle;
             }
@@ -63,7 +63,8 @@ namespace FNAEngine2D.Desginer
             e.Graphics.FillEllipse(new SolidBrush(Color.SlateGray), normalX + e.Bounds.X - 1, normalY + e.Bounds.Y - 1, 3, 3);
 
             // Draw line along the current angle.
-            double radians = (Convert.ToDouble(e.Value) * Math.PI) / (double)180;
+            //double radians = (Convert.ToDouble(e.Value) * Math.PI) / (double)180;
+            double radians = Convert.ToDouble(e.Value) - GameMath.DegToRad(90);
             e.Graphics.DrawLine(new Pen(new SolidBrush(Color.Red), 1), normalX + e.Bounds.X, normalY + e.Bounds.Y,
                 e.Bounds.X + (normalX + (int)((double)normalX * Math.Cos(radians))),
                 e.Bounds.Y + (normalY + (int)((double)normalY * Math.Sin(radians))));

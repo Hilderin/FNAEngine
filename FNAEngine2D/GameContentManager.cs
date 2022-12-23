@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -208,6 +209,9 @@ namespace FNAEngine2D
 
             Type type = gameObject.GetType();
 
+            string json = JsonConvert.SerializeObject(obj);
+            object newObj = JsonConvert.DeserializeObject(json, type);
+
             //Copy values...
             foreach (KeyValuePair<string, object> kv in obj)
             {
@@ -215,66 +219,89 @@ namespace FNAEngine2D
                 if (kv.Key == "ClassName")
                     continue;
 
-                PropertyInfo prop =  type.GetProperty(kv.Key);
+                PropertyInfo prop = type.GetProperty(kv.Key);
 
                 if (prop == null || !prop.CanWrite)
                     continue;
 
-                object val;
-                try
-                {
-                    //If already the good type, we keep it!
-                    if (kv.Value.GetType() == prop.PropertyType)
-                    {
-                        val = kv.Value;
-                    }
-                    else
-                    {
-                        if (prop.PropertyType.IsEnum)
-                        {
-                            val = Enum.Parse(prop.PropertyType, kv.Value.ToString());
-                        }
-                        else if (prop.PropertyType == typeof(Color))
-                        {
-                            val = CreateColor(kv.Value.ToString());
-                        }
-                        else if (prop.PropertyType == typeof(Vector2))
-                        {
-                            val = CreateVector2(kv.Value.ToString());
-                        }
-                        else
-                        {
-                            val = Convert.ChangeType(kv.Value, prop.PropertyType);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new FormatException("Impossible to convert '" + kv.Value + ", to type: " + prop.PropertyType.Name + ", error: " + ex.ToString());
-                }
-
-
-                //For some props, we mush do special tricks for already existing objects...
-                switch (kv.Key)
-                {
-                    case "X":
-                        gameObject.TranslateX((float)val - gameObject.X);
-                        break;
-                    case "Y":
-                        gameObject.TranslateY((float)val - gameObject.Y);
-                        break;
-                    case "Width":
-                        gameObject.ResizeWidth((float)val - gameObject.Width);
-                        break;
-                    case "Height":
-                        gameObject.ResizeHeight((float)val - gameObject.Height);
-                        break;
-                    default:
-                        prop.SetValue(gameObject, val);
-                        break;
-                }
+                //Copy of value....
+                prop.SetValue(gameObject, prop.GetValue(newObj));
 
             }
+
+            ////Copy values...
+            //foreach (KeyValuePair<string, object> kv in obj)
+            //{
+            //    //On skip ClassName...
+            //    if (kv.Key == "ClassName")
+            //        continue;
+
+            //    PropertyInfo prop =  type.GetProperty(kv.Key);
+
+            //    if (prop == null || !prop.CanWrite)
+            //        continue;
+
+            //    object val;
+            //    try
+            //    {
+            //        //If already the good type, we keep it!
+            //        //When we save the content in the ContentDesigner, the prop are not serialized in the GameContentObject, so if we reload the Container,
+            //        //we will already have the correct type.
+            //        if (kv.Value == null)
+            //        {
+            //            val = null;
+            //        }
+            //        else if (kv.Value.GetType() == prop.PropertyType)
+            //        {
+            //            val = kv.Value;
+            //        }
+            //        else
+            //        {
+            //            if (prop.PropertyType.IsEnum)
+            //            {
+            //                val = Enum.Parse(prop.PropertyType, kv.Value.ToString());
+            //            }
+            //            else if (prop.PropertyType == typeof(Color))
+            //            {
+            //                val = CreateColor(kv.Value.ToString());
+            //            }
+            //            else if (prop.PropertyType == typeof(Vector2))
+            //            {
+            //                val = CreateVector2(kv.Value.ToString());
+            //            }
+            //            else
+            //            {
+            //                val = Convert.ChangeType(kv.Value, prop.PropertyType);
+            //            }
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new FormatException("Impossible to convert '" + kv.Value + ", to type: " + prop.PropertyType.Name + ", error: " + ex.ToString());
+            //    }
+
+
+            //    //For some props, we mush do special tricks for already existing objects...
+            //    switch (kv.Key)
+            //    {
+            //        case "X":
+            //            gameObject.TranslateX((float)val - gameObject.X);
+            //            break;
+            //        case "Y":
+            //            gameObject.TranslateY((float)val - gameObject.Y);
+            //            break;
+            //        case "Width":
+            //            gameObject.ResizeWidth((float)val - gameObject.Width);
+            //            break;
+            //        case "Height":
+            //            gameObject.ResizeHeight((float)val - gameObject.Height);
+            //            break;
+            //        default:
+            //            prop.SetValue(gameObject, val);
+            //            break;
+            //    }
+
+            //}
 
         }
 

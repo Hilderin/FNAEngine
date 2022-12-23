@@ -78,6 +78,7 @@
     <Compile Include="Desginer\AngleControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Desginer\TileSetEditor.cs" />
     <Compile Include="Desginer\AngleEditor.cs" />
     <Compile Include="Desginer\ContentDesigner.cs">
       <SubType>Form</SubType>
@@ -85,6 +86,13 @@
     <Compile Include="Desginer\ContentDesigner.Designer.cs">
       <DependentUpon>ContentDesigner.cs</DependentUpon>
     </Compile>
+    <Compile Include="Desginer\TileSetEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Desginer\TileSetEditorForm.Designer.cs">
+      <DependentUpon>TileSetEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditModeHelper.cs" />
     <Compile Include="GameObjectTypesLoader.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="Font.cs" />
@@ -123,6 +131,7 @@
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="Sprite.cs" />
+    <Compile Include="TileGameObject.cs" />
     <Compile Include="TileSet.cs" />
     <Compile Include="TileSetRender.cs" />
     <Compile Include="Vector2Extensions.cs" />
@@ -146,6 +155,9 @@
     <EmbeddedResource Include="Desginer\ContentDesigner.resx">
       <DependentUpon>ContentDesigner.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Desginer\TileSetEditorForm.resx">
+      <DependentUpon>TileSetEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
@@ -157,6 +169,8 @@
     <None Include="Resources\pixel.bin" />
     <None Include="Resources\pixel_magenta.bin" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\imgDelete.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

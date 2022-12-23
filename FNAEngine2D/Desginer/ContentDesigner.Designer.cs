@@ -39,6 +39,8 @@
             this.lstGameObjectTypes = new System.Windows.Forms.ListView();
             this.colFullName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cboGameObjects = new System.Windows.Forms.ComboBox();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnPausePlay = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -56,7 +58,7 @@
             this.cboGameContentContainer.FormattingEnabled = true;
             this.cboGameContentContainer.Location = new System.Drawing.Point(1, 16);
             this.cboGameContentContainer.Name = "cboGameContentContainer";
-            this.cboGameContentContainer.Size = new System.Drawing.Size(330, 21);
+            this.cboGameContentContainer.Size = new System.Drawing.Size(328, 21);
             this.cboGameContentContainer.TabIndex = 1;
             this.cboGameContentContainer.ValueMember = "AssetName";
             this.cboGameContentContainer.SelectedIndexChanged += new System.EventHandler(this.cboGameContentContainer_SelectedIndexChanged);
@@ -82,7 +84,7 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(261, 664);
+            this.btnSave.Location = new System.Drawing.Point(261, 670);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(73, 23);
             this.btnSave.TabIndex = 4;
@@ -106,7 +108,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGrid.Location = new System.Drawing.Point(1, 39);
             this.propertyGrid.Name = "propertyGrid";
-            this.propertyGrid.Size = new System.Drawing.Size(330, 292);
+            this.propertyGrid.Size = new System.Drawing.Size(330, 295);
             this.propertyGrid.TabIndex = 7;
             this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
             // 
@@ -128,11 +130,12 @@
             // 
             // splitContainer.Panel2
             // 
+            this.splitContainer.Panel2.Controls.Add(this.btnDelete);
             this.splitContainer.Panel2.Controls.Add(this.cboGameObjects);
             this.splitContainer.Panel2.Controls.Add(this.propertyGrid);
             this.splitContainer.Panel2.Controls.Add(this.label2);
-            this.splitContainer.Size = new System.Drawing.Size(331, 660);
-            this.splitContainer.SplitterDistance = 323;
+            this.splitContainer.Size = new System.Drawing.Size(331, 666);
+            this.splitContainer.SplitterDistance = 326;
             this.splitContainer.TabIndex = 8;
             // 
             // lstGameObjectTypes
@@ -147,7 +150,7 @@
             this.lstGameObjectTypes.HideSelection = false;
             this.lstGameObjectTypes.Location = new System.Drawing.Point(0, 63);
             this.lstGameObjectTypes.Name = "lstGameObjectTypes";
-            this.lstGameObjectTypes.Size = new System.Drawing.Size(331, 264);
+            this.lstGameObjectTypes.Size = new System.Drawing.Size(329, 264);
             this.lstGameObjectTypes.TabIndex = 4;
             this.lstGameObjectTypes.UseCompatibleStateImageBehavior = false;
             this.lstGameObjectTypes.View = System.Windows.Forms.View.Details;
@@ -169,16 +172,39 @@
             this.cboGameObjects.FormattingEnabled = true;
             this.cboGameObjects.Location = new System.Drawing.Point(0, 16);
             this.cboGameObjects.Name = "cboGameObjects";
-            this.cboGameObjects.Size = new System.Drawing.Size(330, 21);
+            this.cboGameObjects.Size = new System.Drawing.Size(307, 21);
             this.cboGameObjects.TabIndex = 8;
             this.cboGameObjects.ValueMember = "DisplayName";
             this.cboGameObjects.SelectedIndexChanged += new System.EventHandler(this.cboGameObjects_SelectedIndexChanged);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDelete.Image = global::FNAEngine2D.Resource.imgDelete;
+            this.btnDelete.Location = new System.Drawing.Point(308, 15);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(21, 23);
+            this.btnDelete.TabIndex = 9;
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // btnPausePlay
+            // 
+            this.btnPausePlay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnPausePlay.Location = new System.Drawing.Point(3, 670);
+            this.btnPausePlay.Name = "btnPausePlay";
+            this.btnPausePlay.Size = new System.Drawing.Size(73, 23);
+            this.btnPausePlay.TabIndex = 9;
+            this.btnPausePlay.Text = "&Play";
+            this.btnPausePlay.UseVisualStyleBackColor = true;
+            this.btnPausePlay.Click += new System.EventHandler(this.btnPausePlay_Click);
             // 
             // ContentDesigner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(339, 691);
+            this.ClientSize = new System.Drawing.Size(339, 697);
+            this.Controls.Add(this.btnPausePlay);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.splitContainer);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -186,7 +212,9 @@
             this.Name = "ContentDesigner";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Content designer";
+            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ContentDesigner_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ContentDesigner_FormClosed);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);
@@ -208,5 +236,7 @@
         private System.Windows.Forms.ListView lstGameObjectTypes;
         private System.Windows.Forms.ColumnHeader colFullName;
         private System.Windows.Forms.ComboBox cboGameObjects;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnPausePlay;
     }
 }

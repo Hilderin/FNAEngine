@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,12 @@ namespace FNAEngine2D.Desginer
 {
     public partial class ContentDesigner : Form
     {
+
+        /// <summary>
+        /// Current ContentDesigner
+        /// </summary>
+        public static ContentDesigner Current;
+
         /// <summary>
         /// Types of all game object
         /// </summary>
@@ -39,12 +46,25 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private bool _isDirty = false;
 
+
+        /// <summary>
+        /// Current game object in edition
+        /// </summary>
+        public GameObject CurrentGameObject { get { return (GameObject)propertyGrid.SelectedObject; } }
+
+
         /// <summary>
         /// Constructor
         /// </summary>
         public ContentDesigner()
         {
             InitializeComponent();
+
+            //Enabling the edit mode...
+            GameHost.EditMode = true;
+
+            //Current ContentDesigner...
+            Current = this;
 
 
             //Populate game object types...
@@ -58,6 +78,12 @@ namespace FNAEngine2D.Desginer
 
             //Load the components...
             Reload();
+
+        }
+
+
+        public void ReloadContentContainer()
+        {
 
         }
 
@@ -129,10 +155,18 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void ReloadGameObjectsFromContainer()
         {
+
+            _gameObjects = new List<GameObject>();
             if (_currentContainer != null)
-                _gameObjects = _currentContainer.FindAll(o => true);
-            else
-                _gameObjects = new List<GameObject>();
+            {
+                //We add only objet in the root of container
+                for (int index = 0; index < _currentContainer.NbChildren; index++)
+                {
+                    _gameObjects.Add(_currentContainer.Get(index));
+                }
+            }
+            
+                
 
             cboGameObjects.DataSource = _gameObjects;
 
@@ -187,6 +221,51 @@ namespace FNAEngine2D.Desginer
 
                 cboGameObjects.SelectedItem = obj;
 
+                SetDirty(true);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        /// <summary>
+        /// Delete a gameobject
+        /// </summary>
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (cboGameObjects.SelectedItem != null)
+                    RemoveGameObject((GameObject)cboGameObjects.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Add a game object on scene
+        /// </summary>
+        private void RemoveGameObject(GameObject gameObject)
+        {
+            try
+            {
+                if (_currentContainer == null)
+                {
+                    MessageBox.Show("No Container selected.", "Remove impossible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+
+                _currentContainer.Remove(gameObject);
+
+                ReloadGameObjectsFromContainer();
+
+                SetDirty(true);
             }
             catch (Exception ex)
             {
@@ -201,7 +280,16 @@ namespace FNAEngine2D.Desginer
         private void cboGameObjects_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboGameObjects.SelectedItem != null)
+            {
                 propertyGrid.SelectedObject = cboGameObjects.SelectedItem;
+
+                if (TileSetEditorForm.Current != null && cboGameObjects.SelectedItem is TileSetRender)
+                {
+                    TileSetEditorForm.Current.Close();
+                    TileSetEditorForm newForm = new TileSetEditorForm(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
+                    newForm.Show();
+                }
+            }
         }
 
         /// <summary>
@@ -245,7 +333,7 @@ namespace FNAEngine2D.Desginer
         /// <summary>
         /// Set the IsDirty
         /// </summary>
-        private void SetDirty(bool dirty)
+        public void SetDirty(bool dirty)
         {
 
             _isDirty = dirty;
@@ -276,7 +364,7 @@ namespace FNAEngine2D.Desginer
                 string fullPath = Path.Combine(GameHost.InternalGameHost.ContentManager.RootDirectory, _currentContainer.AssetName + ".json").Replace('\\', '/');
 
                 //Disable watching to prevent double reloading...
-                //ContentWatcher.Enabled = false;
+                ContentWatcher.Enabled = false;
 
                 //Creation of the content...
                 GameContent gameContent = _currentContainer.GameContent.Data;
@@ -312,10 +400,10 @@ namespace FNAEngine2D.Desginer
                 MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            //finally
-            //{
-            //    ContentWatcher.Enabled = true;
-            //}
+            finally
+            {
+                ContentWatcher.Enabled = true;
+            }
         }
 
         /// <summary>
@@ -340,6 +428,8 @@ namespace FNAEngine2D.Desginer
                 }
             }
 
+            _currentContainer = (GameContentContainer)cboGameContentContainer.SelectedItem;
+
             ReloadGameObjectsFromContainer();
 
         }
@@ -351,6 +441,33 @@ namespace FNAEngine2D.Desginer
         {
             if (!ConfirmBeforeClose())
                 e.Cancel = true;
+        }
+
+        /// <summary>
+        /// Form closed
+        /// </summary>
+        private void ContentDesigner_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Current = null;
+
+            if (TileSetEditorForm.Current != null)
+            {
+                TileSetEditorForm.Current.Close();
+                TileSetEditorForm.Current = null;
+            }
+
+            //Disabling the edit mode...
+            GameHost.EditMode = false;
+        }
+
+        /// <summary>
+        /// Resume or pause the game in edit mode
+        /// </summary>
+        private void btnPausePlay_Click(object sender, EventArgs e)
+        {
+            GameHost.EditMode = !GameHost.EditMode;
+
+            btnPausePlay.Text = GameHost.EditMode ? "&Play" : "&Pause";
         }
     }
 }
