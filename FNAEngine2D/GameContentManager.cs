@@ -206,22 +206,21 @@ namespace FNAEngine2D
         /// </summary>
         private static void ApplyGameObjectProperties(GameObject gameObject, GameContentObject obj)
         {
+            if (obj.Props == null)
+                return;
 
             Type type = gameObject.GetType();
 
-            string json = JsonConvert.SerializeObject(obj);
+            string json = JsonConvert.SerializeObject(obj.Props);
             object newObj = JsonConvert.DeserializeObject(json, type);
 
             //Copy values...
-            foreach (KeyValuePair<string, object> kv in obj)
+            foreach (PropertyInfo prop in type.GetProperties())
             {
-                //On skip ClassName...
-                if (kv.Key == "ClassName")
+                if (!prop.CanWrite)
                     continue;
 
-                PropertyInfo prop = type.GetProperty(kv.Key);
-
-                if (prop == null || !prop.CanWrite)
+                if (prop.GetCustomAttribute<JsonIgnoreAttribute>() != null)
                     continue;
 
                 //Copy of value....
@@ -229,82 +228,7 @@ namespace FNAEngine2D
 
             }
 
-            ////Copy values...
-            //foreach (KeyValuePair<string, object> kv in obj)
-            //{
-            //    //On skip ClassName...
-            //    if (kv.Key == "ClassName")
-            //        continue;
-
-            //    PropertyInfo prop =  type.GetProperty(kv.Key);
-
-            //    if (prop == null || !prop.CanWrite)
-            //        continue;
-
-            //    object val;
-            //    try
-            //    {
-            //        //If already the good type, we keep it!
-            //        //When we save the content in the ContentDesigner, the prop are not serialized in the GameContentObject, so if we reload the Container,
-            //        //we will already have the correct type.
-            //        if (kv.Value == null)
-            //        {
-            //            val = null;
-            //        }
-            //        else if (kv.Value.GetType() == prop.PropertyType)
-            //        {
-            //            val = kv.Value;
-            //        }
-            //        else
-            //        {
-            //            if (prop.PropertyType.IsEnum)
-            //            {
-            //                val = Enum.Parse(prop.PropertyType, kv.Value.ToString());
-            //            }
-            //            else if (prop.PropertyType == typeof(Color))
-            //            {
-            //                val = CreateColor(kv.Value.ToString());
-            //            }
-            //            else if (prop.PropertyType == typeof(Vector2))
-            //            {
-            //                val = CreateVector2(kv.Value.ToString());
-            //            }
-            //            else
-            //            {
-            //                val = Convert.ChangeType(kv.Value, prop.PropertyType);
-            //            }
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw new FormatException("Impossible to convert '" + kv.Value + ", to type: " + prop.PropertyType.Name + ", error: " + ex.ToString());
-            //    }
-
-
-            //    //For some props, we mush do special tricks for already existing objects...
-            //    switch (kv.Key)
-            //    {
-            //        case "X":
-            //            gameObject.TranslateX((float)val - gameObject.X);
-            //            break;
-            //        case "Y":
-            //            gameObject.TranslateY((float)val - gameObject.Y);
-            //            break;
-            //        case "Width":
-            //            gameObject.ResizeWidth((float)val - gameObject.Width);
-            //            break;
-            //        case "Height":
-            //            gameObject.ResizeHeight((float)val - gameObject.Height);
-            //            break;
-            //        default:
-            //            prop.SetValue(gameObject, val);
-            //            break;
-            //    }
-
-            //}
-
         }
-
 
         /// <summary>
         /// Get the GameContentObject from a GameObject
@@ -316,41 +240,9 @@ namespace FNAEngine2D
 
             GameContentObject gameContentObject = new GameContentObject();
 
+            gameContentObject.ClassName = type.Name;
 
-            gameContentObject["ClassName"] = type.Name;
-
-
-            //Copy values...
-            foreach(PropertyInfo prop in type.GetProperties())
-            {
-                object value = prop.GetValue(gameObject);
-
-                BrowsableAttribute browsableAttr = prop.GetCustomAttribute<BrowsableAttribute>();
-                if (browsableAttr != null && !browsableAttr.Browsable)
-                    //Not visible to the user, we skip..
-                    continue;
-
-                DefaultValueAttribute defaultValueAttr = prop.GetCustomAttribute<DefaultValueAttribute>();
-                if (defaultValueAttr != null)
-                {
-                    if (defaultValueAttr.Value == null)
-                    {
-                        //Default value, we skip..
-                        if (value == null)
-                            continue;
-                    }
-                    else if (defaultValueAttr.Value.Equals(value))
-                    {
-                        //Default value, we skip..
-                        continue;
-                    }
-                }
-
-                gameContentObject[prop.Name] = value;
-
-            }
-
-            //gameContentObject.Props = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(gameObject));
+            gameContentObject.Props = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(gameObject));
 
             return gameContentObject;
 

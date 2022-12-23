@@ -1,5 +1,6 @@
 ﻿using FNAEngine2D.Desginer;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -69,12 +70,14 @@ namespace FNAEngine2D
         /// RootGameObject
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public GameObject RootGameObject;
 
         /// <summary>
         /// Parent GameObject
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public GameObject Parent;
 
         /// <summary>
@@ -87,7 +90,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Display name for the Designer
         /// </summary>
-        [BrowsableAttribute(false)]
+        [Browsable(false)]
+        [JsonIgnore]
         public string DisplayName
         {
             get
@@ -146,6 +150,7 @@ namespace FNAEngine2D
         /// Bounds
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public Rectangle Bounds
         {
             get { return new Rectangle((int)_location.X, (int)_location.Y, (int)_size.X, (int)_size.Y); }
@@ -160,6 +165,7 @@ namespace FNAEngine2D
         /// Position X
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float X
         {
             get { return _location.X; }
@@ -173,6 +179,7 @@ namespace FNAEngine2D
         /// Position Y
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float Y
         {
             get { return _location.Y; }
@@ -186,6 +193,7 @@ namespace FNAEngine2D
         /// Width
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float Width
         {
             get { return _size.X; }
@@ -196,6 +204,7 @@ namespace FNAEngine2D
         /// Height
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float Height
         {
             get { return (int)_size.Y; }
@@ -206,6 +215,7 @@ namespace FNAEngine2D
         /// Right
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float Right
         {
             get { return _location.X + _size.X; }
@@ -216,6 +226,7 @@ namespace FNAEngine2D
         /// Bottom
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float Bottom
         {
             get { return _location.Y + _size.Y; }
@@ -232,28 +243,6 @@ namespace FNAEngine2D
             set { TranslateTo(value); }
         }
 
-        ///// <summary>
-        ///// Position
-        ///// </summary>
-        //public Vector2 Position
-        //{
-        //    get { return new Vector2(this.X, this.Y); }
-        //    set
-        //    {
-        //        this.Bounds.X = (int)value.X;
-        //        this.Bounds.Y = (int)value.Y;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Rectangle
-        ///// </summary>
-        //public Rectangle Rectangle
-        //{
-        //    get { return this.Bounds; }
-        //    set { this.Bounds = value; }
-        //}
-
         /// <summary>
         /// Size
         /// </summary>
@@ -269,6 +258,7 @@ namespace FNAEngine2D
         /// Center en X
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float CenterX
         {
             get { return _location.X + (_size.X / 2); }
@@ -278,6 +268,7 @@ namespace FNAEngine2D
         /// Center en Y
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public float CenterY
         {
             get { return _location.Y + (_size.Y / 2); }
@@ -295,6 +286,7 @@ namespace FNAEngine2D
         /// Count des childrens
         /// </summary>
         [Browsable(false)]
+        [JsonIgnore]
         public int NbChildren
         {
             get { return _childrens.Count; }
@@ -313,6 +305,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Layout")]
         [DefaultValue(0)]
+        [JsonIgnore]
         public int ChildIndex
         {
             get

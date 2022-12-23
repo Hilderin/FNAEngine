@@ -9,26 +9,17 @@ namespace FNAEngine2D
     /// <summary>
     /// Definition of a GameObject
     /// </summary>
-    public class GameContentObject: Dictionary<string, object>
+    public class GameContentObject
     {
         /// <summary>
         /// Class name of the game objet
         /// </summary>
-        public string ClassName
-        {
-            get
-            {
-                if (this.TryGetValue("ClassName", out var className))
-                    return className.ToString();
-                return String.Empty;
-            }
-        }
+        public string ClassName { get; set; }
 
         /// <summary>
-        /// Props of the GameObject
+        /// Properties
         /// </summary>
-        public Dictionary<string, object> Props { get; set; }
-
+        public Dictionary<string, object> Props;
 
     }
 }

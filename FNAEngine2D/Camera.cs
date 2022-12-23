@@ -58,7 +58,7 @@ namespace FNAEngine2D
         /// <summary>
         /// SpriteSortMode
         /// </summary>
-        public SpriteSortMode SpriteSortMode { get; set; } = SpriteSortMode.FrontToBack;
+        public SpriteSortMode SpriteSortMode { get; set; } = SpriteSortMode.Immediate;
 
         /// <summary>
         /// Blend state of textures

@@ -42,6 +42,11 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private bool _isDirty = false;
 
+        /// <summary>
+        /// Loading in progress
+        /// </summary>
+        private bool _loadingSelectedGameObject = true;
+
 
         /// <summary>
         /// Constructor
@@ -153,9 +158,17 @@ namespace FNAEngine2D.Desginer
                 }
             }
 
+            try
+            {
+                _loadingSelectedGameObject = true;
+                cboGameObjects.DataSource = _gameObjects;
 
 
-            cboGameObjects.DataSource = _gameObjects;
+            }
+            finally
+            {
+                _loadingSelectedGameObject = false;
+            }
 
             if (_gameObjects.Count > 0)
             {
@@ -273,13 +286,16 @@ namespace FNAEngine2D.Desginer
                 propertyGrid.SelectedObject = cboGameObjects.SelectedItem;
                 EditModeHelper.SelectedGameObject = (GameObject)cboGameObjects.SelectedItem;
 
-                if (EditModeHelper.IsTileSetEditorOpened)
+                if (!_loadingSelectedGameObject)
                 {
-                    if (cboGameObjects.SelectedItem is TileSetRender)
-                        //Reopenning the tileset editor for the new tileset...
-                        EditModeHelper.ShowTileSetEditor(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
-                    else
-                        EditModeHelper.HideTileSetEditor();
+                    if (EditModeHelper.IsTileSetEditorOpened)
+                    {
+                        if (cboGameObjects.SelectedItem is TileSetRender)
+                            //Reopenning the tileset editor for the new tileset...
+                            EditModeHelper.ShowTileSetEditor(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
+                        else
+                            EditModeHelper.HideTileSetEditor();
+                    }
                 }
             }
             else
@@ -288,9 +304,12 @@ namespace FNAEngine2D.Desginer
                 propertyGrid.SelectedObject = null;
                 EditModeHelper.SelectedGameObject = null;
 
-                if (EditModeHelper.IsTileSetEditorOpened)
+                if (!_loadingSelectedGameObject)
                 {
-                    EditModeHelper.HideTileSetEditor();
+                    if (EditModeHelper.IsTileSetEditorOpened)
+                    {
+                        EditModeHelper.HideTileSetEditor();
+                    }
                 }
             }
         }
@@ -309,11 +328,18 @@ namespace FNAEngine2D.Desginer
 
                     if (e.ChangedItem.PropertyDescriptor.Name == "Name")
                     {
-
-                        object oldSelected = cboGameObjects.SelectedItem;
-                        cboGameObjects.DataSource = null;
-                        cboGameObjects.DataSource = _gameObjects;
-                        cboGameObjects.SelectedItem = oldSelected;
+                        try
+                        {
+                            _loadingSelectedGameObject = true;
+                            object oldSelected = cboGameObjects.SelectedItem;
+                            cboGameObjects.DataSource = null;
+                            cboGameObjects.DataSource = _gameObjects;
+                            cboGameObjects.SelectedItem = oldSelected;
+                        }
+                        finally
+                        {
+                            _loadingSelectedGameObject = false;
+                        }
                     }
 
                     SetDirty(true);

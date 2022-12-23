@@ -133,6 +133,7 @@
     <Compile Include="Sprite.cs" />
     <Compile Include="TileGameObject.cs" />
     <Compile Include="TileSet.cs" />
+    <Compile Include="TilesJsonConverter.cs" />
     <Compile Include="TileSetRender.cs" />
     <Compile Include="Vector2Extensions.cs" />
     <Compile Include="VectorHelper.cs" />

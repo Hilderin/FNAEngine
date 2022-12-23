@@ -27,6 +27,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Tile data
         /// </summary>
+        [JsonConverter(typeof(TilesJsonConverter))]
         public Tile[][] Tiles { get; set; }
 
         /// <summary>
