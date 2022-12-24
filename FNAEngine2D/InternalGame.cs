@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Content;
 using FNAEngine2D.Desginer;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 
 namespace FNAEngine2D
 {
@@ -34,10 +35,10 @@ namespace FNAEngine2D
         /// </summary>
         private GraphicsDevice _graphicsDevice;
 
-        /// <summary>
-        /// Current rendering camera
-        /// </summary>
-        private Camera _currentCamera;
+        ///// <summary>
+        ///// Current rendering camera
+        ///// </summary>
+        //private Camera _currentCamera;
 
         /// <summary>
         /// Game actuellement en train de rouler
@@ -48,6 +49,11 @@ namespace FNAEngine2D
         /// Default Camera
         /// </summary>
         private Camera _mainCamera;
+
+        /// <summary>
+        /// Timer to calculate time for frames
+        /// </summary>
+        private Stopwatch _internalTimer = Stopwatch.StartNew();
 
         /// <summary>
         /// Taille de l'écran
@@ -63,7 +69,7 @@ namespace FNAEngine2D
         /// List of the other cameras on the scene
         /// </summary>
         private List<Camera> _extraCameras = new List<Camera>();
-
+        
         /// <summary>
         /// Indique si l'objet est initialisé
         /// </summary>
@@ -103,10 +109,10 @@ namespace FNAEngine2D
             set { _mainCamera = value; }
         }
 
-        /// <summary>
-        /// Current camera that is rendering
-        /// </summary>
-        public Camera CurrentCamera { get { return _currentCamera; } }
+        ///// <summary>
+        ///// Current camera that is rendering
+        ///// </summary>
+        //public Camera CurrentCamera { get { return _currentCamera; } }
 
         /// <summary>
         /// Width
@@ -290,7 +296,9 @@ namespace FNAEngine2D
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         protected override void Update(GameTime gameTime)
-        {   
+        {
+
+            _internalTimer.Restart();
 
             //---------------
             // DEV MODE....
@@ -357,6 +365,10 @@ namespace FNAEngine2D
 
             //Update the things FNA handles for us underneath the hood:
             base.Update(gameTime);
+
+            //We keep the last Update time
+            //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
+            GameHost.LastFrameUpdateTimeMilliseconds = _internalTimer.ElapsedTicks * (1M / Stopwatch.Frequency) / 1000;
         }
 
 
@@ -389,6 +401,14 @@ namespace FNAEngine2D
 
             //Draw the things FNA handles for us underneath the hood:
             base.Draw(gameTime);
+
+            //We keep the last Draw time
+            _internalTimer.Stop();
+
+            //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
+            GameHost.LastFrameTimeMilliseconds = _internalTimer.ElapsedTicks * (1M / Stopwatch.Frequency) / 1000;
+            GameHost.LastFrameDrawTimeMilliseconds = GameHost.LastFrameTimeMilliseconds - GameHost.LastFrameUpdateTimeMilliseconds;
+            
         }
 
         /// <summary>
@@ -421,14 +441,12 @@ namespace FNAEngine2D
         /// </summary>
         private void RenderCamera(Camera camera)
         {
-            _currentCamera = camera;
-
-            camera.BeginDraw();
+            DrawingContext.Begin(camera);
 
             //Drawing children...
             _rootGameObject.DrawWithChildren();
 
-            camera.EndDraw();
+            DrawingContext.End();
         }
 
 

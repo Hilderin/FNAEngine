@@ -111,8 +111,7 @@ namespace FNAEngine2D
                     {
                         if (column[y] != null)
                         {
-                            GameHost.SpriteBatch.Draw(texture, new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
-                            //GameHost.SpriteBatch.Draw(_texture, new Vector2(posX, posY), new Rectangle(column[y].X * TileSize, column[y].Y * TileSize, TileSize, TileSize), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+                            DrawingContext.Draw(texture, new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
                         }
 
                         posY += tileset.TileScreenSize;

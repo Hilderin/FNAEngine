@@ -65,6 +65,11 @@ namespace FNAEngine2D
         /// </summary>
         private bool _collidable = false;
 
+        /// <summary>
+        /// Layer mask
+        /// </summary>
+        private Layers _layerMask = Layers.Layer1;
+
 
         /// <summary>
         /// RootGameObject
@@ -298,7 +303,23 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(Layers.Layer1)]
-        public Layers LayerMask { get; set; } = Layers.Layer1;
+        public Layers LayerMask
+        {
+            get { return _layerMask; }
+            set
+            {
+                if (_layerMask != value)
+                {
+                    _layerMask = value;
+
+                    if (this._childrens.Count == 0)
+                        return;
+
+                    for (int index = 0; index < this._childrens.Count; index++)
+                        this._childrens[index].LayerMask = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Count des childrens
@@ -682,7 +703,7 @@ namespace FNAEngine2D
                 return;
 
             //Check if object must be renderer by the camera...
-            if ((GameHost.InternalGame.CurrentCamera.LayerMask & this.LayerMask) != 0)
+            if ((DrawingContext.Camera.LayerMask & this.LayerMask) != 0)
                 this.Draw();
 
             if (this._childrens.Count == 0)

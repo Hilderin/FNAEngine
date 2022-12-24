@@ -13,6 +13,11 @@ namespace FNAEngine2D
 {
     public class FPSRender : GameObject
     {
+        public string FontName { get; set; }
+
+        public int FontSize { get; set; }
+        
+        public Color Color { get; set; }
         
         /// <summary>
         /// TextRenderer
@@ -22,9 +27,16 @@ namespace FNAEngine2D
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public FPSRender(string fileName, int fontSize, Color color)
+        public FPSRender(string fontName, int fontSize, Color color)
         {
-            _textRender = this.Add(new TextRender(String.Empty, fileName, fontSize, Vector2.Zero, color));
+            this.FontName = fontName;
+            this.FontSize = fontSize;
+            this.Color = color;
+        }
+
+        public override void Load()
+        {
+            _textRender = this.Add(new TextRender(String.Empty, this.FontName, this.FontSize, Vector2.Zero, this.Color));
         }
 
         /// <summary>
@@ -32,10 +44,8 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
-            _textRender.Text = (1 / GameHost.GameTime.ElapsedGameTime.TotalSeconds).ToString();
-            //_cptFrame++;
-
-            base.Draw();
+            _textRender.Text = "FPS: " + Math.Round(1 / GameHost.GameTime.ElapsedGameTime.TotalSeconds, 4).ToString() + ", Update: " + Math.Round(GameHost.LastFrameUpdateTimeMilliseconds, 8) + "ms, Draw: " + Math.Round(GameHost.LastFrameDrawTimeMilliseconds, 8) + "ms, Total: " + Math.Round(GameHost.LastFrameTimeMilliseconds, 8) + "ms";
+            
         }
 
     }

@@ -87,7 +87,7 @@ namespace FNAEngine2D
 
             Sprite sprite = _sprite.Data;
 
-            GameHost.SpriteBatch.Draw(sprite.Texture, this.Bounds, new Rectangle(this.ColumnIndex * sprite.ColumnWidth, this.RowIndex * sprite.RowHeight, sprite.ColumnWidth, sprite.RowHeight), this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
+            DrawingContext.Draw(sprite.Texture, this.Bounds, new Rectangle(this.ColumnIndex * sprite.ColumnWidth, this.RowIndex * sprite.RowHeight, sprite.ColumnWidth, sprite.RowHeight), this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
 
         }
 

@@ -55,13 +55,13 @@ namespace FNAEngine2D
         /// </summary>
         public Layers LayerMask { get; set; } = Layers.All;
 
-        /// <summary>
-        /// SpriteSortMode
-        /// FrontToBack has weird problem with the text in FrontToBack mode, probablement because of the resolution and the font?
-        /// You should only use Immediate sort mode if you need to change state between every Draw call. 
-        /// Most of the places you used to specify Immediate sort mode, Deferred is now a better choice.
-        /// </summary>
-        public SpriteSortMode SpriteSortMode { get; set; } = SpriteSortMode.Deferred;
+        ///// <summary>
+        ///// SpriteSortMode
+        ///// FrontToBack has weird problem with the text in FrontToBack mode, probablement because of the resolution and the font?
+        ///// You should only use Immediate sort mode if you need to change state between every Draw call. 
+        ///// Most of the places you used to specify Immediate sort mode, Deferred is now a better choice.
+        ///// </summary>
+        //public SpriteSortMode SpriteSortMode { get; set; } = SpriteSortMode.Immediate;
 
         /// <summary>
         /// Blend state of textures
@@ -87,6 +87,11 @@ namespace FNAEngine2D
         /// Effect
         /// </summary>
         public Effect Effect { get; set; } = null;
+
+        /// <summary>
+        /// Camera Index
+        /// </summary>
+        public int CameraIndex { get; private set; }
 
 
         /// <summary>
@@ -184,7 +189,10 @@ namespace FNAEngine2D
             if(_spriteBatch == null)
                 _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
 
-            _spriteBatch.Begin(this.SpriteSortMode,
+            //FrontToBack has weird problem with the text in FrontToBack mode, probablement because of the resolution and the font?
+            // You should only use Immediate sort mode if you need to change state between every Draw call. 
+            // Most of the places you used to specify Immediate sort mode, Deferred is now a better choice.
+            _spriteBatch.Begin(SpriteSortMode.Deferred,
                                 this.BlendState,
                                 this.SamplerState,
                                 this.DepthStencilState,

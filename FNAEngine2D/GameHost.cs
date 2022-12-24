@@ -32,10 +32,10 @@ namespace FNAEngine2D
         private static bool _runDone = false;
 
 
-        /// <summary>
-        /// Sprite batch pour le renderer
-        /// </summary>
-        public static SpriteBatch SpriteBatch { get { return _internalGameHost.CurrentCamera.SpriteBatch; } }
+        ///// <summary>
+        ///// Sprite batch pour le renderer
+        ///// </summary>
+        //public static SpriteBatch SpriteBatch { get { return _internalGameHost.CurrentCamera.SpriteBatch; } }
 
         /// <summary>
         /// Current Game
@@ -75,6 +75,21 @@ namespace FNAEngine2D
         /// ElapsedGameTimeMilliseconds
         /// </summary>
         public static float ElapsedGameTimeMilliseconds { get; private set; }
+
+        /// <summary>
+        /// Time for the last Update
+        /// </summary>
+        public static decimal LastFrameUpdateTimeMilliseconds { get; set; }
+
+        /// <summary>
+        /// Time for the last Draw
+        /// </summary>
+        public static decimal LastFrameDrawTimeMilliseconds { get; set; }
+
+        /// <summary>
+        /// Time for the last Update+Draw
+        /// </summary>
+        public static decimal LastFrameTimeMilliseconds { get; set; }
 
         /// <summary>
         /// Width du jeu

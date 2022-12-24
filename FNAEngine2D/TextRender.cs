@@ -275,12 +275,7 @@ namespace FNAEngine2D
                     break;
             }
 
-            //There's a lot more calculation in the full overload of Velentr.Font.DrawString, so, if we can avoid it...
-            if (this.Rotation == 0 && this.RotationOrigin == Vector2.Zero && this.LayerDepth == 0f)
-                GameHost.SpriteBatch.DrawString(_textCache, new Vector2(x, y), this.Color);
-            else
-                GameHost.SpriteBatch.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.LayerDepth);
-            //_font.DrawString(this.Text, this.Position, this.Color, this.Rotation, this.RotationOrigin);
+             DrawingContext.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.LayerDepth);
         }
 
     }

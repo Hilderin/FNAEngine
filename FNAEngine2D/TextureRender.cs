@@ -90,7 +90,7 @@ namespace FNAEngine2D
             if (_texture == null)
                 return;
 
-            GameHost.SpriteBatch.Draw(_texture.Data, this.Bounds, null, this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
+            DrawingContext.Draw(_texture.Data, this.Bounds, null, this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
         }
 
     }
