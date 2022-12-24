@@ -189,7 +189,9 @@ namespace FNAEngine2D
             if(_spriteBatch == null)
                 _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
 
-            //FrontToBack has weird problem with the text in FrontToBack mode, probablement because of the resolution and the font?
+            //FrontToBack has problem if we have multiple layerDepth, the Array.Sort will not always keep the order of drawing even on the same
+            //layerDepth. So, i created a DrawingContext that sort correctly the draw calls and we can just keep using SpriteSortMode.Deferred
+            //and the layerDepth will be used!
             // You should only use Immediate sort mode if you need to change state between every Draw call. 
             // Most of the places you used to specify Immediate sort mode, Deferred is now a better choice.
             _spriteBatch.Begin(SpriteSortMode.Deferred,
