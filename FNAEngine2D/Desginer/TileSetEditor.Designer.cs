@@ -118,7 +118,10 @@
             this.picTileSet.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.picTileSet.TabIndex = 6;
             this.picTileSet.TabStop = false;
+            this.picTileSet.Paint += new System.Windows.Forms.PaintEventHandler(this.picTileSet_Paint);
             this.picTileSet.MouseClick += new System.Windows.Forms.MouseEventHandler(this.picTileSet_MouseClick);
+            this.picTileSet.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTileSet_MouseDown);
+            this.picTileSet.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTileSet_MouseMove);
             // 
             // TileSetEditor
             // 

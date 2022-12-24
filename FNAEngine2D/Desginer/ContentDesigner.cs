@@ -110,6 +110,8 @@ namespace FNAEngine2D.Desginer
             else
                 _currentContainer = null;
 
+            _isDirty = false;
+
             cboGameContentContainer.DataSource = _containers;
 
             ReloadGameObjectsFromContainer();

@@ -33,6 +33,16 @@ namespace FNAEngine2D.Desginer
         private int _currentRowIndex = -1;
 
         /// <summary>
+        /// Current selected col length
+        /// </summary>
+        private int _currentColLength = -1;
+
+        /// <summary>
+        /// Current selected row length
+        /// </summary>
+        private int _currentRowLength = -1;
+
+        /// <summary>
         /// Indicateur that the form is closing
         /// </summary>
         public bool IsClosing { get; set; }
@@ -83,7 +93,13 @@ namespace FNAEngine2D.Desginer
             if (_currentColIndex < 0)
                 return;
 
-            SetCurrentTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, new Tile(_currentColIndex, _currentRowIndex));
+            for (int col = 0; col < _currentColLength; col++)
+            {
+                for (int row = 0; row < _currentRowLength; row++)
+                {
+                    SetCurrentTile((x / _tileSet.TileScreenSize) + col, (y / _tileSet.TileScreenSize) + row, new Tile(_currentColIndex + col, _currentRowIndex + row));
+                }
+            }
         }
 
         /// <summary>
@@ -279,6 +295,20 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void picTileSet_MouseClick(object sender, MouseEventArgs e)
         {
+            
+        }
+
+
+        private void picTileSet_Paint(object sender, PaintEventArgs e)
+        {
+            if (_currentColIndex < 0)
+                return;
+
+            e.Graphics.DrawRectangle(Pens.Aqua, new Rectangle(_currentColIndex * _tileSet.TileSize, _currentRowIndex * _tileSet.TileSize, _currentColLength * _tileSet.TileSize, _currentRowLength * _tileSet.TileSize));
+        }
+
+        private void picTileSet_MouseDown(object sender, MouseEventArgs e)
+        {
             try
             {
                 //Juste avoiding a division by zero
@@ -286,8 +316,57 @@ namespace FNAEngine2D.Desginer
                     return;
 
 
-                _currentColIndex = e.X / _tileSet.TileSize;
-                _currentRowIndex = e.Y / _tileSet.TileSize;
+
+                int currentColIndex = e.X / _tileSet.TileSize;
+                int currentRowIndex = e.Y / _tileSet.TileSize;
+
+                _currentColIndex = currentColIndex;
+                _currentRowIndex = currentRowIndex;
+                _currentColLength = 1;
+                _currentRowLength = 1;
+
+                picTileSet.Invalidate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void picTileSet_MouseMove(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                //Juste avoiding a division by zero
+                if (_tileSet.TileSize == 0)
+                    return;
+
+                if (e.Button == MouseButtons.Left)
+                {
+
+                    int currentColIndex = e.X / _tileSet.TileSize;
+                    int currentRowIndex = e.Y / _tileSet.TileSize;
+
+                    if (currentColIndex < _currentColIndex)
+                    {
+                        _currentColLength += (_currentColIndex - currentColIndex);
+                        _currentColIndex = currentColIndex;
+                    }
+                    else if (currentColIndex >= _currentColIndex + _currentColLength)
+                    {
+                        _currentColLength = currentColIndex - _currentColIndex + 1;
+                    }
+
+                    if (currentRowIndex < _currentRowIndex)
+                    {
+                        _currentRowLength += (_currentRowIndex - currentRowIndex);
+                        _currentRowIndex = currentRowIndex;
+                    }
+                    else if (currentRowIndex >= _currentRowIndex + _currentRowLength)
+                        _currentRowLength = currentRowIndex - _currentRowIndex + 1;
+
+                    picTileSet.Invalidate();
+                }
 
             }
             catch (Exception ex)
