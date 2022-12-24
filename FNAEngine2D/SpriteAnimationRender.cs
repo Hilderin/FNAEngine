@@ -139,7 +139,7 @@ namespace FNAEngine2D
 
             SpriteAnimation spriteAnimation = _spriteAnimation.Data;
 
-            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].ColumnIndex * spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Frames[_currentFrame].RowIndex * spriteAnimation.Sprite.RowHeight, spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Sprite.RowHeight), this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.LayerDepth);
+            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].ColumnIndex * spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Frames[_currentFrame].RowIndex * spriteAnimation.Sprite.RowHeight, spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Sprite.RowHeight), this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
             
         }
 

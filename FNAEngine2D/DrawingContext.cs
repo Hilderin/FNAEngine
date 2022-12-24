@@ -65,7 +65,7 @@ namespace FNAEngine2D
                          float rotation,
                          Vector2 origin,
                          SpriteEffects effects,
-                         float layerDepth)
+                         float depth)
         {
             _drawIndex++;
             if (_drawIndex == _bufferLength)
@@ -82,7 +82,7 @@ namespace FNAEngine2D
             _drawings[_drawIndex].rotation = rotation;
             _drawings[_drawIndex].origin = origin;
             _drawings[_drawIndex].effects = effects;
-            _drawings[_drawIndex].layerDepth = layerDepth;
+            _drawings[_drawIndex].depth = depth;
 
         }
 
@@ -97,7 +97,7 @@ namespace FNAEngine2D
                          Vector2 origin,
                          Vector2 scale,
                          SpriteEffects effects,
-                         float layerDepth)
+                         float depth)
         {
             _drawIndex++;
             if (_drawIndex == _bufferLength)
@@ -115,7 +115,7 @@ namespace FNAEngine2D
             _drawings[_drawIndex].origin = origin;
 			_drawings[_drawIndex].scale = scale;
             _drawings[_drawIndex].effects = effects;
-            _drawings[_drawIndex].layerDepth = layerDepth;
+            _drawings[_drawIndex].depth = depth;
 
         }
 
@@ -129,7 +129,7 @@ namespace FNAEngine2D
                                Vector2 origin, 
                                Vector2 scale, 
                                SpriteEffects effects, 
-                               float layerDepth)
+                               float depth)
         {
             _drawIndex++;
             if (_drawIndex == _bufferLength)
@@ -143,7 +143,7 @@ namespace FNAEngine2D
             _drawings[_drawIndex].position = position;
             _drawings[_drawIndex].scale = scale;
             _drawings[_drawIndex].effects = effects;
-            _drawings[_drawIndex].layerDepth = layerDepth;
+            _drawings[_drawIndex].depth = depth;
 
 
             //There's a lot more calculation in the full overload of Velentr.Font.DrawString, so, if we can avoid it...
@@ -239,7 +239,7 @@ namespace FNAEngine2D
             public Vector2 origin;
             public Vector2 scale;
             public SpriteEffects effects;
-            public float layerDepth;
+            public float depth;
 
         }
 
@@ -250,9 +250,10 @@ namespace FNAEngine2D
         {
             public unsafe int Compare(DrawInfo i1, DrawInfo i2)
             {
-                int compare = i1.layerDepth.CompareTo(i2.layerDepth);
+                int compare = i1.depth.CompareTo(i2.depth);
                 if (compare != 0)
-                    return compare;
+                    //We want that higher depth be at the beginning of the array
+                    return -compare;
                 return i1.drawIndex.CompareTo(i2.drawIndex);
             }
         }

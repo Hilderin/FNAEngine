@@ -90,6 +90,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Design")]
         [DefaultValue("")]
+        [Description("Name of the GameObject")]
         public string Name { get; set; } = String.Empty;
 
         /// <summary>
@@ -110,24 +111,29 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// LayerDepth of the object
+        /// Depth of the object
+        /// Higher = Draw first
+        /// Lower = In front
         /// </summary>
         [Category("Layout")]
         [DefaultValue(0f)]
-        public float LayerDepth { get; set; } = 0f;
+        [Description("Depth of the object\r\nHigher = Draw first\r\nLower = In front")]
+        public float Depth { get; set; } = 0f;
 
         /// <summary>
-        /// Indicate if GameObject is enabled (is disable, GameObject is not updated or drow)
+        /// Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(true)]
+        [Description("Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.")]
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Indique si l'objet est paused
+        /// Indicate if GameObject is paused. If paused, GameObject is not updated.
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(false)]
+        [Description("Indicate if GameObject is paused. If paused, GameObject is not updated.")]
         public bool Paused { get; set; }
 
         /// <summary>
@@ -135,6 +141,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(true)]
+        [Description("Indicate if GameObject is visible. If not visible, GameObject is not drew.")]
         public bool Visible
         {
             get { return _visible; }
@@ -242,6 +249,7 @@ namespace FNAEngine2D
         /// Location
         /// </summary>
         [Category("Layout")]
+        [Description("Position in the world of the GameObject.")]
         public Vector2 Location
         {
             get { return _location; }
@@ -252,6 +260,7 @@ namespace FNAEngine2D
         /// Size
         /// </summary>
         [Category("Layout")]
+        [Description("Size of the GameObject")]
         public Vector2 Size
         {
             get { return _size; }
@@ -303,6 +312,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(Layers.Layer1)]
+        [Description("Layer on which the GameObject should be drew.")]
         public Layers LayerMask
         {
             get { return _layerMask; }
@@ -352,6 +362,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(false)]
+        [Description("Indicate of a collider should be activated for this GameObject.")]
         public bool Collidable
         {
             get { return _collidable; }
@@ -813,8 +824,7 @@ namespace FNAEngine2D
         public void ResizeWidth(float offsetX)
         {
             _size.X += offsetX;
-
-
+            
             if (this._childrens.Count == 0)
                 return;
 
@@ -964,38 +974,6 @@ namespace FNAEngine2D
 
             return container.GetCollision(position, size, _collider, types);
         }
-
-        ///// <summary>
-        ///// Permet d'obtenir la liste des collisions
-        ///// </summary>
-        //public List<Collision> GetCollisions(Type[] types)
-        //{
-        //    return GetCollisions(_location, types);
-
-        //}
-
-        ///// <summary>
-        ///// Permet d'obtenir la première collision
-        ///// </summary>
-        //public List<Collision> GetCollisions(Vector2 position, Type[] types)
-        //{
-        //    ColliderContainer container = GetColliderContainer();
-
-        //    if (container.IsEmpty)
-        //        return CollisionHelper.EMPTY_COLLISIONS;
-
-        //    return container.GetCollisions(position, _size, _collider, types);
-
-        //}
-
-
-        ///// <summary>
-        ///// Permet d'obtenir la liste des collisions
-        ///// </summary>
-        //public List<Collision> GetCollisions(int nextX, int nextY, Type[] types)
-        //{
-        //    return GetCollisions(new Vector2(nextX, nextY), types);
-        //}
 
         /// <summary>
         /// Hide a object

@@ -275,7 +275,7 @@ namespace FNAEngine2D
                     break;
             }
 
-             DrawingContext.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.LayerDepth);
+             DrawingContext.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.Depth);
         }
 
     }
