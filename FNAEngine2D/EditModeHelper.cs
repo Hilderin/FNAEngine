@@ -57,10 +57,15 @@ namespace FNAEngine2D
         public static bool IsTileSetEditorOpened { get { return _tileSetEditor != null; } }
 
         /// <summary>
+        /// DateTime when the Game or a designer was last activate
+        /// </summary>
+        public static DateTime LastTimeActivated { get; set; }
+
+        /// <summary>
         /// Indicate if we are in edit mode
         /// </summary>
         public static bool EditMode
-        { 
+        {
             get { return _editMode; }
             set
             {
@@ -72,7 +77,7 @@ namespace FNAEngine2D
                     SelectedGameObject = null;
 
                     if (_editMode)
-                    {   
+                    {
                         ShowDesigner();
                     }
                     else
@@ -84,44 +89,106 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Process the Update loop for DevMode
+        /// </summary>
+        public static void ProcessUpdateDevMode()
+        {
+            //We will need the current main windows Win32
+            if (GameHost.InternalGame.GameWindowHandle == IntPtr.Zero)
+                GameHost.InternalGame.GameWindowHandle = WindowHelper.GetMainWindowHandle();
+
+            if (!GameHost.InternalGame.IsActive)
+                return;
+
+            EditModeHelper.LastTimeActivated = DateTime.Now;
+
+            //Reload the content...
+            if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
+            {
+                GameHost.InternalGame.RootGameObject.RemoveAll();
+                GameHost.InternalGame.RootGameObject.Load();
+
+                EditModeHelper.ReloadDesigner();
+            }
+
+            //Designer...
+            if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
+            {
+                if (EditModeHelper.EditMode)
+                {
+                    //We must close the designer...
+                    EditModeHelper.HideDesigner();
+                }
+                else
+                {
+                    //Opening the designer...
+                    EditModeHelper.ShowDesigner();
+
+                }
+            }
+        }
+
 
         /// <summary>
         /// Process the Update loop in edit mode
         /// </summary>
         public static void ProcessUpdateEditMode()
         {
-            if (!GameHost.InternalGame.IsActive)
-                return;
-
-            if (Input.IsKeyDown(Keys.A))
-                //Moving camera to the left
-                GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddX(-CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
-            else if (Input.IsKeyDown(Keys.D))
-                //Moving camera to the right
-                GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddX(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
-
-            if (Input.IsKeyDown(Keys.W))
-                //Moving camera to the top
-                GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(-CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
-            else if (Input.IsKeyDown(Keys.S))
-                //Moving camera to the down
-                GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
-
-
-            //Mouse left click to place a tile...
-            if (Input.MouseLeftDown() || Input.MouseRightDown())
+            if (GameHost.InternalGame.IsActive)
             {
-                if (_tileSetEditor != null)
+                //Game active...
+                if (Input.IsKeyDown(Keys.A))
+                    //Moving camera to the left
+                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddX(-CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
+                else if (Input.IsKeyDown(Keys.D))
+                    //Moving camera to the right
+                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddX(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
+
+                if (Input.IsKeyDown(Keys.W))
+                    //Moving camera to the top
+                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(-CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
+                else if (Input.IsKeyDown(Keys.S))
+                    //Moving camera to the down
+                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
+
+                //Mouse left click to place a tile...
+                if (Input.MouseLeftDown() || Input.MouseRightDown())
                 {
-                    Vector2 mousePosition = Input.MousePosition();
-                    if(Input.MouseLeftDown())
-                        _tileSetEditor.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                    if (Input.MouseRightDown())
-                        _tileSetEditor.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                    if (_tileSetEditor != null)
+                    {
+                        Vector2 mousePosition = Input.MousePosition();
+                        if (Input.MouseLeftDown())
+                            _tileSetEditor.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                        if (Input.MouseRightDown())
+                            _tileSetEditor.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                    }
                 }
+
+            }
+
+
+            //Even inactive i want to see the preview...
+            //Showing preview on mouse cursor...
+            if (_tileSetEditor != null)
+            {
+                Vector2 mousePosition = Input.MousePosition();
+                _tileSetEditor.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
             }
 
         }
+
+
+        /// <summary>
+        /// Check if a reshowing of all window is needed
+        /// </summary>
+        public static bool IsReshowWindowNeeded()
+        {
+            return DateTime.Now.Subtract(EditModeHelper.LastTimeActivated).TotalMilliseconds > 300;
+        }
+
+
+
 
         /// <summary>
         /// Show the designer
@@ -200,6 +267,15 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Add the Game Content state in the history
+        /// </summary>
+        public static void AddHistory()
+        {
+            if (_designer != null && !_designer.IsDisposed)
+                _designer.AddHistory();
+        }
+
+        /// <summary>
         /// Show tileset editor
         /// </summary>
         public static void ShowTileSetEditor(TileSet tileSet)
@@ -207,7 +283,7 @@ namespace FNAEngine2D
             int lastX = Int32.MinValue;
             int lastY = Int32.MinValue;
 
-            if (_tileSetEditor != null && _tileSetEditor.TileSet != tileSet)
+            if (_tileSetEditor != null && (_tileSetEditor.TileSet != tileSet || _tileSetEditor.GameObject != EditModeHelper.SelectedGameObject))
             {
                 lastX = _tileSetEditor.Left;
                 lastY = _tileSetEditor.Top;
@@ -257,7 +333,7 @@ namespace FNAEngine2D
         {
             if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
             {
-                if(!_tileSetEditor.IsClosing)
+                if (!_tileSetEditor.IsClosing)
                     _tileSetEditor.Close();
                 _tileSetEditor = null;
             }
@@ -308,7 +384,7 @@ namespace FNAEngine2D
         /// </summary>
         internal static bool Quit(bool canCancel = true)
         {
-            
+
             if (_designer != null && !_designer.IsDisposed)
             {
                 //Check if modification in the designer before closing

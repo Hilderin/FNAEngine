@@ -112,7 +112,7 @@ namespace FNAEngine2D
         public static int CenterY { get { return _internalGameHost.Height / 2; } }
 
         /// <summary>
-        /// Size du jeu
+        /// Size of the Game (Internal size)
         /// </summary>
         public static Point Size { get { return _internalGameHost.Size; } }
 
@@ -125,6 +125,11 @@ namespace FNAEngine2D
         /// Bounds of the game
         /// </summary>
         public static Rectangle Bounds { get { return _internalGameHost.Bounds; } }
+
+        /// <summary>
+        /// Background color
+        /// </summary>
+        public static Color BackgroundColor { get; set; } = Color.Gray;
 
 
         /// <summary>

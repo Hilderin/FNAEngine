@@ -47,6 +47,16 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private bool _loadingSelectedGameObject = true;
 
+        /// <summary>
+        /// History
+        /// </summary>
+        private List<HistoryState> _history = new List<HistoryState>();
+
+        /// <summary>
+        /// History index
+        /// </summary>
+        private int _historyIndex = -1;
+
 
         /// <summary>
         /// Constructor
@@ -114,9 +124,28 @@ namespace FNAEngine2D.Desginer
 
             cboGameContentContainer.DataSource = _containers;
 
+            ResetHistory();
+
             ReloadGameObjectsFromContainer();
+
+            ReopenTileSetEditorAfterReload();
+
         }
 
+
+        /// <summary>
+        /// Reopen the tile set editor after reloading if needed
+        /// </summary>
+        private void ReopenTileSetEditorAfterReload()
+        {
+            //Reopening the TileSetEditor...
+            if (EditModeHelper.IsTileSetEditorOpened)
+            {
+                if (cboGameObjects.SelectedItem is TileSetRender)
+                    //Reopenning the tileset editor for the new tileset...
+                    EditModeHelper.ShowTileSetEditor(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
+            }
+        }
 
         /// <summary>
         /// Ask the user to confirm the changes before closing the form
@@ -140,6 +169,9 @@ namespace FNAEngine2D.Desginer
                     }
                 }
             }
+
+            //Fake that it's not dirty so the question will not be asked again.
+            _isDirty = false;
 
             return true;
         }
@@ -194,7 +226,10 @@ namespace FNAEngine2D.Desginer
             try
             {
                 if (lstGameObjectTypes.SelectedItems.Count > 0)
+                {
                     AddGameObject(_gameObjectTypes[lstGameObjectTypes.SelectedItems[0].Index]);
+                    AddHistory();
+                }
 
             }
             catch (Exception ex)
@@ -225,6 +260,8 @@ namespace FNAEngine2D.Desginer
 
                 cboGameObjects.SelectedItem = obj;
 
+                ReopenTileSetEditorAfterReload();
+
                 SetDirty(true);
 
             }
@@ -243,7 +280,10 @@ namespace FNAEngine2D.Desginer
             try
             {
                 if (cboGameObjects.SelectedItem != null)
+                {
                     RemoveGameObject((GameObject)cboGameObjects.SelectedItem);
+                    AddHistory();
+                }
             }
             catch (Exception ex)
             {
@@ -268,6 +308,8 @@ namespace FNAEngine2D.Desginer
                 _currentContainer.Remove(gameObject);
 
                 ReloadGameObjectsFromContainer();
+
+                ReopenTileSetEditorAfterReload();
 
                 SetDirty(true);
             }
@@ -345,6 +387,7 @@ namespace FNAEngine2D.Desginer
                     }
 
                     SetDirty(true);
+                    AddHistory();
                 }
             }
             catch (Exception ex)
@@ -373,6 +416,7 @@ namespace FNAEngine2D.Desginer
                 this.Text = this.Text.Replace(" *", String.Empty) + " *";
             else
                 this.Text = this.Text.Replace(" *", String.Empty);
+
         }
 
         /// <summary>
@@ -461,7 +505,11 @@ namespace FNAEngine2D.Desginer
 
             _currentContainer = (GameContentContainer)cboGameContentContainer.SelectedItem;
 
+            ResetHistory();
+
             ReloadGameObjectsFromContainer();
+
+            ReopenTileSetEditorAfterReload();
 
         }
 
@@ -493,7 +541,7 @@ namespace FNAEngine2D.Desginer
 
             //Win32.SetForegroundWindow(GameHost.InternalGame.GameWindowHandle);
 
-            
+
         }
 
         /// <summary>
@@ -502,7 +550,7 @@ namespace FNAEngine2D.Desginer
         private void ContentDesigner_Activated(object sender, EventArgs e)
         {
             //Reopening the designer forms and refocusing on ourself...
-            if(DateTime.Now.Subtract(GameHost.InternalGame.LastTimeActivated).TotalMilliseconds > 300)
+            if (EditModeHelper.IsReshowWindowNeeded())
                 EditModeHelper.ShowDesigner(this.Handle);
 
         }
@@ -525,5 +573,106 @@ namespace FNAEngine2D.Desginer
 
             return base.ProcessDialogKey(keyData);
         }
+
+        /// <summary>
+        /// Update the last time a form is active
+        /// </summary>
+        private void tmrUpdateLastActive_Tick(object sender, EventArgs e)
+        {
+            if (Form.ActiveForm != null)
+                EditModeHelper.LastTimeActivated = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Reset the history
+        /// </summary>
+        private void ResetHistory()
+        {
+            _history.Clear();
+            _historyIndex = -1;
+
+            AddHistory();
+        }
+
+        /// <summary>
+        /// Add a state in the history
+        /// </summary>
+        public void AddHistory()
+        {
+            _historyIndex++;
+
+            //Removing the futur actions...
+            while (_history.Count > _historyIndex)
+                _history.RemoveAt(_history.Count - 1);
+
+            HistoryState history = new HistoryState();
+
+            GameContent gameContent = new GameContent();
+            foreach (GameObject gameObject in _gameObjects)
+            {
+                gameContent.Objects.Add(GameContentManager.GetGameContentObject(gameObject));
+            }
+
+            history.JsonGameContent = JsonConvert.SerializeObject(gameContent);
+            history.GameObjectSelectedIndex = cboGameObjects.SelectedIndex;
+
+            _history.Add(history);
+        }
+
+        /// <summary>
+        /// Undo the last modification
+        /// </summary>
+        private void btnUndo_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        /// <summary>
+        /// Undo the last modification
+        /// </summary>
+        private void Undo()
+        {
+            try
+            {
+                if (_historyIndex <= 0)
+                    return;
+
+                HistoryState history = _history[_historyIndex - 1];
+
+                _historyIndex--;
+
+                //Recreating the game content...
+                GameContent gameContent = JsonConvert.DeserializeObject<GameContent>(history.JsonGameContent);
+                               
+
+                GameContentManager.ReplaceContent(_currentContainer, gameContent);
+
+                ReloadGameObjectsFromContainer();
+
+                try
+                {
+                    cboGameObjects.SelectedItem = history.GameObjectSelectedIndex;
+                }
+                catch { }
+
+                ReopenTileSetEditorAfterReload();
+
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// HistoryState
+        /// </summary>
+        private class HistoryState
+        {
+            public int GameObjectSelectedIndex { get; set; }
+            public string JsonGameContent { get; set; }
+        }
+
     }
 }

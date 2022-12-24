@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -315,27 +316,20 @@ namespace FNAEngine2D
         /// </summary>
         private T LoadTexture<T>(string assetName, out string fullPath)
         {
-            if (assetName == "pixel" && typeof(T) == typeof(Texture2D))
+            //Built in textures?
+            if (typeof(T) == typeof(Texture2D))
             {
-                fullPath = "pixel";
-
-                using (MemoryStream ms = new MemoryStream(Resource.pixelBin))
+                if(!assetName.Contains("\\") && !assetName.Contains("//"))
                 {
-                    object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
-                    return (T)ret;
+                    object resObj = Resource.ResourceManager.GetObject(assetName);
+                    if (resObj != null && resObj is byte[])
+                    {
+                        fullPath = assetName;
+                        object ret = GetTexture2DFromBytes((byte[])resObj);
+                        return (T)ret;
+                    }
                 }
             }
-            else if (assetName == "pixel_magenta" && typeof(T) == typeof(Texture2D))
-            {
-                fullPath = "pixel_magenta";
-
-                using (MemoryStream ms = new MemoryStream(Resource.pixel_magenta))
-                {
-                    object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
-                    return (T)ret;
-                }
-            }
-
 
             try
             {
@@ -371,6 +365,18 @@ namespace FNAEngine2D
                     object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
                     return (T)ret;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Load a Texture 2D from an array of bytes
+        /// </summary>
+        private Texture2D GetTexture2DFromBytes(byte[] data)
+        {
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                object ret = Texture2D.FromStream(GetGraphicsDevice(), ms);
+                return (Texture2D)ret;
             }
         }
 

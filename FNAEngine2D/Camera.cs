@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,10 +26,10 @@ namespace FNAEngine2D
         /// </summary>
         private Vector2 _location;
 
-        ///// <summary>
-        ///// Size of the camera
-        ///// </summary>
-        //private Vector2? _size;
+        /// <summary>
+        /// Size of the camera
+        /// </summary>
+        private Point _size;
 
         /// <summary>
         /// Zoom level (1 = no zoom)
@@ -49,6 +50,27 @@ namespace FNAEngine2D
         /// SpriteBatch of the camera
         /// </summary>
         private SpriteBatch _spriteBatch;
+
+        /// <summary>
+        /// ViewPort
+        /// </summary>
+        private Viewport _viewPort;
+
+        /// <summary>
+        /// Position of the view on the screen
+        /// </summary>
+        private Point _viewLocation = Point.Zero;
+
+        /// <summary>
+        /// Graghics device
+        /// </summary>
+        private GraphicsDevice _graphicsDevice;
+
+        /// <summary>
+        /// Bounds of the displayed area
+        /// </summary>
+        private Rectangle _displayBounds;
+
 
         /// <summary>
         /// Layer of the game object
@@ -93,7 +115,6 @@ namespace FNAEngine2D
         /// </summary>
         public int CameraIndex { get; private set; }
 
-
         /// <summary>
         /// Spritebatch of the camera
         /// </summary>
@@ -104,8 +125,6 @@ namespace FNAEngine2D
                 return _spriteBatch; 
             }
         }
-
-
 
         /// <summary>
         /// Location
@@ -119,25 +138,44 @@ namespace FNAEngine2D
                 {
                     _location = value;
                     _updated = true;
+                    RecalculteDisplayBounds();
                 }
             }
         }
 
-        ///// <summary>
-        ///// Size
-        ///// </summary>
-        //public Vector2? Size
-        //{
-        //    get { return _size; }
-        //    set
-        //    {
-        //        if (_size != value)
-        //        {
-        //            _size = value;
-        //            _updated = true;
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// Location on the screen
+        /// </summary>
+        public Point ViewLocation
+        {
+            get { return _viewLocation; }
+            set
+            {
+                if (_viewLocation != value)
+                {
+                    _viewLocation = value;
+                    RecalculteViewPort();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Size
+        /// </summary>
+        public Point Size
+        {
+            get { return _size; }
+            set
+            {
+                if (_size != value)
+                {
+                    _size = value;
+                    _updated = true;
+                    RecalculteViewPort();
+                    RecalculteDisplayBounds();
+                }
+            }
+        }
 
 
         /// <summary>
@@ -152,6 +190,7 @@ namespace FNAEngine2D
                 {
                     _zoom = value;
                     _updated = true;
+                    RecalculteDisplayBounds();
                 }
             }
         }
@@ -172,13 +211,43 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Camera(int width, int height)
+        {
+            //Default size
+            _size = new Point(width, height);
+            RecalculteViewPort();
+        }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public Camera()
         {
-            
+            //Default size
+            _size = new Point(GameHost.Width, GameHost.Height);
+            RecalculteViewPort();
+        }
+
+        /// <summary>
+        /// Check if a rectangle is in the field of view of the camera
+        /// </summary>
+        public bool IsDisplayed(Vector2 position, float width, float height)
+        {
+            return (position.X <= _displayBounds.Right)
+                    && (position.X + width >= _displayBounds.X)
+                    && (position.Y <= _displayBounds.Bottom)
+                    && (position.Y + height >= _displayBounds.Y);
+        }
+
+        /// <summary>
+        /// Check if a rectangle is in the field of view of the camera
+        /// </summary>
+        public bool IsDisplayed(Rectangle rectangle)
+        {
+            return _displayBounds.Intersects(rectangle);
         }
 
         /// <summary>
@@ -186,7 +255,16 @@ namespace FNAEngine2D
         /// </summary>
         public virtual void BeginDraw()
         {
-            if(_spriteBatch == null)
+            if (_graphicsDevice == null)
+                _graphicsDevice = GameHost.InternalGame.GraphicsDevice;
+
+
+            //Set le ViewPort
+            if(_graphicsDevice.Viewport.X != _viewPort.X || _graphicsDevice.Viewport.Y != _viewPort.Y || _graphicsDevice.Viewport.Width != _viewPort.Width || _graphicsDevice.Viewport.Height != _viewPort.Height)
+                _graphicsDevice.Viewport = _viewPort;
+
+            //Creation of the spritebatch...
+            if (_spriteBatch == null)
                 _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
 
             //FrontToBack has problem if we have multiple layerDepth, the Array.Sort will not always keep the order of drawing even on the same
@@ -251,6 +329,29 @@ namespace FNAEngine2D
 
             return _transformMatrix;
 
+        }
+
+        /// <summary>
+        /// Recalculate the view port to use
+        /// </summary>
+        private void RecalculteViewPort()
+        {
+            Vector2 scale = Vector2.One;
+            if (GameHost.InternalGame != null)
+                scale = GameHost.InternalGame.ScreenScale;
+
+            _viewPort = new Viewport((int)(_viewLocation.X * scale.X), 
+                                    (int)(_viewLocation.Y * scale.Y),
+                                    (int)(_size.X * scale.X),
+                                    (int)(_size.Y * scale.Y));
+        }
+
+        /// <summary>
+        /// Recalculate the display bounds
+        /// </summary>
+        private void RecalculteDisplayBounds()
+        {
+            _displayBounds = new Rectangle((int)_location.X, (int)_location.Y, (int)Math.Ceiling(_size.X / _zoom), (int)Math.Ceiling(_size.Y / _zoom));
         }
 
     }

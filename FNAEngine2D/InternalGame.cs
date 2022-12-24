@@ -78,7 +78,7 @@ namespace FNAEngine2D
         /// <summary>
         /// The scale result of merging Internal size with Screen size.
         /// </summary>
-        public Vector2 ScreenScale { get; private set; }
+        public Vector2 ScreenScale { get; private set; } = Vector2.One;
 
         /// <summary>
         /// The scale used for beginning the SpriteBatch.
@@ -149,9 +149,10 @@ namespace FNAEngine2D
         /// </summary>
         public List<Camera> ExtraCameras { get { return _extraCameras; } }
 
+        /// <summary>
+        /// Handle to the Window (the Win32 handle)
+        /// </summary>
         public IntPtr GameWindowHandle { get; set; }
-        public DateTime LastTimeActivated { get; set; }
-
 
         /// <summary>
         /// Constructeur
@@ -161,8 +162,10 @@ namespace FNAEngine2D
             _graphics = new GraphicsDeviceManager(this);
 
             //Default Camera = a static camera 
-            _mainCamera = new Camera();
-           
+            _mainCamera = new Camera(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            //Init gameSize so the SetResolution cam calculate the diff for the resize of the camera...
+            _gameSize = new Point(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
             //Création du Content Manager..
             _contentManager = new ContentManager(this.Services, ContentWatcher.ContentFolder);
             this.Content = _contentManager;
@@ -182,12 +185,21 @@ namespace FNAEngine2D
         /// <param name="internalHeight">Internal height, number of pixels everything use internally</param>
         public void SetResolution(int screenWidth, int screenHeight, int internalWidth, int internalHeight, bool isFullScreen)
         {
-
+            //Update graphics...
             _graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.PreferredBackBufferHeight = screenHeight;
             _graphics.IsFullScreen = isFullScreen;
             _graphics.ApplyChanges();
 
+
+            //Update cameras...
+            Point diff = new Point(internalWidth - _gameSize.X, internalHeight - _gameSize.Y);
+            _mainCamera.Size += diff;
+            foreach (Camera extraCamera in _extraCameras)
+                extraCamera.Size += diff;
+
+
+            //Recalculate internal things...
             _gameSize = new Point(internalWidth, internalHeight);
             _gameRectangle = new Rectangle(0, 0, internalWidth, internalHeight);
 
@@ -244,7 +256,6 @@ namespace FNAEngine2D
             //Rendu ici, on peut accéder au GrraphicsDevice
             _graphicsDevice = this.GraphicsDevice;
 
-
             //Le FontManager a aussi besoin du graphicsDevice...
             FontManager.SetGraphicsDevice(_graphicsDevice);
 
@@ -284,9 +295,6 @@ namespace FNAEngine2D
                 ContentWatcher.StartWatchUpdateContent();
 
 
-            
-
-            //_graphicsDevice.Viewport = new Viewport(0, 0, 100, 100);
 
         }
 
@@ -300,55 +308,27 @@ namespace FNAEngine2D
 
             _internalTimer.Restart();
 
+
+            //On update le gametime pour l'avoir partout...
+            GameHost.SetGameTime(gameTime);
+
+
+            //Update des inputs...
+            Input.Update();
+
             //---------------
             // DEV MODE....
             if (GameHost.DevelopmentMode)
             {
-                //We will need the current main windows Win32
-                if (GameWindowHandle == IntPtr.Zero)
-                    GameWindowHandle = WindowHelper.GetMainWindowHandle();
-                if (this.IsActive)
-                    LastTimeActivated = DateTime.Now;
-
-                //Reload the content...
-                if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
-                {
-                    _rootGameObject.RemoveAll();
-                    _rootGameObject.Load();
-
-                    EditModeHelper.ReloadDesigner();
-                }
-
-                //Designer...
-                if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
-                {
-                    if (EditModeHelper.EditMode)
-                    {
-                        //We must close the designer...
-                        EditModeHelper.HideDesigner();
-                    }
-                    else
-                    {
-                        //Opening the designer...
-                        EditModeHelper.ShowDesigner();
-                        
-                    }
-                }
+                EditModeHelper.ProcessUpdateDevMode();
             }
-
-
-            //On update le gametime pour l'avoir partout...
-            GameHost.SetGameTime(gameTime);
 
 
             //On regarde si on a du content à reloader...
             ContentWatcher.ReloadModifiedContent();
 
 
-            //Update des inputs...
-            Input.Update();
-
-            //Processing des mouses events...
+            //Processing mouse events...
             MouseManager.ProcessMouseEvents();
 
 
@@ -382,7 +362,7 @@ namespace FNAEngine2D
             GameHost.SetGameTime(gameTime);
 
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
-            _graphicsDevice.Clear(Color.Gray);
+            _graphicsDevice.Clear(GameHost.BackgroundColor);
 
             //Render...
             if (_rootGameObject.Visible)
@@ -419,7 +399,8 @@ namespace FNAEngine2D
             if (EditModeHelper.EditMode)
             {
                 //Reopening the designer forms and refocusing on ourself...
-                EditModeHelper.ShowDesigner(this.GameWindowHandle);
+                if (EditModeHelper.IsReshowWindowNeeded())
+                    EditModeHelper.ShowDesigner(this.GameWindowHandle);
             }
 
             base.OnActivated(sender, args);

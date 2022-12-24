@@ -16,6 +16,16 @@ namespace FNAEngine2D
     public class TileSetRender: GameObject
     {
         /// <summary>
+        /// Edit mode overlay
+        /// </summary>
+        private Color _editModeOverlayColor = Color.White * 0.5f;
+
+        /// <summary>
+        /// Edit mode overlay
+        /// </summary>
+        private Content<Texture2D> _editModeOverlayTexture;
+
+        /// <summary>
         /// Information on tileset
         /// </summary>
         [EditorAttribute(typeof(TileSetUITypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -42,6 +52,8 @@ namespace FNAEngine2D
         /// </summary>
         public override void Load()
         {
+            _editModeOverlayTexture = GameHost.GetContent<Texture2D>("pixel");
+            
             if (this.TileSet == null)
                 return;
 
@@ -92,11 +104,15 @@ namespace FNAEngine2D
                 return;
 
             Color color = Color.White;
+            bool editMode = false;
 
-            if (EditModeHelper.EditMode)
+            if (EditModeHelper.EditMode && !EditModeHelper.IsGameRunning)
             {
-                if (EditModeHelper.IsTileSetEditorOpened && EditModeHelper.SelectedGameObject != this)
-                    color = Color.DimGray;
+                if (EditModeHelper.IsTileSetEditorOpened && EditModeHelper.SelectedGameObject == this)
+                {
+                    //color = Color.DimGray;
+                    editMode = true;
+                }
             }
 
             int posX = 0;
@@ -112,6 +128,10 @@ namespace FNAEngine2D
                         if (column[y] != null)
                         {
                             DrawingContext.Draw(texture, new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+
+                            if(editMode)
+                                DrawingContext.Draw(_editModeOverlayTexture.Data, new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), _editModeOverlayColor, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+
                         }
 
                         posY += tileset.TileScreenSize;

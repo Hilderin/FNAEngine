@@ -37,6 +37,7 @@
             this.lblTileScreenSize = new System.Windows.Forms.Label();
             this.panTileSet = new System.Windows.Forms.Panel();
             this.picTileSet = new System.Windows.Forms.PictureBox();
+            this.btnForDefaultFocus = new System.Windows.Forms.Button();
             this.panTileSet.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picTileSet)).BeginInit();
             this.SuspendLayout();
@@ -56,7 +57,7 @@
             this.txtTexture.MaxLength = 255;
             this.txtTexture.Name = "txtTexture";
             this.txtTexture.Size = new System.Drawing.Size(197, 20);
-            this.txtTexture.TabIndex = 0;
+            this.txtTexture.TabIndex = 1;
             this.txtTexture.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTexture_KeyDown);
             this.txtTexture.Validated += new System.EventHandler(this.txtTexture_Validated);
             // 
@@ -66,7 +67,8 @@
             this.txtTileSize.MaxLength = 4;
             this.txtTileSize.Name = "txtTileSize";
             this.txtTileSize.Size = new System.Drawing.Size(40, 20);
-            this.txtTileSize.TabIndex = 1;
+            this.txtTileSize.TabIndex = 2;
+            this.txtTileSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTileSize_KeyDown);
             this.txtTileSize.Validating += new System.ComponentModel.CancelEventHandler(this.txtTileSize_Validating);
             this.txtTileSize.Validated += new System.EventHandler(this.txtTileSize_Validated);
             // 
@@ -85,7 +87,8 @@
             this.txtTileScreenSize.MaxLength = 4;
             this.txtTileScreenSize.Name = "txtTileScreenSize";
             this.txtTileScreenSize.Size = new System.Drawing.Size(40, 20);
-            this.txtTileScreenSize.TabIndex = 2;
+            this.txtTileScreenSize.TabIndex = 3;
+            this.txtTileScreenSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtTileScreenSize_KeyDown);
             this.txtTileScreenSize.Validating += new System.ComponentModel.CancelEventHandler(this.txtTileScreenSize_Validating);
             this.txtTileScreenSize.Validated += new System.EventHandler(this.txtTileScreenSize_Validated);
             // 
@@ -108,7 +111,7 @@
             this.panTileSet.Location = new System.Drawing.Point(1, 36);
             this.panTileSet.Name = "panTileSet";
             this.panTileSet.Size = new System.Drawing.Size(785, 519);
-            this.panTileSet.TabIndex = 7;
+            this.panTileSet.TabIndex = 4;
             // 
             // picTileSet
             // 
@@ -123,11 +126,21 @@
             this.picTileSet.MouseDown += new System.Windows.Forms.MouseEventHandler(this.picTileSet_MouseDown);
             this.picTileSet.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picTileSet_MouseMove);
             // 
+            // btnForDefaultFocus
+            // 
+            this.btnForDefaultFocus.Location = new System.Drawing.Point(-100, 0);
+            this.btnForDefaultFocus.Name = "btnForDefaultFocus";
+            this.btnForDefaultFocus.Size = new System.Drawing.Size(75, 23);
+            this.btnForDefaultFocus.TabIndex = 0;
+            this.btnForDefaultFocus.Text = "button1";
+            this.btnForDefaultFocus.UseVisualStyleBackColor = true;
+            // 
             // TileSetEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(790, 560);
+            this.Controls.Add(this.btnForDefaultFocus);
             this.Controls.Add(this.panTileSet);
             this.Controls.Add(this.txtTileScreenSize);
             this.Controls.Add(this.lblTileScreenSize);
@@ -138,6 +151,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TileSetEditor";
             this.Text = "TileSet Editor";
+            this.Activated += new System.EventHandler(this.TileSetEditor_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TileSetEditor_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TileSetEditorForm_FormClosed);
             this.panTileSet.ResumeLayout(false);
@@ -158,5 +172,6 @@
         private System.Windows.Forms.Label lblTileScreenSize;
         private System.Windows.Forms.PictureBox picTileSet;
         private System.Windows.Forms.Panel panTileSet;
+        private System.Windows.Forms.Button btnForDefaultFocus;
     }
 }

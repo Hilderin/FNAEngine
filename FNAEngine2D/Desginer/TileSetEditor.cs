@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -25,22 +26,27 @@ namespace FNAEngine2D.Desginer
         /// <summary>
         /// Current selected col
         /// </summary>
-        private int _currentColIndex = -1;
+        private static int _currentColIndex = -1;
 
         /// <summary>
         /// Current selected row
         /// </summary>
-        private int _currentRowIndex = -1;
+        private static int _currentRowIndex = -1;
 
         /// <summary>
         /// Current selected col length
         /// </summary>
-        private int _currentColLength = -1;
+        private static int _currentColLength = -1;
 
         /// <summary>
         /// Current selected row length
         /// </summary>
-        private int _currentRowLength = -1;
+        private static int _currentRowLength = -1;
+
+        /// <summary>
+        /// Preview object
+        /// </summary>
+        private TileSetRender _previewObject = null;
 
         /// <summary>
         /// Indicateur that the form is closing
@@ -93,13 +99,18 @@ namespace FNAEngine2D.Desginer
             if (_currentColIndex < 0)
                 return;
 
-            for (int col = 0; col < _currentColLength; col++)
+            bool updated = SetTiles(x, y, _tileSet);
+
+            if (updated)
             {
-                for (int row = 0; row < _currentRowLength; row++)
-                {
-                    SetCurrentTile((x / _tileSet.TileScreenSize) + col, (y / _tileSet.TileScreenSize) + row, new Tile(_currentColIndex + col, _currentRowIndex + row));
-                }
+                EditModeHelper.SetDirty(true);
+                EditModeHelper.AddHistory();
+                UpdatePreviewTileSet();
+
+                _gameObject.RemoveAll();
+                _gameObject.Load();
             }
+
         }
 
         /// <summary>
@@ -107,56 +118,156 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void OnMouseRightClickInGame(int x, int y)
         {
-            SetCurrentTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null);
+            if (SetTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null, _tileSet))
+            {
+                EditModeHelper.SetDirty(true);
+                EditModeHelper.AddHistory();
+                UpdatePreviewTileSet();
+
+                _gameObject.RemoveAll();
+                _gameObject.Load();
+            }
+        }
+
+        /// <summary>
+        /// Showing preview
+        /// </summary>
+        public void ShowPreview(int x, int y)
+        {
+            if (_currentColIndex < 0)
+                return;
+
+            //Preview object creation...
+            if (_previewObject == null)
+            {
+                _previewObject = new TileSetRender(new TileSet());
+
+                UpdatePreviewTileSet();
+
+                _gameObject.RootGameObject.Add(_previewObject);
+
+            }
+
+            _previewObject.Location = _gameObject.Location;
+
+            //Empty tiles..
+            _previewObject.TileSet.Tiles = new Tile[0][];
+            //Set tiles..
+            SetTiles(x, y, _previewObject.TileSet);
+
+
+        }
+
+        /// <summary>
+        /// Hide preview
+        /// </summary>
+        public void HidePreview()
+        {
+            if (_previewObject != null && _gameObject != null && _gameObject.RootGameObject != null)
+            {
+                _gameObject.RootGameObject.Remove(_previewObject);
+            }
+
+            _previewObject = null;
+        }
+
+        /// <summary>
+        /// Update preview tileset with the same settings then the current tileset
+        /// </summary>
+        private void UpdatePreviewTileSet()
+        {
+            if (_previewObject != null)
+            {
+                _previewObject.TileSet.TileSize = _tileSet.TileSize;
+                _previewObject.TileSet.TileScreenSize = _tileSet.TileScreenSize;
+                _previewObject.TileSet.TextureName = _tileSet.TextureName;
+            }
         }
 
 
         /// <summary>
+        /// Set the tiles in a tileset
+        /// </summary>
+        private bool SetTiles(int x, int y, TileSet tileSet)
+        {
+            bool updated = false;
+            for (int col = 0; col < _currentColLength; col++)
+            {
+                for (int row = 0; row < _currentRowLength; row++)
+                {
+                    if (SetTile((x / tileSet.TileScreenSize) + col, (y / tileSet.TileScreenSize) + row, new Tile(_currentColIndex + col, _currentRowIndex + row), tileSet))
+                        updated = true;
+                }
+            }
+
+            return updated;
+        }
+
+        /// <summary>
         /// Set the tile
         /// </summary>
-        private void SetCurrentTile(int tileX, int tileY, Tile tile)
+        private bool SetTile(int tileX, int tileY, Tile tile, TileSet tileSet)
         {
             if (tileX < 0 || tileY < 0)
-                return;
+                return false;
 
-            if (_tileSet.Tiles == null)
+            if (tileSet.Tiles == null)
             {
-                _tileSet.Tiles = new Tile[tileX + 1][];
+                tileSet.Tiles = new Tile[tileX + 1][];
             }
-            else if(_tileSet.Tiles.Length <= tileX)
+            else if(tileSet.Tiles.Length <= tileX)
             {
                 //We need to grow the tiles array...
                 Tile[][] newColTiles = new Tile[tileX + 1][];
 
                 //Copy the existing data...
-                Array.Copy(_tileSet.Tiles, newColTiles, _tileSet.Tiles.Length);
+                Array.Copy(tileSet.Tiles, newColTiles, tileSet.Tiles.Length);
 
-                _tileSet.Tiles = newColTiles;
+                tileSet.Tiles = newColTiles;
             }
 
-            if (_tileSet.Tiles[tileX] == null)
+            if (tileSet.Tiles[tileX] == null)
             {
-                _tileSet.Tiles[tileX] = new Tile[tileY + 1];
+                tileSet.Tiles[tileX] = new Tile[tileY + 1];
             }
-            else if (_tileSet.Tiles[tileX].Length <= tileY)
+            else if (tileSet.Tiles[tileX].Length <= tileY)
             {
                 //We need to grow the tiles array...
                 Tile[] newRowTiles = new Tile[tileY + 1];
 
                 //Copy the existing data...
-                Array.Copy(_tileSet.Tiles[tileX], newRowTiles, _tileSet.Tiles[tileX].Length);
+                Array.Copy(tileSet.Tiles[tileX], newRowTiles, tileSet.Tiles[tileX].Length);
 
-                _tileSet.Tiles[tileX] = newRowTiles;
+                tileSet.Tiles[tileX] = newRowTiles;
 
             }
 
-            _tileSet.Tiles[tileX][tileY] = tile;
+            if (!AreTileEguals(tileSet.Tiles[tileX][tileY], tile))
+            {
+                //Needs to update...
+                tileSet.Tiles[tileX][tileY] = tile;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
-            EditModeHelper.SetDirty(true);
 
-            _gameObject.RemoveAll();
-            _gameObject.Load();
+        }
 
+        /// <summary>
+        /// Check if 2 tiles are eguals
+        /// </summary>
+        private bool AreTileEguals(Tile a, Tile b)
+        {
+            if (a == null && b == null)
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            return a.Col == b.Col && a.Row == b.Row;
         }
 
         /// <summary>
@@ -201,6 +312,8 @@ namespace FNAEngine2D.Desginer
                     LoadTileSet(_tileSet.TextureName);
 
                     EditModeHelper.SetDirty(true);
+                    EditModeHelper.AddHistory();
+                    UpdatePreviewTileSet();
                 }
             }
             catch (Exception ex)
@@ -239,6 +352,8 @@ namespace FNAEngine2D.Desginer
                     _tileSet.TileSize = size;
 
                     EditModeHelper.SetDirty(true);
+                    EditModeHelper.AddHistory();
+                    UpdatePreviewTileSet();
                 }
             }
         }
@@ -255,10 +370,24 @@ namespace FNAEngine2D.Desginer
                     _tileSet.TileScreenSize = size;
 
                     EditModeHelper.SetDirty(true);
+                    EditModeHelper.AddHistory();
+                    UpdatePreviewTileSet();
                 }
             }
         }
 
+        /// <summary>
+        /// To force the update on an Enter
+        /// </summary>
+        private void txtTileSize_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+
+                txtTileSize_Validated(sender, EventArgs.Empty);
+            }
+        }
 
         /// <summary>
         /// Form closing
@@ -273,6 +402,12 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void TileSetEditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //Removing the preview object
+            if (_previewObject != null && _gameObject != null && _gameObject.RootGameObject != null)
+            {
+                _gameObject.RootGameObject.Remove(_previewObject);
+            }
+
             EditModeHelper.HideTileSetEditor();
         }
 
@@ -289,7 +424,19 @@ namespace FNAEngine2D.Desginer
             }
         }
 
-        
+        /// <summary>
+        /// Trapping the enter to change the texture
+        /// </summary>
+        private void txtTileScreenSize_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+
+                txtTileScreenSize_Validated(sender, EventArgs.Empty);
+            }
+        }
+
         /// <summary>
         /// Click on the tileset picture
         /// </summary>
@@ -374,5 +521,16 @@ namespace FNAEngine2D.Desginer
                 MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        /// <summary>
+        /// Form activated
+        /// </summary>
+        private void TileSetEditor_Activated(object sender, EventArgs e)
+        {
+            //Reopening the designer forms and refocusing on ourself...
+            if (EditModeHelper.IsReshowWindowNeeded())
+                EditModeHelper.ShowDesigner(this.Handle);
+        }
+
     }
 }

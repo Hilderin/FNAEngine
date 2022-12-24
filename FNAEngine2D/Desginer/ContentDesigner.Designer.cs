@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContentDesigner));
             this.cboGameContentContainer = new System.Windows.Forms.ComboBox();
             this.lblContainer = new System.Windows.Forms.Label();
@@ -41,6 +42,8 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.cboGameObjects = new System.Windows.Forms.ComboBox();
             this.btnPausePlay = new System.Windows.Forms.Button();
+            this.tmrUpdateLastActive = new System.Windows.Forms.Timer(this.components);
+            this.btnUndo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -199,11 +202,28 @@
             this.btnPausePlay.UseVisualStyleBackColor = true;
             this.btnPausePlay.Click += new System.EventHandler(this.btnPausePlay_Click);
             // 
+            // tmrUpdateLastActive
+            // 
+            this.tmrUpdateLastActive.Enabled = true;
+            this.tmrUpdateLastActive.Tick += new System.EventHandler(this.tmrUpdateLastActive_Tick);
+            // 
+            // btnUndo
+            // 
+            this.btnUndo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnUndo.Location = new System.Drawing.Point(82, 670);
+            this.btnUndo.Name = "btnUndo";
+            this.btnUndo.Size = new System.Drawing.Size(73, 23);
+            this.btnUndo.TabIndex = 10;
+            this.btnUndo.Text = "&Undo";
+            this.btnUndo.UseVisualStyleBackColor = true;
+            this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
+            // 
             // ContentDesigner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(339, 697);
+            this.Controls.Add(this.btnUndo);
             this.Controls.Add(this.btnPausePlay);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.splitContainer);
@@ -238,5 +258,7 @@
         private System.Windows.Forms.ComboBox cboGameObjects;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnPausePlay;
+        private System.Windows.Forms.Timer tmrUpdateLastActive;
+        private System.Windows.Forms.Button btnUndo;
     }
 }

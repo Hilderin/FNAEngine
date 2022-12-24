@@ -67,11 +67,19 @@ namespace FNAEngine2D
                          SpriteEffects effects,
                          float depth)
         {
+
+            //Check if the texture si really on the camera
+            if (!_camera.IsDisplayed(destinationRectangle))
+                return;
+
+
+            //Add to the queue of be drew...
             _drawIndex++;
             if (_drawIndex == _bufferLength)
             {
                 ResizeDrawingsArray();
             }
+
 
             _drawings[_drawIndex].drawType = DrawType.TextureDestinationRectangle;
             _drawings[_drawIndex].drawIndex = _drawIndex;
@@ -99,6 +107,20 @@ namespace FNAEngine2D
                          SpriteEffects effects,
                          float depth)
         {
+
+            //Check if the texture si really on the camera
+            if (sourceRectangle != null)
+            {
+                if (!_camera.IsDisplayed(position, sourceRectangle.Value.Width, sourceRectangle.Value.Height))
+                    return;
+            }
+            else
+            {
+                if (!_camera.IsDisplayed(position, texture.Width, texture.Height))
+                    return;
+            }
+
+            //Add to the queue of be drew...
             _drawIndex++;
             if (_drawIndex == _bufferLength)
             {
@@ -131,6 +153,11 @@ namespace FNAEngine2D
                                SpriteEffects effects, 
                                float depth)
         {
+            //Check if the texture si really on the camera
+            if (!_camera.IsDisplayed(position, text.Width, text.Height))
+                return;
+
+            //Add to the queue of be drew...
             _drawIndex++;
             if (_drawIndex == _bufferLength)
             {
