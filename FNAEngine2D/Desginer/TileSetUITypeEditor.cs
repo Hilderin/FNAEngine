@@ -31,10 +31,15 @@ namespace FNAEngine2D.Desginer
             if (value != null && value.GetType() != typeof(TileSet))
                 return value;
 
-            if (value == null)
-                value = new TileSet();
+            if(EditModeHelper.SelectedGameObject == null || !(EditModeHelper.SelectedGameObject is TileSetRender))
+                return value;
 
-            EditModeHelper.ShowTileSetEditor((TileSet)value);
+            TileSetRender tileSetRender = (TileSetRender)EditModeHelper.SelectedGameObject;
+
+            if (tileSetRender.TileSet == null)
+                tileSetRender.TileSet = new TileSet();
+
+            EditModeHelper.ShowTileSetEditor(tileSetRender, true);
 
 
             //No changes...

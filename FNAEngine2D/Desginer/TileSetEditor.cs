@@ -69,26 +69,43 @@ namespace FNAEngine2D.Desginer
         /// <summary>
         /// Constructor
         /// </summary>
-        public TileSetEditor(TileSet tileSet)
+        public TileSetEditor()
         {
             InitializeComponent();
 
-            _gameObject = EditModeHelper.SelectedGameObject;
-            this.Text = "Tile Set Editor - " + _gameObject.DisplayName;
+        }
 
-            if (tileSet == null)
-                tileSet = new TileSet();
+        /// <summary>
+        /// Set of the current game object that is edited
+        /// </summary>
+        public void SetGameObject(GameObject gameObject)
+        {
+            if (gameObject is TileSetRender)
+            {
+                _gameObject = EditModeHelper.SelectedGameObject;
+                this.Text = "Tile Set Editor - " + _gameObject.DisplayName;
 
-            _tileSet = tileSet;
+                TileSetRender tileSetRender = (TileSetRender)gameObject;
+                if (tileSetRender.TileSet == null)
+                    tileSetRender.TileSet = new TileSet();
+
+                _tileSet = tileSetRender.TileSet;
 
 
-            //Bind to screen...
-            txtTexture.Text = _tileSet.TextureName;
-            txtTileSize.Text = _tileSet.TileSize.ToString();
-            txtTileScreenSize.Text = _tileSet.TileScreenSize.ToString();
+                //Bind to screen...
+                txtTexture.Text = _tileSet.TextureName;
+                txtTileSize.Text = _tileSet.TileSize.ToString();
+                txtTileScreenSize.Text = _tileSet.TileScreenSize.ToString();
 
-            LoadTileSet(_tileSet.TextureName);
-
+                LoadTileSet(_tileSet.TextureName);
+            }
+            else
+            {
+                this.Text = "Tile Set Editor - No selection";
+                _tileSet = null;
+                _gameObject = null;
+                LoadTileSet(String.Empty);
+            }
         }
 
         /// <summary>

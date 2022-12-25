@@ -54,7 +54,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Indicate we the TileSet editor is opened
         /// </summary>
-        public static bool IsTileSetEditorOpened { get { return _tileSetEditor != null; } }
+        public static bool IsTileSetEditorOpened { get { return _tileSetEditor != null && _tileSetEditor.Visible; } }
 
         /// <summary>
         /// DateTime when the Game or a designer was last activate
@@ -155,7 +155,7 @@ namespace FNAEngine2D
                 //Mouse left click to place a tile...
                 if (Input.MouseLeftDown() || Input.MouseRightDown())
                 {
-                    if (_tileSetEditor != null)
+                    if (IsTileSetEditorOpened)
                     {
                         Vector2 mousePosition = Input.MousePosition();
                         if (Input.MouseLeftDown())
@@ -170,7 +170,7 @@ namespace FNAEngine2D
 
             //Even inactive i want to see the preview...
             //Showing preview on mouse cursor...
-            if (_tileSetEditor != null)
+            if (IsTileSetEditorOpened)
             {
                 Vector2 mousePosition = Input.MousePosition();
                 _tileSetEditor.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
@@ -278,34 +278,21 @@ namespace FNAEngine2D
         /// <summary>
         /// Show tileset editor
         /// </summary>
-        public static void ShowTileSetEditor(TileSet tileSet)
+        public static void ShowTileSetEditor(TileSetRender gameObject, bool setFocus)
         {
-            int lastX = Int32.MinValue;
-            int lastY = Int32.MinValue;
-
-            if (_tileSetEditor != null && (_tileSetEditor.TileSet != tileSet || _tileSetEditor.GameObject != EditModeHelper.SelectedGameObject))
-            {
-                lastX = _tileSetEditor.Left;
-                lastY = _tileSetEditor.Top;
-
-                _tileSetEditor.Close();
-                _tileSetEditor = null;
-            }
-
-
+            
             if (_tileSetEditor == null || _tileSetEditor.IsDisposed)
             {
-                _tileSetEditor = new TileSetEditor(tileSet);
+                _tileSetEditor = new TileSetEditor();
                 _tileSetEditor.Show();
                 WindowHelper.LastWindowSwitch = DateTime.MinValue;
-
-                if (lastX != Int32.MinValue)
-                {
-                    _tileSetEditor.Left = lastX;
-                    _tileSetEditor.Top = lastY;
-                }
-
             }
+
+            if (_tileSetEditor != null && (_tileSetEditor.TileSet != gameObject.TileSet || _tileSetEditor.GameObject != gameObject))
+            {
+                _tileSetEditor.SetGameObject(gameObject);
+            }
+
 
 
             //Restore/disply window...
@@ -323,7 +310,8 @@ namespace FNAEngine2D
 
 
             //We will focus on the editor...
-            ShowAllGameForms(_tileSetEditor.Handle);
+            if(setFocus)
+                ShowAllGameForms(_tileSetEditor.Handle);
         }
 
         /// <summary>
@@ -333,9 +321,7 @@ namespace FNAEngine2D
         {
             if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
             {
-                if (!_tileSetEditor.IsClosing)
-                    _tileSetEditor.Close();
-                _tileSetEditor = null;
+                _tileSetEditor.Hide();
             }
         }
 

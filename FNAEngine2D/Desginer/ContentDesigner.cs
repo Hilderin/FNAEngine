@@ -109,6 +109,11 @@ namespace FNAEngine2D.Desginer
                     if (!Save())
                         return;
                 }
+                else
+                {
+                    //Revert back ti the original...
+                    RevertToHistory(_history[0]);
+                }
             }
 
             //Fetch all containers...
@@ -120,30 +125,32 @@ namespace FNAEngine2D.Desginer
             else
                 _currentContainer = null;
 
-            _isDirty = false;
+            SetDirty(false);
 
             cboGameContentContainer.DataSource = _containers;
+            
+            ReloadGameObjectsFromContainer();
 
             ResetHistory();
 
-            ReloadGameObjectsFromContainer();
-
-            ReopenTileSetEditorAfterReload();
+            SetTileSetEditorAfterReload();
 
         }
 
 
         /// <summary>
-        /// Reopen the tile set editor after reloading if needed
+        /// Update the tile set editor after reloading
         /// </summary>
-        private void ReopenTileSetEditorAfterReload()
+        private void SetTileSetEditorAfterReload()
         {
             //Reopening the TileSetEditor...
             if (EditModeHelper.IsTileSetEditorOpened)
             {
                 if (cboGameObjects.SelectedItem is TileSetRender)
                     //Reopenning the tileset editor for the new tileset...
-                    EditModeHelper.ShowTileSetEditor(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
+                    EditModeHelper.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
+                else
+                    EditModeHelper.HideTileSetEditor();
             }
         }
 
@@ -168,10 +175,15 @@ namespace FNAEngine2D.Desginer
                         return false;
                     }
                 }
+                else
+                {
+                    //Revert back ti the original...
+                    RevertToHistory(_history[0]);
+                }
             }
 
             //Fake that it's not dirty so the question will not be asked again.
-            _isDirty = false;
+            SetDirty(false);
 
             return true;
         }
@@ -260,7 +272,7 @@ namespace FNAEngine2D.Desginer
 
                 cboGameObjects.SelectedItem = obj;
 
-                ReopenTileSetEditorAfterReload();
+                SetTileSetEditorAfterReload();
 
                 SetDirty(true);
 
@@ -309,7 +321,7 @@ namespace FNAEngine2D.Desginer
 
                 ReloadGameObjectsFromContainer();
 
-                ReopenTileSetEditorAfterReload();
+                SetTileSetEditorAfterReload();
 
                 SetDirty(true);
             }
@@ -336,7 +348,7 @@ namespace FNAEngine2D.Desginer
                     {
                         if (cboGameObjects.SelectedItem is TileSetRender)
                             //Reopenning the tileset editor for the new tileset...
-                            EditModeHelper.ShowTileSetEditor(((TileSetRender)cboGameObjects.SelectedItem).TileSet);
+                            EditModeHelper.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
                         else
                             EditModeHelper.HideTileSetEditor();
                     }
@@ -486,30 +498,20 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void cboGameContentContainer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_isDirty && _currentContainer != null)
+            if (!ConfirmBeforeClose(true))
             {
-                DialogResult result = MessageBox.Show("Modifications not saved. Do you want to save your modifications?", "Modification", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-                if (result == DialogResult.Cancel)
-                {
-                    cboGameContentContainer.SelectedItem = _currentContainer;
-                    return;
-                }
-
-                if (result == DialogResult.Yes)
-                {
-                    if (!Save())
-                        return;
-                }
+                //Reselect the container...
+                cboGameContentContainer.SelectedItem = _currentContainer;
             }
+
 
             _currentContainer = (GameContentContainer)cboGameContentContainer.SelectedItem;
 
-            ResetHistory();
-
             ReloadGameObjectsFromContainer();
 
-            ReopenTileSetEditorAfterReload();
+            ResetHistory();
+
+            SetTileSetEditorAfterReload();
 
         }
 
@@ -634,35 +636,42 @@ namespace FNAEngine2D.Desginer
         {
             try
             {
-                if (_historyIndex <= 0)
+                if (_historyIndex < 1)
                     return;
 
                 HistoryState history = _history[_historyIndex - 1];
 
                 _historyIndex--;
 
-                //Recreating the game content...
-                GameContent gameContent = JsonConvert.DeserializeObject<GameContent>(history.JsonGameContent);
-                               
+                RevertToHistory(history);
 
-                GameContentManager.ReplaceContent(_currentContainer, gameContent);
-
-                ReloadGameObjectsFromContainer();
-
-                try
-                {
-                    cboGameObjects.SelectedItem = history.GameObjectSelectedIndex;
-                }
-                catch { }
-
-                ReopenTileSetEditorAfterReload();
-
-                
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Revert back the content to an history
+        /// </summary>
+        private void RevertToHistory(HistoryState history)
+        {
+            //Recreating the game content...
+            GameContent gameContent = JsonConvert.DeserializeObject<GameContent>(history.JsonGameContent);
+
+
+            GameContentManager.ReplaceContent(_currentContainer, gameContent);
+
+            ReloadGameObjectsFromContainer();
+
+            try
+            {
+                cboGameObjects.SelectedItem = history.GameObjectSelectedIndex;
+            }
+            catch { }
+
+            SetTileSetEditorAfterReload();
         }
 
         /// <summary>
