@@ -96,6 +96,7 @@
       <DependentUpon>TileSetEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="EditModeHelper.cs" />
+    <Compile Include="DebugInfoRender.cs" />
     <Compile Include="GameObjectTypesLoader.cs" />
     <Compile Include="DrawingContext.cs" />
     <Compile Include="Font.cs" />

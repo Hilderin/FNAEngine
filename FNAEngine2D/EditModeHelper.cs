@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,7 +45,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Indicate if we when to run the game in edit mode
         /// </summary>
-        public static bool IsGameRunning { get; set; } = false;
+        private static bool _isGameRunning = false;
+
 
         /// <summary>
         /// Selected game object in the designer
@@ -84,6 +86,44 @@ namespace FNAEngine2D
                     {
                         HideDesigner();
                         HideTileSetEditor();
+                    }
+
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Indicate if we when to run the game in edit mode
+        /// </summary>
+        public static bool IsGameRunning
+        {
+            get { return _isGameRunning; }
+            set
+            {
+                if (_isGameRunning != value)
+                {
+                    _isGameRunning = value;
+                    if (_isGameRunning)
+                    {
+                        if (_designer != null && !_designer.IsDisposed)
+                        {
+                            _designer.HidePreview();
+                        }
+
+                        if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
+                        {
+                            _tileSetEditor.HidePreview();
+                        }
+
+
+                        if (!_isMouseWasShowned)
+                            MouseManager.HideMouse();
+                    }
+                    else
+                    {
+                        //Reshowing the mouse...
+                        MouseManager.ShowMouse();
                     }
                 }
             }
@@ -275,6 +315,7 @@ namespace FNAEngine2D
 
             if (_designer != null && !_designer.IsDisposed)
             {
+                _designer.HidePreview();
                 _designer.Hide();
             }
 
@@ -355,6 +396,7 @@ namespace FNAEngine2D
         {
             if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
             {
+                _tileSetEditor.HidePreview();
                 _tileSetEditor.Hide();
             }
         }

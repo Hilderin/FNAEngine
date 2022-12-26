@@ -85,5 +85,29 @@ namespace FNAEngine2D
         {
             return new Vector2(vector.X, vector.Y + y);
         }
+
+        /// <summary>
+        /// Add on x and y axis
+        /// </summary>
+        public static Vector2 AddXY(Vector2 vector, float x, float y)
+        {
+            return new Vector2(vector.X + x, vector.Y + y);
+        }
+
+        /// <summary>
+        /// Add a point
+        /// </summary>
+        public static Vector2 Add(Vector2 vector, Point point)
+        {
+            return new Vector2(vector.X + point.X, vector.Y + point.Y);
+        }
+
+        /// <summary>
+        /// Substract a point
+        /// </summary>
+        public static Vector2 Substract(Vector2 vector, Point point)
+        {
+            return new Vector2(vector.X - point.X, vector.Y - point.Y);
+        }
     }
 }
