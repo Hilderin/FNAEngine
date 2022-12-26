@@ -223,9 +223,18 @@ namespace FNAEngine2D
             if (_textUpdated)
             {
                 if (_font == null || String.IsNullOrEmpty(this.Text))
+                {
                     _textCache = null;
+                    this.Width = 0;
+                    this.Height = 0;
+                }
                 else
+                {
                     _textCache = _font.MakeText(this.Text);
+                    this.Width = _textCache.Width;
+                    this.Height = _textCache.Height;
+                }
+
                 _textUpdated = false;
             }
         }

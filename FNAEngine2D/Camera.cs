@@ -219,6 +219,7 @@ namespace FNAEngine2D
             //Default size
             _size = new Point(width, height);
             RecalculteViewPort();
+            RecalculteDisplayBounds();
         }
 
         /// <summary>
@@ -229,6 +230,7 @@ namespace FNAEngine2D
             //Default size
             _size = new Point(GameHost.Width, GameHost.Height);
             RecalculteViewPort();
+            RecalculteDisplayBounds();
         }
 
         /// <summary>

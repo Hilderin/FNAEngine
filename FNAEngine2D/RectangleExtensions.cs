@@ -62,6 +62,22 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Add on x and y axis
+        /// </summary>
+        public static Rectangle AddXY(this Rectangle rectangle, int x, int y)
+        {
+            return RectangleHelper.AddXY(rectangle, x, y);
+        }
+
+        /// <summary>
+        /// Add on x and y axis
+        /// </summary>
+        public static Rectangle Add(this Rectangle rectangle, Vector2 vector)
+        {
+            return RectangleHelper.Add(rectangle, vector);
+        }
+
+        /// <summary>
         /// Get the location Vector2
         /// </summary>
         public static Vector2 GetLocation(this Rectangle rectangle)

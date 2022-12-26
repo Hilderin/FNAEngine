@@ -53,7 +53,7 @@ namespace FNAEngine2D
 
         public override void Load()
         {
-            _textRender = this.Add(new TextRender(GetText(), this.FontName, this.FontSize, Vector2.Zero, this.Color));
+            _textRender = this.Add(new TextRender(GetText(), this.FontName, this.FontSize, this.Location, this.Color));
         }
 
         public override void Update()
@@ -65,8 +65,12 @@ namespace FNAEngine2D
         {
             MouseState mouseState = Mouse.GetState();
 
-            return "Mouse: " + mouseState.X + ", " + mouseState.Y;
+            return "Mouse: " + mouseState.X + ", " + mouseState.Y + ", Elapsed: "  + GameHost.ElapsedGameTimeMilliseconds + "ms";
         }
 
+        public override void Draw()
+        {
+            base.Draw();
+        }
     }
 }

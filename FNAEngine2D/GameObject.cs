@@ -320,13 +320,20 @@ namespace FNAEngine2D
             {
                 if (_layerMask != value)
                 {
+                    
+                    //Update children that were on the same layer...
+                    if (this._childrens.Count > 0)
+                    {
+
+                        for (int index = 0; index < this._childrens.Count; index++)
+                        {
+                            if (this._childrens[index].LayerMask == _layerMask)
+                                this._childrens[index].LayerMask = value;
+                        }
+
+                    }
+
                     _layerMask = value;
-
-                    if (this._childrens.Count == 0)
-                        return;
-
-                    for (int index = 0; index < this._childrens.Count; index++)
-                        this._childrens[index].LayerMask = value;
                 }
             }
         }
@@ -424,6 +431,9 @@ namespace FNAEngine2D
 
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
+            //Propagate the layermask...
+            if (gameObject.LayerMask == Layers.Layer1 && this.LayerMask != Layers.Layer1)
+                gameObject.LayerMask = this.LayerMask;
 
 
             this._childrens.Insert(index, gameObject);

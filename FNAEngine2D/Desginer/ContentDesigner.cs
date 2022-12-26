@@ -8,6 +8,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -159,7 +160,9 @@ namespace FNAEngine2D.Desginer
 
                         }
 
-                        _previewEditObject.Bounds = EditModeHelper.SelectedGameObject.Bounds;
+                        //Camera camera = GetCameraForLayer(EditModeHelper.SelectedGameObject.LayerMask);
+                        _previewEditObject.Bounds = GetGameObjectBounds(EditModeHelper.SelectedGameObject);
+                        _previewEditObject.LayerMask = EditModeHelper.SelectedGameObject.LayerMask;
                     }
                 }
 
@@ -168,6 +171,67 @@ namespace FNAEngine2D.Desginer
             {
                 MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);                
             }
+        }
+
+        /// <summary>
+        /// Get the bounds of a game object for the preview
+        /// </summary>
+        private Microsoft.Xna.Framework.Rectangle GetGameObjectBounds(GameObject gameObject)
+        {
+            if (gameObject.Width != 0 && gameObject.Height != 0)
+                return gameObject.Bounds;
+
+            Microsoft.Xna.Framework.Rectangle bounds = gameObject.Bounds;
+            UpdateGameObjectBounds(gameObject, ref bounds);
+            return bounds;
+
+        }
+
+        /// <summary>
+        /// Get the bounds of a game object for the preview
+        /// </summary>
+        private void UpdateGameObjectBounds(GameObject gameObject, ref Microsoft.Xna.Framework.Rectangle bounds)
+        {
+            if (gameObject.X < bounds.X)
+                bounds.X = (int)gameObject.X;
+            if (gameObject.Y < bounds.Y)
+                bounds.Y = (int)gameObject.Y;
+
+            if (bounds.Width < gameObject.Width)
+                bounds.Width = (int)gameObject.Width;
+            if (bounds.Height < gameObject.Height)
+                bounds.Height = (int)gameObject.Height;
+
+            if (gameObject.NbChildren > 0)
+            {
+                for (int index = 0; index < gameObject.NbChildren; index++)
+                    UpdateGameObjectBounds(gameObject.Get(index), ref bounds);
+            }
+
+        }
+
+        /// <summary>
+        /// Get the camera to use for a layermask
+        /// </summary>
+        private Camera GetCameraForLayer(Layers layerMask)
+        {
+            if (GameHost.ExtraCameras.Count == 0)
+                return GameHost.MainCamera;
+
+            if ((GameHost.MainCamera.LayerMask & layerMask) != 0)
+                return GameHost.MainCamera;
+
+            if (GameHost.ExtraCameras.Count > 0)
+            {
+                foreach (Camera camera in GameHost.ExtraCameras)
+                {
+                    if ((camera.LayerMask & layerMask) != 0)
+                        return camera;
+                }
+            }
+
+            return GameHost.MainCamera;
+
         }
 
         /// <summary>
@@ -232,7 +296,16 @@ namespace FNAEngine2D.Desginer
             else
             {
                 //We dont have anything selected...
+                List<GameObject> selectObjects = GetGameObjectsAtCoord(x, y);
+                if (selectObjects.Count > 0)
+                {
+                    //Already selected?
+                    if (EditModeHelper.SelectedGameObject != null && selectObjects.Contains(EditModeHelper.SelectedGameObject))
+                        return;
 
+                    //Change selection to the last game...
+                    cboGameObjects.SelectedItem = selectObjects[selectObjects.Count - 1];
+                }
             }
 
         }
@@ -242,15 +315,11 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void OnMouseRightClickInGame(int x, int y)
         {
-            //if (SetTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null, _tileSet))
-            //{
-            //    EditModeHelper.SetDirty(true);
-            //    EditModeHelper.AddHistory();
-            //    UpdatePreviewTileSet();
-
-            //    _gameObject.RemoveAll();
-            //    _gameObject.Load();
-            //}
+            List<GameObject> selectObjects = GetGameObjectsAtCoord(x, y);
+            if (selectObjects.Count > 0)
+            {
+                RemoveGameObject(selectObjects[selectObjects.Count - 1]);
+            }
         }
 
         /// <summary>
@@ -258,30 +327,28 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void Reload()
         {
-            if (_isDirty && _currentContainer != null)
-            {
-                DialogResult result = MessageBox.Show("Modifications not saved. Do you want to save your modifications?", "Modification", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            //if (_isDirty && _currentContainer != null)
+            //{
+            //    DialogResult result = MessageBox.Show("Modifications not saved. Do you want to save your modifications?", "Modification", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
-                if (result == DialogResult.Cancel)
-                {
-                    cboGameContentContainer.SelectedItem = _currentContainer;
-                    return;
-                }
+            //    if (result == DialogResult.Cancel)
+            //    {
+            //        cboGameContentContainer.SelectedItem = _currentContainer;
+            //        return;
+            //    }
 
-                if (result == DialogResult.Yes)
-                {
-                    if (!Save())
-                        return;
-                }
-                else
-                {
-                    //Revert back ti the original...
-                    RevertToHistory(_history[0]);
-                }
-            }
+            //    if (result == DialogResult.Yes)
+            //    {
+            //        if (!Save())
+            //            return;
+            //    }
+            //}
 
             //Fetch all containers...
             _containers = GameHost.RootGameObject.FindAll<GameContentContainer>();
+
+            _previewEditObject = null;
+            _previewAddObject = null;
 
 
             if (_containers.Count > 0)
@@ -357,6 +424,8 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void ReloadGameObjectsFromContainer()
         {
+
+            HideEditPreview();
 
             _gameObjects = new List<GameObject>();
             if (_currentContainer != null)
@@ -634,6 +703,7 @@ namespace FNAEngine2D.Desginer
                 var serializer = new JsonSerializer();
 
                 serializer.Formatting = Formatting.Indented;
+                serializer.DefaultValueHandling = DefaultValueHandling.Ignore;
 
                 using (Stream stream = File.Create(fullPath))
                 {
@@ -824,6 +894,15 @@ namespace FNAEngine2D.Desginer
         }
 
         /// <summary>
+        /// Revert all modifications
+        /// </summary>
+        public void Revert()
+        {
+            if(_history.Count > 1)
+                RevertToHistory(_history[0]);
+        }
+
+        /// <summary>
         /// Revert back the content to an history
         /// </summary>
         private void RevertToHistory(HistoryState history)
@@ -872,6 +951,36 @@ namespace FNAEngine2D.Desginer
 
 
 
+        /// <summary>
+        /// Get game objects at a coord
+        /// </summary>
+        private List<GameObject> GetGameObjectsAtCoord(int x, int y)
+        {
+            List<GameObject> list = new List<GameObject>();
+
+            if (_currentContainer != null)
+            {
+                Microsoft.Xna.Framework.Vector2 coord = new Microsoft.Xna.Framework.Vector2(x, y);
+                coord -= GameHost.MainCamera.Location.Substract(GameHost.MainCamera.ViewLocation);
+                list.AddRange(_currentContainer.FindAll(o => IsObjectAtCoord(o, coord)));
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Check if a object is at a coord
+        /// </summary>
+        private bool IsObjectAtCoord(GameObject gameObject, Microsoft.Xna.Framework.Vector2 coord)
+        {
+            if (!_gameObjects.Contains(gameObject))
+                return false;
+
+            //We need the camera for the offset location...
+            Camera camera = GetCameraForLayer(gameObject.LayerMask);
+
+            return VectorHelper.Intersects(coord + camera.Location, GetGameObjectBounds(gameObject));
+        }
 
         /// <summary>
         /// HistoryState

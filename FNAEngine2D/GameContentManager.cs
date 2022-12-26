@@ -242,7 +242,10 @@ namespace FNAEngine2D
 
             gameContentObject.ClassName = type.Name;
 
-            gameContentObject.Props = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(gameObject));
+            gameContentObject.Props = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(gameObject, Formatting.None, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            }));
 
             return gameContentObject;
 

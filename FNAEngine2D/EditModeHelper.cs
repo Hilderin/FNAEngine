@@ -146,10 +146,17 @@ namespace FNAEngine2D
             //Reload the content...
             if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
             {
-                GameHost.InternalGame.RootGameObject.RemoveAll();
-                GameHost.InternalGame.RootGameObject.Load();
+                if (EditModeHelper.ConfirmBeforeClose(true))
+                {
+                    EditModeHelper.Revert();
 
-                EditModeHelper.ReloadDesigner();
+                    GameHost.InternalGame.RootGameObject.RemoveAll();
+                    GameHost.InternalGame.RootGameObject.Load();
+
+                    EditModeHelper.ReloadDesigner();
+                }
+
+
             }
 
             //Designer...
@@ -330,6 +337,15 @@ namespace FNAEngine2D
         {
             if (_designer != null && !_designer.IsDisposed)
                 _designer.Reload();
+        }
+
+        /// <summary>
+        /// Revert all modifications
+        /// </summary>
+        public static void Revert()
+        {
+            if (_designer != null && !_designer.IsDisposed)
+                _designer.Revert();
         }
 
         /// <summary>

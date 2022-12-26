@@ -25,8 +25,8 @@ namespace FNAEngine2D
         /// </summary>
         public static Rectangle CenterBottom(Rectangle parentBounds, int width, int height)
         {
-            return new Rectangle((parentBounds.Width / 2) - (width / 2)
-                                , parentBounds.Height - height
+            return new Rectangle(parentBounds.X + (parentBounds.Width / 2) - (width / 2)
+                                , parentBounds.Y + (parentBounds.Height - height)
                                 , width
                                 , height);
         }
@@ -45,6 +45,22 @@ namespace FNAEngine2D
         public static Rectangle AddY(Rectangle rectangle, int y)
         {
             return new Rectangle(rectangle.X, rectangle.Y + y, rectangle.Width, rectangle.Height);
+        }
+
+        /// <summary>
+        /// Add on x and y axis
+        /// </summary>
+        public static Rectangle AddXY(Rectangle rectangle, int x, int y)
+        {
+            return new Rectangle(rectangle.X + x, rectangle.Y + y, rectangle.Width, rectangle.Height);
+        }
+
+        /// <summary>
+        /// Add on x and y axis
+        /// </summary>
+        public static Rectangle Add(Rectangle rectangle, Vector2 vector)
+        {
+            return new Rectangle(rectangle.X + (int)vector.X, rectangle.Y + (int)vector.Y, rectangle.Width, rectangle.Height);
         }
     }
 }
