@@ -270,10 +270,6 @@ namespace FNAEngine2D
             //Setup the mouse...
             this.IsMouseVisible = MouseManager.IsMouseVisible;
 
-            //We disable the fixed time step be better manage lags or if frame take longer to update/draw.
-            //this.IsFixedTimeStep = false;
-
-
         }
 
         /// <summary>

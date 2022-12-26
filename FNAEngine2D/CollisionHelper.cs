@@ -14,9 +14,78 @@ namespace FNAEngine2D
     public static class CollisionHelper
     {
         /// <summary>
+        /// Number of pixels minimum for distance travelled for calculation
+        /// </summary>
+        public static float MinimumDistanceCalculation = 5f;
+
+        /// <summary>
         /// Empty collisions
         /// </summary>
         public readonly static List<Collision> EMPTY_COLLISIONS = new List<Collision>();
+
+
+        /// <summary>
+        /// Permet d'obtenir le résultat de la collision entre 2 rectangle
+        /// </summary>
+        public static bool GetCollisionTravel(Vector2 movingColliderOriginLocation, Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider collidesWith, ref Collision collision)
+        {
+            Vector2 movingColliderDestinationLocation;
+            //We start from the other collider...
+            if (collision != null)
+                movingColliderDestinationLocation = collision.StopLocation;
+            else
+                movingColliderDestinationLocation = movingColliderLocation;
+
+
+            float distance = (movingColliderDestinationLocation - movingColliderOriginLocation).Length();
+
+            //If we are good with the distance, we will not split it...
+            if (distance <= MinimumDistanceCalculation)
+                return GetCollision(movingColliderLocation, movingColliderSize, collidesWith, ref collision);
+
+            int nbLerp = (int)Math.Ceiling(distance / MinimumDistanceCalculation);
+            float incrementAmount = 1f / nbLerp;
+            float amount = 0;
+            bool collided = false;
+            for (int index = 1; index < nbLerp; index++)
+            {
+                amount += incrementAmount;
+                Vector2 movingColliderLocationLerped = Vector2.Lerp(movingColliderOriginLocation, movingColliderDestinationLocation, amount);
+
+                Collision stepCollision = null;
+                if (GetCollision(movingColliderLocationLerped, movingColliderSize, collidesWith, ref stepCollision))
+                {
+                    collided = true;
+                    if (stepCollision.StopLocation == movingColliderDestinationLocation)
+                    {
+                        //Cannot move anymore...
+                        collision = stepCollision;
+                        return true;
+                    }
+
+                    if (stepCollision.StopLocation.X != movingColliderLocationLerped.X)
+                    {
+                        //Cannot move on X...
+                        movingColliderLocation.X = stepCollision.StopLocation.X;
+                        movingColliderDestinationLocation.X = stepCollision.StopLocation.X;
+                    }
+                    if (stepCollision.StopLocation.Y != movingColliderLocationLerped.Y)
+                    {
+                        //Cannot move on Y...
+                        movingColliderLocation.Y = stepCollision.StopLocation.Y;
+                        movingColliderDestinationLocation.Y = stepCollision.StopLocation.Y;
+                    }
+                }
+
+            }
+
+            //Check the last one at destination...
+            if (GetCollision(movingColliderDestinationLocation, movingColliderSize, collidesWith, ref collision))
+                collided = true;
+
+            return collided;
+
+        }
 
         /// <summary>
         /// Permet d'obtenir le résultat de la collision entre 2 rectangle

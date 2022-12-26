@@ -64,6 +64,30 @@ namespace FNAEngine2D
             return ret;
         }
 
+        /// <summary>
+        /// Permet d'obtenir la liste des collisions
+        /// </summary>
+        public Collision GetCollisionTravel(Vector2 movingColliderOriginLocation, Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, Type[] types)
+        {
+            if (_colliders.Count == 0)
+                return null;
+
+            Collision ret = null;
+
+            for (int index = 0; index < _colliders.Count; index++)
+            {
+                if (_colliders[index] != movingCollider)
+                {
+                    if (types == null || types.Contains(_colliders[index].GameObject.GetType()))
+                    {
+                        CollisionHelper.GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingColliderSize, _colliders[index], ref ret);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         ///// <summary>
         ///// Permet d'obtenir la liste des collisions
         ///// </summary>

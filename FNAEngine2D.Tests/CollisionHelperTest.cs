@@ -83,8 +83,19 @@ namespace FNAEngine2D.Tests
         [TestMethod]
         public void GetCollision_None()
         {
-            Collision collision = CollisionHelper.GetCollision(new Vector2(2000, 20), new Vector2(10, 20), new Collider(10, 10, 100, 100));
+            Collision collision = CollisionHelper.GetCollision(new Vector2(2000, 20), new Vector2(10, 20), new Collider(10, 10, 100, 100)); 
             Assert.IsNull(collision);
+        }
+
+        [TestMethod]
+        public void GetCollisionTravel()
+        {
+            Collision collision = null;
+            bool ret = CollisionHelper.GetCollisionTravel(new Vector2(0, 5), new Vector2(1000, 5), new Vector2(5, 5), new Collider(10, 0, 10, 100), ref collision);
+
+            Assert.IsTrue(ret);
+            Assert.AreEqual(5, collision.StopLocation.X);
+            Assert.AreEqual(5, collision.StopLocation.Y);
         }
     }
 }

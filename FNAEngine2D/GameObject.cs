@@ -977,7 +977,7 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(float nextX, float nextY, Type[] types)
         {
-            return GetCollision(new Vector2(nextX, nextY), types);
+            return GetCollision(this._location, new Vector2(nextX, nextY), types);
         }
 
         /// <summary>
@@ -992,6 +992,7 @@ namespace FNAEngine2D
 
             return container.GetCollision(position, size, _collider, types);
         }
+
 
         /// <summary>
         /// Hide a object
