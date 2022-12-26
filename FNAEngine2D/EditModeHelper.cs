@@ -135,6 +135,12 @@ namespace FNAEngine2D
         /// </summary>
         public static void ProcessUpdateEditMode()
         {
+            //Cancel selection...
+            if (Input.IsKeyDown(Keys.Escape))
+            {
+                ClearSelection();
+            }
+
             if (GameHost.InternalGame.IsActive)
             {
                 //Game active...
@@ -152,6 +158,7 @@ namespace FNAEngine2D
                     //Moving camera to the down
                     GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
 
+
                 //Mouse left click to place a tile...
                 if (Input.MouseLeftDown() || Input.MouseRightDown())
                 {
@@ -165,6 +172,18 @@ namespace FNAEngine2D
                     }
                 }
 
+                if (Input.MouseLeftNewDown() || Input.MouseRightNewDown())
+                {
+                    if (_designer != null && !_designer.IsDisposed)
+                    {
+                        Vector2 mousePosition = Input.MousePosition();
+                        if (Input.MouseLeftDown())
+                            _designer.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                        if (Input.MouseRightDown())
+                            _designer.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                    }
+                }
+
             }
 
 
@@ -175,9 +194,24 @@ namespace FNAEngine2D
                 Vector2 mousePosition = Input.MousePosition();
                 _tileSetEditor.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
             }
+            else if(_designer != null && !_designer.IsDisposed)
+            {
+                Vector2 mousePosition = Input.MousePosition();
+                _designer.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
+            }
 
         }
 
+        /// <summary>
+        /// Remove the curret selection of object
+        /// </summary>
+        public static void ClearSelection()
+        {
+            if (IsTileSetEditorOpened)
+                _tileSetEditor.ClearSelection();
+            if (_designer != null && !_designer.IsDisposed)
+                _designer.ClearSelection();
+        }
 
         /// <summary>
         /// Check if a reshowing of all window is needed

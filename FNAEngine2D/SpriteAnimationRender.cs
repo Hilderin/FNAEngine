@@ -14,7 +14,7 @@ namespace FNAEngine2D
         /// <summary>
         /// CurrentFrame
         /// </summary>
-        private int _currentFrame = -1;
+        private int _currentFrame = 0;
 
         /// <summary>
         /// ElapsedTime
@@ -58,7 +58,8 @@ namespace FNAEngine2D
         /// </summary>
         public void Restart()
         {
-            _currentFrame = -1;
+            _currentFrame = 0;
+            _elapsedTime = 0;
         }
 
         /// <summary>
@@ -69,6 +70,7 @@ namespace FNAEngine2D
             if (String.IsNullOrEmpty(this.SpriteAnimationName))
             {
                 _spriteAnimation = null;
+                _currentFrame = -1;
             }
             else
             {
@@ -78,6 +80,12 @@ namespace FNAEngine2D
                     this.Width = _spriteAnimation.Data.Sprite.ColumnScreenWidth;
                 if (this.Height == 0)
                     this.Height = _spriteAnimation.Data.Sprite.RowScreenHeight;
+
+                if (_spriteAnimation.Data.Frames.Length == 0 || _spriteAnimation.Data.Sprite == null || _spriteAnimation.Data.Sprite.Texture == null)
+                {
+                    _currentFrame = -1;
+                    return;
+                }
             }
 
         }

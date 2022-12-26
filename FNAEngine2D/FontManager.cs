@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,12 @@ namespace FNAEngine2D
     /// </summary>
     internal static class FontManager
     {
+        /// <summary>
+        /// Embed font: Roboto-Regular
+        /// </summary>
+        public const string ROBOTO_REGULAR = "Roboto-Regular";
+
+
         /// <summary>
         /// Graphics device
         /// </summary>
@@ -63,11 +70,18 @@ namespace FNAEngine2D
             if (_fontManager == null)
                 throw new InvalidOperationException("GetFont called before initialize.");
 
+            //Embbed font?
+            if (filename == ROBOTO_REGULAR)
+            {
+                return _fontManager.GetTypeface(ROBOTO_REGULAR, Resource.Roboto_Regular).GetFont(fontSize);
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(Path.GetExtension(filename)))
+                    filename += ".ttf";
 
-            if (String.IsNullOrEmpty(Path.GetExtension(filename)))
-                filename += ".ttf";
-
-            return _fontManager.GetFont(ContentWatcher.ContentFolder + filename, fontSize);
+                return _fontManager.GetFont(ContentWatcher.ContentFolder + filename, fontSize);
+            }
         }
     }
 }

@@ -804,6 +804,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de déplacer vers une coordonnées
         /// </summary>
+        public void TranslateTo(float x, float y)
+        {
+            this.Translate(x - _location.X, y - _location.Y);
+        }
+
+        /// <summary>
+        /// Permet de déplacer vers une coordonnées
+        /// </summary>
         public void TranslateTo(Vector2 destination)
         {
             this.Translate(destination.X - _location.X, destination.Y - _location.Y);

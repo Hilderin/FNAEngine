@@ -13,16 +13,53 @@ namespace FNAEngine2D
 {
     public class FPSRender : GameObject
     {
-        public string FontName { get; set; }
+        /// <summary>
+        /// Fps average calculator
+        /// </summary>
+        private AverageCalculator _fpsAverage = new AverageCalculator(60);
 
-        public int FontSize { get; set; }
+        /// <summary>
+        /// LastFrameUpdateTimeMilliseconds average calculator
+        /// </summary>
+        private AverageCalculator _lastFrameUpdateTimeMillisecondsAverage = new AverageCalculator(120);
+
+        /// <summary>
+        /// LastFrameDrawTimeMilliseconds average calculator
+        /// </summary>
+        private AverageCalculator _lastFrameDrawTimeMillisecondsAverage = new AverageCalculator(120);
+
+        /// <summary>
+        /// LastFrameTimeMilliseconds average calculator
+        /// </summary>
+        private AverageCalculator _lastFrameTimeMillisecondsAverage = new AverageCalculator(120);
         
-        public Color Color { get; set; }
+
+        /// <summary>
+        /// Font name
+        /// </summary>
+        public string FontName { get; set; } = FontManager.ROBOTO_REGULAR;
+
+        /// <summary>
+        /// Font size
+        /// </summary>
+        public int FontSize { get; set; } = 12;
+
+        /// <summary>
+        /// Color to display
+        /// </summary>
+        public Color Color { get; set; } = Color.Yellow;
         
         /// <summary>
         /// TextRenderer
         /// </summary>
         private TextRender _textRender;
+
+        /// <summary>
+        /// Renderer de texture
+        /// </summary>
+        public FPSRender()
+        {
+        }
 
         /// <summary>
         /// Renderer de texture
@@ -36,16 +73,25 @@ namespace FNAEngine2D
 
         public override void Load()
         {
-            _textRender = this.Add(new TextRender(String.Empty, this.FontName, this.FontSize, Vector2.Zero, this.Color));
+            _textRender = this.Add(new TextRender(GetText(0, 0, 0, 0), this.FontName, this.FontSize, Vector2.Zero, this.Color));
         }
 
-        /// <summary>
-        /// Permet de dessiner l'objet
-        /// </summary>
-        public override void Draw()
+        public override void Update()
         {
-            _textRender.Text = "FPS: " + Math.Round(1 / GameHost.GameTime.ElapsedGameTime.TotalSeconds, 4).ToString() + ", Update: " + Math.Round(GameHost.LastFrameUpdateTimeMilliseconds, 8) + "ms, Draw: " + Math.Round(GameHost.LastFrameDrawTimeMilliseconds, 8) + "ms, Total: " + Math.Round(GameHost.LastFrameTimeMilliseconds, 8) + "ms";
+            _fpsAverage.Add(1 / GameHost.GameTime.ElapsedGameTime.TotalSeconds);
+            _lastFrameUpdateTimeMillisecondsAverage.Add(GameHost.LastFrameUpdateTimeMilliseconds);
+            _lastFrameDrawTimeMillisecondsAverage.Add(GameHost.LastFrameDrawTimeMilliseconds);
+            _lastFrameTimeMillisecondsAverage.Add(GameHost.LastFrameTimeMilliseconds);
             
+
+
+
+            _textRender.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());
+        }
+
+        private string GetText(decimal fps, decimal lastFrameUpdateTimeMilliseconds, decimal lastFrameDrawTimeMilliseconds, decimal lastFrameTimeMilliseconds)
+        {
+            return "FPS: " + Math.Round(fps, 4).ToString() + ", Update: " + Math.Round(lastFrameUpdateTimeMilliseconds, 4) + "ms, Draw: " + Math.Round(lastFrameDrawTimeMilliseconds, 4) + "ms, Total: " + Math.Round(lastFrameTimeMilliseconds, 4) + "ms";
         }
 
     }

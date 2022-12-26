@@ -57,6 +57,22 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private int _historyIndex = -1;
 
+        /// <summary>
+        /// Preview object
+        /// </summary>
+        private GameObject _previewObject = null;
+
+        /// <summary>
+        /// Selected game object type
+        /// </summary>
+        private Type _selectedGameObjectType = null;
+
+        /// <summary>
+        /// Item with the mouse over it
+        /// </summary>
+        private ListViewItem _mouseOverItem = null;
+        private ListViewItem _mouseOverItemSelectedItem = null;
+
 
         /// <summary>
         /// Constructor
@@ -87,6 +103,91 @@ namespace FNAEngine2D.Desginer
             //Load the components...
             Reload();
 
+        }
+
+        /// <summary>
+        /// Showing preview
+        /// </summary>
+        public void ShowPreview(int x, int y)
+        {
+            try
+            {
+                if (_selectedGameObjectType == null || _currentContainer == null || _currentContainer.RootGameObject == null)
+                    return;
+
+                //Preview object creation...
+                if (_previewObject == null)
+                {
+                    _previewObject = (GameObject)Activator.CreateInstance(_selectedGameObjectType);
+
+                    _currentContainer.RootGameObject.Add(_previewObject);
+
+                }
+
+                _previewObject.Location = new Microsoft.Xna.Framework.Vector2(x, y);
+
+            }
+            catch (Exception ex)
+            {
+                HidePreview();
+                lstGameObjectTypes.SelectedItems.Clear();
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);                
+            }
+        }
+
+        /// <summary>
+        /// Hide preview
+        /// </summary>
+        public void HidePreview()
+        {
+            if (_previewObject != null && _currentContainer != null && _currentContainer.RootGameObject != null)
+            {
+                _currentContainer.RootGameObject.Remove(_previewObject);
+            }
+
+            _previewObject = null;
+        }
+
+        /// <summary>
+        /// Remove selection
+        /// </summary>
+        public void ClearSelection()
+        {
+            if (lstGameObjectTypes.SelectedItems.Count > 0)
+            {
+                lstGameObjectTypes.SelectedItems[0].Selected = false;
+            }
+        }
+
+        /// <summary>
+        /// The user has click in the game
+        /// </summary>
+        public void OnMouseLeftClickInGame(int x, int y)
+        {
+            if (_previewObject == null || _selectedGameObjectType == null)
+                return;
+
+            GameObject newGameObject = AddGameObject(_selectedGameObjectType);
+
+            if (newGameObject != null)
+                newGameObject.TranslateTo(x, y);
+
+        }
+
+        /// <summary>
+        /// The user has click in the game
+        /// </summary>
+        public void OnMouseRightClickInGame(int x, int y)
+        {
+            //if (SetTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null, _tileSet))
+            //{
+            //    EditModeHelper.SetDirty(true);
+            //    EditModeHelper.AddHistory();
+            //    UpdatePreviewTileSet();
+
+            //    _gameObject.RemoveAll();
+            //    _gameObject.Load();
+            //}
         }
 
         /// <summary>
@@ -253,14 +354,14 @@ namespace FNAEngine2D.Desginer
         /// <summary>
         /// Add a game object on scene
         /// </summary>
-        private void AddGameObject(Type gameObjectType)
+        private GameObject AddGameObject(Type gameObjectType)
         {
             try
             {
                 if (_currentContainer == null)
                 {
                     MessageBox.Show("No Container selected.", "Add impossible", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    return null;
                 }
 
 
@@ -276,10 +377,13 @@ namespace FNAEngine2D.Desginer
 
                 SetDirty(true);
 
+                return obj;
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
             }
 
         }
@@ -572,9 +676,12 @@ namespace FNAEngine2D.Desginer
 
                 return true;
             }
+            
+
 
             return base.ProcessDialogKey(keyData);
         }
+
 
         /// <summary>
         /// Update the last time a form is active
@@ -673,6 +780,36 @@ namespace FNAEngine2D.Desginer
 
             SetTileSetEditorAfterReload();
         }
+
+        /// <summary>
+        /// Selected game object type changed
+        /// </summary>
+        private void lstGameObjectTypes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstGameObjectTypes.SelectedItems.Count > 0)
+            {
+                _selectedGameObjectType = _gameObjectTypes[lstGameObjectTypes.SelectedItems[0].Index];
+                _mouseOverItemSelectedItem = lstGameObjectTypes.SelectedItems[0];
+            }
+            else
+            {
+                _selectedGameObjectType = null;
+                _mouseOverItemSelectedItem = null;
+                HidePreview();
+            }
+        }
+
+
+        /// <summary>
+        /// Clear the selection
+        /// </summary>
+        private void lnkClearSelection_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            lstGameObjectTypes.SelectedItems.Clear();
+        }
+
+
+
 
         /// <summary>
         /// HistoryState

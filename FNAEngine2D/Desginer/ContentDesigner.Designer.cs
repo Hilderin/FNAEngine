@@ -44,6 +44,7 @@
             this.btnPausePlay = new System.Windows.Forms.Button();
             this.tmrUpdateLastActive = new System.Windows.Forms.Timer(this.components);
             this.btnUndo = new System.Windows.Forms.Button();
+            this.lnkClearSelection = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -126,6 +127,7 @@
             // 
             // splitContainer.Panel1
             // 
+            this.splitContainer.Panel1.Controls.Add(this.lnkClearSelection);
             this.splitContainer.Panel1.Controls.Add(this.lstGameObjectTypes);
             this.splitContainer.Panel1.Controls.Add(this.label1);
             this.splitContainer.Panel1.Controls.Add(this.cboGameContentContainer);
@@ -143,6 +145,7 @@
             // 
             // lstGameObjectTypes
             // 
+            this.lstGameObjectTypes.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.lstGameObjectTypes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -151,12 +154,15 @@
             this.lstGameObjectTypes.FullRowSelect = true;
             this.lstGameObjectTypes.GridLines = true;
             this.lstGameObjectTypes.HideSelection = false;
+            this.lstGameObjectTypes.HoverSelection = true;
             this.lstGameObjectTypes.Location = new System.Drawing.Point(0, 40);
+            this.lstGameObjectTypes.MultiSelect = false;
             this.lstGameObjectTypes.Name = "lstGameObjectTypes";
             this.lstGameObjectTypes.Size = new System.Drawing.Size(333, 210);
             this.lstGameObjectTypes.TabIndex = 4;
             this.lstGameObjectTypes.UseCompatibleStateImageBehavior = false;
             this.lstGameObjectTypes.View = System.Windows.Forms.View.Details;
+            this.lstGameObjectTypes.SelectedIndexChanged += new System.EventHandler(this.lstGameObjectTypes_SelectedIndexChanged);
             this.lstGameObjectTypes.DoubleClick += new System.EventHandler(this.lstGameObjectTypes_DoubleClick);
             // 
             // colFullName
@@ -218,6 +224,20 @@
             this.btnUndo.UseVisualStyleBackColor = true;
             this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
             // 
+            // lnkClearSelection
+            // 
+            this.lnkClearSelection.ActiveLinkColor = System.Drawing.Color.Blue;
+            this.lnkClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lnkClearSelection.Location = new System.Drawing.Point(234, 24);
+            this.lnkClearSelection.Name = "lnkClearSelection";
+            this.lnkClearSelection.Size = new System.Drawing.Size(100, 13);
+            this.lnkClearSelection.TabIndex = 5;
+            this.lnkClearSelection.TabStop = true;
+            this.lnkClearSelection.Text = "Clear selection";
+            this.lnkClearSelection.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lnkClearSelection.VisitedLinkColor = System.Drawing.Color.Blue;
+            this.lnkClearSelection.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearSelection_LinkClicked);
+            // 
             // ContentDesigner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -260,5 +280,6 @@
         private System.Windows.Forms.Button btnPausePlay;
         private System.Windows.Forms.Timer tmrUpdateLastActive;
         private System.Windows.Forms.Button btnUndo;
+        private System.Windows.Forms.LinkLabel lnkClearSelection;
     }
 }

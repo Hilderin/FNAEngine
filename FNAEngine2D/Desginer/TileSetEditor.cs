@@ -147,6 +147,19 @@ namespace FNAEngine2D.Desginer
         }
 
         /// <summary>
+        /// Remove selection
+        /// </summary>
+        public void ClearSelection()
+        {
+            _currentColIndex = -1;
+            _currentRowIndex = -1;
+            _currentColLength = 0;
+            _currentRowLength = 0;
+
+            picTileSet.Invalidate();
+        }
+
+        /// <summary>
         /// Showing preview
         /// </summary>
         public void ShowPreview(int x, int y)

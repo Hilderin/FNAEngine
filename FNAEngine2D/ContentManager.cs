@@ -409,14 +409,14 @@ namespace FNAEngine2D
         /// </summary>
         private Sprite LoadSprite(string assetName, out string fullPath)
         {
-            fullPath = GetAssetFullPath(assetName, SPRITE_EXTENSIONS);
-
             try
             {
+                fullPath = GetAssetFullPath(assetName, SPRITE_EXTENSIONS);
                 return Deserialize<Sprite>(fullPath);
             }
             catch (Exception ex)
             {
+                fullPath = Path.Combine(this.RootDirectory, assetName + ".png").Replace('\\', '/');
                 Debug.WriteLine("LoadSprite - Error loading '" + assetName + "': " + ex.Message);
                 return new Sprite("pixel_magenta", 1, 1, 1, 1);
             }

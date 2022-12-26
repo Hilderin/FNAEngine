@@ -60,7 +60,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Nom de la font
         /// </summary>
-        private string _fontName = String.Empty;
+        private string _fontName = FontManager.ROBOTO_REGULAR;
 
         /// <summary>
         /// Size de la font
@@ -70,7 +70,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Text
         /// </summary>
-        private string _text = String.Empty;
+        private string _text = "Text";
 
         /// <summary>
         /// Rotation
@@ -92,7 +92,7 @@ namespace FNAEngine2D
         /// Nom de la font
         /// </summary>
         [Category("Text")]
-        [DefaultValue("")]
+        [DefaultValue(FontManager.ROBOTO_REGULAR)]
         public string FontName
         {
             get { return _fontName; }
@@ -149,7 +149,7 @@ namespace FNAEngine2D
         /// Texte à afficher
         /// </summary>
         [Category("Text")]
-        [DefaultValue("")]
+        [DefaultValue("Text")]
         public string Text
         {
             get { return _text; }

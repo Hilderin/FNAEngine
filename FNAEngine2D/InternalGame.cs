@@ -348,7 +348,7 @@ namespace FNAEngine2D
 
             //We keep the last Update time
             //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
-            GameHost.LastFrameUpdateTimeMilliseconds = _internalTimer.ElapsedTicks * (1M / Stopwatch.Frequency) / 1000;
+            GameHost.LastFrameUpdateTimeMilliseconds = ((decimal)_internalTimer.ElapsedTicks / Stopwatch.Frequency) * 1000;
         }
 
 
@@ -386,7 +386,7 @@ namespace FNAEngine2D
             _internalTimer.Stop();
 
             //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
-            GameHost.LastFrameTimeMilliseconds = _internalTimer.ElapsedTicks * (1M / Stopwatch.Frequency) / 1000;
+            GameHost.LastFrameTimeMilliseconds = ((decimal)_internalTimer.ElapsedTicks / Stopwatch.Frequency) * 1000;
             GameHost.LastFrameDrawTimeMilliseconds = GameHost.LastFrameTimeMilliseconds - GameHost.LastFrameUpdateTimeMilliseconds;
             
         }
