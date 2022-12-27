@@ -74,7 +74,9 @@ namespace FNAEngine2D
                         {
                             if (column[y] != null)
                             {
-                                Add(new TileGameObject(new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize))).EnableCollider();
+                                //If there is a tile right, left, top and bottom, no need for a collider...
+                                if (tileset.GetTile(x + 1, y) == null || tileset.GetTile(x - 1, y) == null || tileset.GetTile(x, y - 1) == null || tileset.GetTile(x, y + 1) == null)
+                                    Add(new TileGameObject(new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize))).EnableCollider();
                             }
 
                             posY += tileset.TileScreenSize;

@@ -98,7 +98,8 @@ namespace FNAEngine2D.Desginer
             foreach (Type type in GameObjectTypesLoader.GetGameObjectTypes())
             {
                 //Certain types cannot be used in the designer...
-                if (type != typeof(TileGameObject) && type != typeof(GameContentContainer))
+                //Cannot use generic type either
+                if (type != typeof(TileGameObject) && type != typeof(GameContentContainer) && !type.IsGenericType)
                 {
                     ListViewItem item = new ListViewItem(type.FullName);
                     lstGameObjectTypes.Items.Add(item);
@@ -980,6 +981,15 @@ namespace FNAEngine2D.Desginer
             Camera camera = GetCameraForLayer(gameObject.LayerMask);
 
             return VectorHelper.Intersects(coord + camera.Location, GetGameObjectBounds(gameObject));
+        }
+
+
+        /// <summary>
+        /// Reset selection when enter properties
+        /// </summary>
+        private void propertyGrid_Enter(object sender, EventArgs e)
+        {
+            lstGameObjectTypes.SelectedItems.Clear();
         }
 
         /// <summary>

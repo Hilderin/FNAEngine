@@ -36,7 +36,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Minimum rate for playing the sound
         /// </summary>
-        public float MinimumRateSeconds = 0f;
+        public float MinimumRateSeconds { get; set; } = 0f;
+
+        /// <summary>
+        /// Allow multiple sfx at the same time
+        /// </summary>
+        public bool AllowMultiple { get; set; } = false;
 
         /// <summary>
         /// IsPlaying
@@ -45,6 +50,26 @@ namespace FNAEngine2D
         {
             get { return _currentSfxInstance != null && _currentSfxInstance.State == SoundState.Playing; }
         }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public SoundEffectPlayer()
+        {
+
+        }
+
+
+        /// <summary>
+        /// Update each frame
+        /// </summary>
+        public override void Update()
+        {
+            if (!AllowMultiple)
+                _elapedStartSeconds += GameHost.ElapsedGameTimeSeconds;
+        }
+
 
         /// <summary>
         /// Get a sfx content
@@ -64,30 +89,37 @@ namespace FNAEngine2D
             if (sfx == null)
                 return;
 
-
-            if (_currentSfxInstance != null && _currentlyPlaying == sfx && _currentSfxInstance.State == SoundState.Playing)
-                //Already playing...
-                return;
-
-
-            if (_elapedStartSeconds < this.MinimumRateSeconds)
-                //Still not the time...
-                return;
-
-
-            if (_currentSfxInstance != null)
+            if (AllowMultiple)
             {
-                //Stopping...
-                _currentSfxInstance.Dispose();
+                //Allowing multiple at the same time?
+                sfx.Data.Play(this.Volume, 0f, 0f);
             }
+            else
+            {
+                if (_currentSfxInstance != null && _currentlyPlaying == sfx && _currentSfxInstance.State == SoundState.Playing)
+                    //Already playing...
+                    return;
 
-            //Start playing...
-            _currentlyPlaying = sfx;
-            _currentSfxInstance = _currentlyPlaying.Data.CreateInstance();
-            _currentSfxInstance.Volume = this.Volume;
-            _currentSfxInstance.Play();
 
-            _elapedStartSeconds = 0f;
+                if (_elapedStartSeconds < this.MinimumRateSeconds)
+                    //Still not the time...
+                    return;
+
+
+                if (_currentSfxInstance != null)
+                {
+                    //Stopping...
+                    _currentSfxInstance.Dispose();
+                }
+
+                //Start playing...
+                _currentlyPlaying = sfx;
+                _currentSfxInstance = _currentlyPlaying.Data.CreateInstance();
+                _currentSfxInstance.Volume = this.Volume;
+                _currentSfxInstance.Play();
+
+                _elapedStartSeconds = 0f;
+            }
 
         }
 
@@ -96,6 +128,7 @@ namespace FNAEngine2D
         /// </summary>
         public void Stop()
         {
+            
             if (_currentlyPlaying == null)
                 return;
 
@@ -107,15 +140,6 @@ namespace FNAEngine2D
             }
 
             _currentlyPlaying = null;
-        }
-
-
-        /// <summary>
-        /// Update each frame
-        /// </summary>
-        public override void Update()
-        {
-            _elapedStartSeconds += GameHost.ElapsedGameTimeSeconds;
         }
 
         /// <summary>

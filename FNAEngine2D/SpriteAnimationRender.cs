@@ -22,6 +22,11 @@ namespace FNAEngine2D
         private float _elapsedTime = 0f;
 
         /// <summary>
+        /// Ended
+        /// </summary>
+        private bool _stopped = false;
+
+        /// <summary>
         /// Sprite animation
         /// </summary>
         private Content<SpriteAnimation> _spriteAnimation;
@@ -35,7 +40,17 @@ namespace FNAEngine2D
         /// Color
         /// </summary>
         public Color Color { get; set; } = Color.White;
-               
+
+        /// <summary>
+        /// Loop the animation
+        /// </summary>
+        public bool Loop { get; set; } = true;
+
+        /// <summary>
+        /// Play the animation on start
+        /// </summary>
+        public bool PlayOnStart { get; set; } = true;
+
 
         /// <summary>
         /// Empty constructor
@@ -60,6 +75,19 @@ namespace FNAEngine2D
         {
             _currentFrame = 0;
             _elapsedTime = 0;
+            _stopped = false;
+
+            //Force drawing the first frame...
+            UpdateInternal(0);
+        }
+
+        /// <summary>
+        /// Stop the current animation
+        /// </summary>
+        public void Stop()
+        {
+            _stopped = true;
+
         }
 
         /// <summary>
@@ -86,6 +114,12 @@ namespace FNAEngine2D
                     _currentFrame = -1;
                     return;
                 }
+
+                if (!PlayOnStart)
+                {
+                    _currentFrame = -1;
+                    _stopped = true;
+                }
             }
 
         }
@@ -95,8 +129,22 @@ namespace FNAEngine2D
         /// </summary>
         public override void Update()
         {
-            //Littre validations...
+            UpdateInternal(GameHost.ElapsedGameTimeMilliseconds);
+
+        }
+
+
+        /// <summary>
+        /// Update
+        /// </summary>
+        private void UpdateInternal(float elapsedGameTimeMilliseconds)
+        {
+            if (_stopped)
+                return;
+
+            //Little validations...
             SpriteAnimation spriteAnimation = _spriteAnimation.Data;
+           
 
             if (spriteAnimation == null || spriteAnimation.Frames.Length == 0 || spriteAnimation.Sprite == null || spriteAnimation.Sprite.Texture == null)
             {
@@ -111,7 +159,7 @@ namespace FNAEngine2D
                 return;
             }
 
-            float newTime = _elapsedTime + GameHost.ElapsedGameTimeMilliseconds;
+            float newTime = _elapsedTime + elapsedGameTimeMilliseconds;
 
             //First frame?
             if (_currentFrame < 0)
@@ -126,7 +174,18 @@ namespace FNAEngine2D
                 //Next frame...
                 _currentFrame++;
                 if (_currentFrame >= spriteAnimation.Frames.Length)
-                    _currentFrame = 0;
+                {
+                    if (this.Loop)
+                    {
+                        _currentFrame = 0;
+                    }
+                    else
+                    {
+                        _currentFrame = -1;
+                        _stopped = true;
+                        break;
+                    }
+                }
 
                 //We remove the duration used on this frame...
                 newTime -= spriteAnimation.Frames[_currentFrame].Duration;
@@ -142,7 +201,7 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
-            if (_currentFrame < 0)
+            if (_currentFrame < 0 || _stopped)
                 return;
 
             SpriteAnimation spriteAnimation = _spriteAnimation.Data;

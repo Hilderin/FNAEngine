@@ -294,7 +294,7 @@ namespace FNAEngine2D
         ///// </summary>
         //public float Scale = 1f;
 
-        
+
 
         /// <summary>
         /// Count des childrens
@@ -320,7 +320,7 @@ namespace FNAEngine2D
             {
                 if (_layerMask != value)
                 {
-                    
+
                     //Update children that were on the same layer...
                     if (this._childrens.Count > 0)
                     {
@@ -842,7 +842,7 @@ namespace FNAEngine2D
         public void ResizeWidth(float offsetX)
         {
             _size.X += offsetX;
-            
+
             if (this._childrens.Count == 0)
                 return;
 
@@ -891,6 +891,17 @@ namespace FNAEngine2D
         public void ResizeTo(float offsetX, float offsetY)
         {
             this.Resize(offsetX - _size.X, offsetY - _size.Y);
+        }
+
+
+
+        /// <summary>
+        /// Set the layer mask
+        /// </summary>
+        public GameObject SetLayerMask(Layers layerMask)
+        {
+            this.LayerMask = layerMask;
+            return this;
         }
 
         /// <summary>
@@ -1033,6 +1044,9 @@ namespace FNAEngine2D
         /// </summary>
         private ColliderContainer GetColliderContainer()
         {
+            if (this.RootGameObject == null)
+                return new ColliderContainer();
+
             if (this.RootGameObject._colliderContainer == null)
                 this.RootGameObject._colliderContainer = new ColliderContainer();
 

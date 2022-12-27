@@ -32,6 +32,17 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Get the rectangle centered and align with the Middle
+        /// </summary>
+        public static Rectangle CenterMiddle(Rectangle parentBounds, int width, int height)
+        {
+            return new Rectangle(parentBounds.X + (parentBounds.Width / 2) - (width / 2)
+                                , parentBounds.Y + (parentBounds.Height / 2) - (height / 2)
+                                , width
+                                , height);
+        }
+
+        /// <summary>
         /// Add on x axis
         /// </summary>
         public static Rectangle AddX(Rectangle rectangle, int x)

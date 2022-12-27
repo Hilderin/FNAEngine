@@ -41,7 +41,31 @@ namespace FNAEngine2D
         /// <summary>
         /// Add a number
         /// </summary>
+        public void Add(int number)
+        {
+            Add((decimal)number);
+        }
+
+        /// <summary>
+        /// Add a number
+        /// </summary>
+        public void Add(long number)
+        {
+            Add((decimal)number);
+        }
+
+        /// <summary>
+        /// Add a number
+        /// </summary>
         public void Add(double number)
+        {
+            Add((decimal)number);
+        }
+
+        /// <summary>
+        /// Add a number
+        /// </summary>
+        public void Add(float number)
         {
             Add((decimal)number);
         }

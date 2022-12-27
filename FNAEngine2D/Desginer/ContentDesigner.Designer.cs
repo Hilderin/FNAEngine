@@ -37,6 +37,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.propertyGrid = new System.Windows.Forms.PropertyGrid();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.lnkClearSelection = new System.Windows.Forms.LinkLabel();
             this.lstGameObjectTypes = new System.Windows.Forms.ListView();
             this.colFullName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnDelete = new System.Windows.Forms.Button();
@@ -44,7 +45,6 @@
             this.btnPausePlay = new System.Windows.Forms.Button();
             this.tmrUpdateLastActive = new System.Windows.Forms.Timer(this.components);
             this.btnUndo = new System.Windows.Forms.Button();
-            this.lnkClearSelection = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -115,6 +115,7 @@
             this.propertyGrid.Size = new System.Drawing.Size(332, 370);
             this.propertyGrid.TabIndex = 7;
             this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
+            this.propertyGrid.Enter += new System.EventHandler(this.propertyGrid_Enter);
             // 
             // splitContainer
             // 
@@ -142,6 +143,20 @@
             this.splitContainer.Size = new System.Drawing.Size(333, 666);
             this.splitContainer.SplitterDistance = 251;
             this.splitContainer.TabIndex = 8;
+            // 
+            // lnkClearSelection
+            // 
+            this.lnkClearSelection.ActiveLinkColor = System.Drawing.Color.Blue;
+            this.lnkClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lnkClearSelection.Location = new System.Drawing.Point(234, 24);
+            this.lnkClearSelection.Name = "lnkClearSelection";
+            this.lnkClearSelection.Size = new System.Drawing.Size(100, 13);
+            this.lnkClearSelection.TabIndex = 5;
+            this.lnkClearSelection.TabStop = true;
+            this.lnkClearSelection.Text = "Clear selection";
+            this.lnkClearSelection.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lnkClearSelection.VisitedLinkColor = System.Drawing.Color.Blue;
+            this.lnkClearSelection.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearSelection_LinkClicked);
             // 
             // lstGameObjectTypes
             // 
@@ -223,20 +238,6 @@
             this.btnUndo.Text = "&Undo";
             this.btnUndo.UseVisualStyleBackColor = true;
             this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
-            // 
-            // lnkClearSelection
-            // 
-            this.lnkClearSelection.ActiveLinkColor = System.Drawing.Color.Blue;
-            this.lnkClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lnkClearSelection.Location = new System.Drawing.Point(234, 24);
-            this.lnkClearSelection.Name = "lnkClearSelection";
-            this.lnkClearSelection.Size = new System.Drawing.Size(100, 13);
-            this.lnkClearSelection.TabIndex = 5;
-            this.lnkClearSelection.TabStop = true;
-            this.lnkClearSelection.Text = "Clear selection";
-            this.lnkClearSelection.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.lnkClearSelection.VisitedLinkColor = System.Drawing.Color.Blue;
-            this.lnkClearSelection.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearSelection_LinkClicked);
             // 
             // ContentDesigner
             // 

@@ -98,6 +98,31 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Get the tile at a position
+        /// </summary>
+        public Tile GetTile(int x, int y)
+        {
+            if (this.Tiles == null)
+                return null;
+
+            if (x < 0 || y < 0)
+                return null;
+
+            if (x >= this.Tiles.Length)
+                return null;
+
+            Tile[] column = this.Tiles[x];
+
+            if (column == null)
+                return null;
+
+            if (y >= column.Length)
+                return null;
+
+            return column[y];
+        }
+
+        /// <summary>
         /// Override of the ToString to display the TileSet name
         /// </summary>
         public override string ToString()

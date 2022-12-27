@@ -37,6 +37,11 @@ namespace FNAEngine2D
         /// </summary>
         public Keys JumpKey = Keys.Space;
 
+        /// <summary>
+        /// Fire key
+        /// </summary>
+        public Keys FireKey = Keys.E;
+
 
         /// <summary>
         /// Is moving left?
@@ -67,6 +72,16 @@ namespace FNAEngine2D
         /// Is newly jumping
         /// </summary>
         public bool IsNewJump { get { return Input.IsKeyNewDown(JumpKey); } }
+
+        /// <summary>
+        /// Is Firing
+        /// </summary>
+        public bool IsFire { get { return Input.IsKeyDown(FireKey); } }
+
+        /// <summary>
+        /// Is newly Fireing
+        /// </summary>
+        public bool IsNewFire { get { return Input.IsKeyNewDown(FireKey); } }
 
     }
 }

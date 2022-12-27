@@ -127,6 +127,7 @@
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="SpriteAnimationRender.cs" />
     <Compile Include="SpriteAnimationFrame.cs" />
+    <Compile Include="SpriteAnimator.cs" />
     <Compile Include="TextRender.cs" />
     <Compile Include="SpriteRender.cs" />
     <Compile Include="Texture2DExtensions.cs" />

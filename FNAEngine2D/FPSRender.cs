@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -32,7 +33,13 @@ namespace FNAEngine2D
         /// LastFrameTimeMilliseconds average calculator
         /// </summary>
         private AverageCalculator _lastFrameTimeMillisecondsAverage = new AverageCalculator(120);
-        
+
+
+        /// <summary>
+        /// Timer to calculate time for fps
+        /// </summary>
+        private Stopwatch _drawTimer = Stopwatch.StartNew();
+
 
         /// <summary>
         /// Font name
@@ -78,17 +85,26 @@ namespace FNAEngine2D
 
         public override void Update()
         {
-            _fpsAverage.Add(1 / GameHost.GameTime.ElapsedGameTime.TotalSeconds);
+            
             _lastFrameUpdateTimeMillisecondsAverage.Add(GameHost.LastFrameUpdateTimeMilliseconds);
             _lastFrameDrawTimeMillisecondsAverage.Add(GameHost.LastFrameDrawTimeMilliseconds);
             _lastFrameTimeMillisecondsAverage.Add(GameHost.LastFrameTimeMilliseconds);
-            
-
 
 
             _textRender.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());
         }
 
+        public override void Draw()
+        {
+            decimal elapsedMilliseconds = ((decimal)_drawTimer.ElapsedTicks / Stopwatch.Frequency);
+            _drawTimer.Restart();
+            if(elapsedMilliseconds > 0)
+                _fpsAverage.Add(1M / elapsedMilliseconds);            
+        }
+
+        /// <summary>
+        /// Get the text to render
+        /// </summary>
         private string GetText(decimal fps, decimal lastFrameUpdateTimeMilliseconds, decimal lastFrameDrawTimeMilliseconds, decimal lastFrameTimeMilliseconds)
         {
             return "FPS: " + Math.Round(fps, 4).ToString() + ", Update: " + Math.Round(lastFrameUpdateTimeMilliseconds, 4) + "ms, Draw: " + Math.Round(lastFrameDrawTimeMilliseconds, 4) + "ms, Total: " + Math.Round(lastFrameTimeMilliseconds, 4) + "ms";
