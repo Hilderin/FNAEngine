@@ -32,6 +32,12 @@ namespace FNAEngine2D
         private Content<SpriteAnimation> _spriteAnimation;
 
         /// <summary>
+        /// Play the animation on start
+        /// </summary>
+        private bool _playOnStart = true;
+
+
+        /// <summary>
         /// Information on the sprite animation
         /// </summary>
         public string SpriteAnimationName { get; set; }
@@ -49,7 +55,24 @@ namespace FNAEngine2D
         /// <summary>
         /// Play the animation on start
         /// </summary>
-        public bool PlayOnStart { get; set; } = true;
+        public bool PlayOnStart
+        {
+            get { return _playOnStart; }
+            set
+            {
+                if (_playOnStart != value)
+                {
+                    _playOnStart = value;
+
+                    //If not started.... we stop it
+                    if (!value)
+                    {
+                        if (_elapsedTime == 0)
+                            Stop();
+                    }
+                }
+            }
+        }
 
 
         /// <summary>

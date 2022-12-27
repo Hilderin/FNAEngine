@@ -104,7 +104,8 @@ namespace FNAEngine2D
             LoadAnimations();
 
             //Play the first animation...
-            Play((T)Enum.GetValues(typeof(T)).GetValue(0));
+            if(_playOnStart)
+                Play((T)Enum.GetValues(typeof(T)).GetValue(0));
         }
 
 
