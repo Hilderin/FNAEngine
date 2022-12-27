@@ -218,6 +218,31 @@ namespace FNAEngine2D
             }
         }
 
+
+        /// <summary>
+        /// Get the camera to use for a layermask
+        /// </summary>
+        public static Camera GetCameraForObject(GameObject gameObject)
+        {
+            if (GameHost.ExtraCameras.Count == 0)
+                return GameHost.MainCamera;
+
+            if ((GameHost.MainCamera.LayerMask & gameObject.LayerMask) != 0)
+                return GameHost.MainCamera;
+
+            if (GameHost.ExtraCameras.Count > 0)
+            {
+                foreach (Camera camera in GameHost.ExtraCameras)
+                {
+                    if ((camera.LayerMask & gameObject.LayerMask) != 0)
+                        return camera;
+                }
+            }
+
+            return GameHost.MainCamera;
+
+        }
+
         /// <summary>
         /// Exécution du GameHost
         /// </summary>

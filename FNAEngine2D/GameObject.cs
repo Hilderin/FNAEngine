@@ -70,6 +70,11 @@ namespace FNAEngine2D
         /// </summary>
         private Layers _layerMask = Layers.Layer1;
 
+        /// <summary>
+        /// Depth
+        /// </summary>
+        private float _depth = 0f;
+
 
         /// <summary>
         /// RootGameObject
@@ -118,7 +123,30 @@ namespace FNAEngine2D
         [Category("Layout")]
         [DefaultValue(0f)]
         [Description("Depth of the object\r\nHigher = Draw first\r\nLower = In front")]
-        public float Depth { get; set; } = 0f;
+        public float Depth
+        {
+            get { return _depth; }
+            set
+            {
+                if (_depth != value)
+                {
+
+                    //Update children that were on the same layer...
+                    if (this._childrens.Count > 0)
+                    {
+
+                        for (int index = 0; index < this._childrens.Count; index++)
+                        {
+                            if (this._childrens[index].Depth == _depth)
+                                this._childrens[index].Depth = value;
+                        }
+
+                    }
+
+                    _depth = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.
@@ -431,9 +459,14 @@ namespace FNAEngine2D
 
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
+
             //Propagate the layermask...
             if (gameObject.LayerMask == Layers.Layer1 && this.LayerMask != Layers.Layer1)
                 gameObject.LayerMask = this.LayerMask;
+
+            //Propagate the despth...
+            if (gameObject.Depth == 0f && this.Depth != 0f)
+                gameObject.Depth = this.Depth;
 
 
             this._childrens.Insert(index, gameObject);
@@ -517,6 +550,15 @@ namespace FNAEngine2D
         {
             return Find(o => o.Name == name);
         }
+
+        /// <summary>
+        /// Find a GameObjet by type only
+        /// </summary>
+        public T Find<T>() where T : GameObject
+        {
+            return (T)Find(o => typeof(T).IsAssignableFrom(o.GetType()));
+        }
+
 
         /// <summary>
         /// Find a GameObjet by name

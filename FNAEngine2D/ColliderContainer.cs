@@ -28,6 +28,11 @@ namespace FNAEngine2D
         /// </summary>
         private Dictionary<Type, List<Collider>> _collidersPerType = new Dictionary<Type, List<Collider>>();
 
+        /// <summary>
+        /// Cache of types
+        /// </summary>
+        private static Dictionary<Type, List<Type>> _cacheTypes = new Dictionary<Type, List<Type>>();
+
 
         /// <summary>
         /// Ajoute un collider
@@ -38,12 +43,15 @@ namespace FNAEngine2D
 
             //Add in dictionary per type...
             List<Collider> colliders;
-            if (!_collidersPerType.TryGetValue(collider.GameObject.GetType(), out colliders))
+            foreach (Type type in GetAllTypesForGameObject(collider.GameObject))
             {
-                colliders = new List<Collider>();
-                _collidersPerType[collider.GameObject.GetType()] = colliders;
+                if (!_collidersPerType.TryGetValue(type, out colliders))
+                {
+                    colliders = new List<Collider>();
+                    _collidersPerType[type] = colliders;
+                }
+                colliders.Add(collider);
             }
-            colliders.Add(collider);
         }
 
         /// <summary>
@@ -55,9 +63,12 @@ namespace FNAEngine2D
 
             //Remove in dictionary per type...
             List<Collider> colliders;
-            if (_collidersPerType.TryGetValue(collider.GameObject.GetType(), out colliders))
+            foreach (Type type in GetAllTypesForGameObject(collider.GameObject))
             {
-                colliders.Remove(collider);
+                if (_collidersPerType.TryGetValue(type, out colliders))
+                {
+                    colliders.Remove(collider);
+                }
             }
         }
 
@@ -91,6 +102,50 @@ namespace FNAEngine2D
 
 
             return collision;
+        }
+
+        /// <summary>
+        /// Get all types for a type
+        /// </summary>
+        private List<Type> GetAllTypesForGameObject(GameObject gameObject)
+        {
+            List<Type> types;
+
+            Type type = gameObject.GetType();
+
+            if (_cacheTypes.TryGetValue(type, out types))
+                return types;
+
+
+            types = new List<Type>();
+
+            LoadAllTypesForType(type, types);
+
+            _cacheTypes[type] = types;
+
+            return types;
+
+        }
+
+        /// <summary>
+        /// Load all types for a type
+        /// </summary>
+        private void LoadAllTypesForType(Type type, List<Type> types)
+        {
+            if (type == typeof(GameObject))
+                return;
+
+            if (types.Contains(type))
+                return;
+
+
+            types.Add(type);
+
+            if(type.BaseType != null)
+                LoadAllTypesForType(type.BaseType, types);
+
+            foreach (Type interfaceType in type.GetInterfaces())
+                LoadAllTypesForType(interfaceType, types);
         }
 
         /// <summary>

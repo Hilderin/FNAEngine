@@ -212,30 +212,6 @@ namespace FNAEngine2D.Desginer
         }
 
         /// <summary>
-        /// Get the camera to use for a layermask
-        /// </summary>
-        private Camera GetCameraForLayer(Layers layerMask)
-        {
-            if (GameHost.ExtraCameras.Count == 0)
-                return GameHost.MainCamera;
-
-            if ((GameHost.MainCamera.LayerMask & layerMask) != 0)
-                return GameHost.MainCamera;
-
-            if (GameHost.ExtraCameras.Count > 0)
-            {
-                foreach (Camera camera in GameHost.ExtraCameras)
-                {
-                    if ((camera.LayerMask & layerMask) != 0)
-                        return camera;
-                }
-            }
-
-            return GameHost.MainCamera;
-
-        }
-
-        /// <summary>
         /// Hide preview
         /// </summary>
         public void HidePreview()
@@ -962,7 +938,10 @@ namespace FNAEngine2D.Desginer
             if (_currentContainer != null)
             {
                 Microsoft.Xna.Framework.Vector2 coord = new Microsoft.Xna.Framework.Vector2(x, y);
+
+                //We remove the main camera because it's been added, we will rehad it in the IsObjectAtCoord...
                 coord -= GameHost.MainCamera.Location.Substract(GameHost.MainCamera.ViewLocation);
+
                 list.AddRange(_currentContainer.FindAll(o => IsObjectAtCoord(o, coord)));
             }
 
@@ -978,7 +957,7 @@ namespace FNAEngine2D.Desginer
                 return false;
 
             //We need the camera for the offset location...
-            Camera camera = GetCameraForLayer(gameObject.LayerMask);
+            Camera camera = GameHost.GetCameraForObject(gameObject);
 
             return VectorHelper.Intersects(coord + camera.Location, GetGameObjectBounds(gameObject));
         }

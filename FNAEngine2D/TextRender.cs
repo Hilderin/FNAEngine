@@ -225,14 +225,19 @@ namespace FNAEngine2D
                 if (_font == null || String.IsNullOrEmpty(this.Text))
                 {
                     _textCache = null;
-                    this.Width = 0;
-                    this.Height = 0;
+
+                    if(this.HorizontalAlignment == TextHorizontalAlignment.Left)
+                        this.Width = 0;
+                    if (this.VerticalAlignment == TextVerticalAlignment.Top)
+                        this.Height = 0;
                 }
                 else
                 {
                     _textCache = _font.MakeText(this.Text);
-                    this.Width = _textCache.Width;
-                    this.Height = _textCache.Height;
+                    if (this.HorizontalAlignment == TextHorizontalAlignment.Left)
+                        this.Width = _textCache.Width;
+                    if (this.VerticalAlignment == TextVerticalAlignment.Top)
+                        this.Height = _textCache.Height;
                 }
 
                 _textUpdated = false;
