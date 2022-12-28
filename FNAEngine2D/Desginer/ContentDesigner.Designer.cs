@@ -45,6 +45,8 @@
             this.btnPausePlay = new System.Windows.Forms.Button();
             this.tmrUpdateLastActive = new System.Windows.Forms.Timer(this.components);
             this.btnUndo = new System.Windows.Forms.Button();
+            this.btnMoveTo = new System.Windows.Forms.Button();
+            this.btnReloadObject = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -136,6 +138,8 @@
             // 
             // splitContainer.Panel2
             // 
+            this.splitContainer.Panel2.Controls.Add(this.btnReloadObject);
+            this.splitContainer.Panel2.Controls.Add(this.btnMoveTo);
             this.splitContainer.Panel2.Controls.Add(this.btnDelete);
             this.splitContainer.Panel2.Controls.Add(this.cboGameObjects);
             this.splitContainer.Panel2.Controls.Add(this.propertyGrid);
@@ -239,6 +243,28 @@
             this.btnUndo.UseVisualStyleBackColor = true;
             this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
             // 
+            // btnMoveTo
+            // 
+            this.btnMoveTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMoveTo.Location = new System.Drawing.Point(261, 39);
+            this.btnMoveTo.Name = "btnMoveTo";
+            this.btnMoveTo.Size = new System.Drawing.Size(73, 23);
+            this.btnMoveTo.TabIndex = 11;
+            this.btnMoveTo.Text = "&Move to";
+            this.btnMoveTo.UseVisualStyleBackColor = true;
+            this.btnMoveTo.Click += new System.EventHandler(this.btnMoveTo_Click);
+            // 
+            // btnReloadObject
+            // 
+            this.btnReloadObject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReloadObject.Location = new System.Drawing.Point(184, 39);
+            this.btnReloadObject.Name = "btnReloadObject";
+            this.btnReloadObject.Size = new System.Drawing.Size(73, 23);
+            this.btnReloadObject.TabIndex = 12;
+            this.btnReloadObject.Text = "&Reload";
+            this.btnReloadObject.UseVisualStyleBackColor = true;
+            this.btnReloadObject.Click += new System.EventHandler(this.btnReloadObject_Click);
+            // 
             // ContentDesigner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -282,5 +308,7 @@
         private System.Windows.Forms.Timer tmrUpdateLastActive;
         private System.Windows.Forms.Button btnUndo;
         private System.Windows.Forms.LinkLabel lnkClearSelection;
+        private System.Windows.Forms.Button btnMoveTo;
+        private System.Windows.Forms.Button btnReloadObject;
     }
 }

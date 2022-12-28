@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -35,6 +37,16 @@ namespace FNAEngine2D
         private bool _playOnStart = true;
 
         /// <summary>
+        /// Hide if animation is stopped?
+        /// </summary>
+        private bool _hideOnStop = true;
+
+        /// <summary>
+        /// Inverted on the X axis
+        /// </summary>
+        private bool _invertedX = false;
+
+        /// <summary>
         /// Animation folder
         /// </summary>
         public string AnimationFolder { get; set; }
@@ -42,11 +54,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Return the current animation
         /// </summary>
+        [JsonIgnore]
+        [Browsable(false)]
         public T CurrentAnimation { get; set; }
 
         /// <summary>
         /// Loop the animation
         /// </summary>
+        [DefaultValue(true)]
         public bool Loop
         {
             get { return _loop; }
@@ -66,6 +81,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Play the animation on start
         /// </summary>
+        [DefaultValue(true)]
         public bool PlayOnStart
         {
             get { return _playOnStart; }
@@ -82,6 +98,45 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Hide if animation is stopped?
+        /// </summary>
+        [DefaultValue(false)]
+        public bool HideOnStop
+        {
+            get { return _hideOnStop; }
+            set
+            {
+                if (_hideOnStop != value)
+                {
+                    _hideOnStop = value;
+
+                    //End we change the animations...
+                    foreach (SpriteAnimationRender spriteAnimationRender in _animations.Values)
+                        spriteAnimationRender.HideOnStop = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inverted on the X axis
+        /// </summary>
+        [DefaultValue(false)]
+        public bool InvertedX
+        {
+            get { return _invertedX; }
+            set
+            {
+                if (_invertedX != value)
+                {
+                    _invertedX = value;
+
+                    //End we change the animations...
+                    foreach (SpriteAnimationRender spriteAnimationRender in _animations.Values)
+                        spriteAnimationRender.InvertedX = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Constructor
@@ -90,6 +145,16 @@ namespace FNAEngine2D
         {
             this.AnimationFolder = animationFolder;
 
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public SpriteAnimator(string animationFolder, bool loop, bool playOnStart, bool hideOnStop): this(animationFolder)
+        {
+            _loop = loop;
+            _playOnStart = playOnStart;
+            _hideOnStop = hideOnStop;
         }
 
 
@@ -154,7 +219,7 @@ namespace FNAEngine2D
                 string assetName = Path.Combine("animations", characterAnimation.ToString());
 
                 
-                SpriteAnimationRender spriteAnimationRender = new SpriteAnimationRender(assetName);
+                SpriteAnimationRender spriteAnimationRender = new SpriteAnimationRender(assetName, _loop, _playOnStart, _hideOnStop);
 
                 //Adding and removing to load the animation...
                 Add(spriteAnimationRender);

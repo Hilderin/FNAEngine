@@ -149,8 +149,8 @@ namespace FNAEngine2D.Desginer
                         throw;
                     }
                 }
-                
-                if(EditModeHelper.SelectedGameObject != null)
+
+                if (EditModeHelper.SelectedGameObject != null)
                 {
                     if (!(EditModeHelper.SelectedGameObject is TileSetRender))
                     {
@@ -170,7 +170,7 @@ namespace FNAEngine2D.Desginer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);                
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -336,7 +336,7 @@ namespace FNAEngine2D.Desginer
             SetDirty(false);
 
             cboGameContentContainer.DataSource = _containers;
-            
+
             ReloadGameObjectsFromContainer();
 
             ResetHistory();
@@ -554,7 +554,7 @@ namespace FNAEngine2D.Desginer
             {
                 propertyGrid.SelectedObject = cboGameObjects.SelectedItem;
                 EditModeHelper.SelectedGameObject = (GameObject)cboGameObjects.SelectedItem;
-                
+
                 if (!_loadingSelectedGameObject)
                 {
                     if (EditModeHelper.IsTileSetEditorOpened)
@@ -754,11 +754,15 @@ namespace FNAEngine2D.Desginer
         private void btnPausePlay_Click(object sender, EventArgs e)
         {
             EditModeHelper.IsGameRunning = !EditModeHelper.IsGameRunning;
+            UpdatePausePlayUI();
+        }
+
+        /// <summary>
+        /// Pause/play the game
+        /// </summary>
+        public void UpdatePausePlayUI()
+        {
             btnPausePlay.Text = EditModeHelper.IsGameRunning ? "&Pause" : "&Play";
-
-            //Win32.SetForegroundWindow(GameHost.InternalGame.GameWindowHandle);
-
-
         }
 
         /// <summary>
@@ -787,7 +791,7 @@ namespace FNAEngine2D.Desginer
 
                 return true;
             }
-            
+
 
 
             return base.ProcessDialogKey(keyData);
@@ -875,7 +879,7 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void Revert()
         {
-            if(_history.Count > 1)
+            if (_history.Count > 1)
                 RevertToHistory(_history[0]);
         }
 
@@ -969,6 +973,41 @@ namespace FNAEngine2D.Desginer
         private void propertyGrid_Enter(object sender, EventArgs e)
         {
             lstGameObjectTypes.SelectedItems.Clear();
+        }
+
+        /// <summary>
+        /// Move to object
+        /// </summary>
+        private void btnMoveTo_Click(object sender, EventArgs e)
+        {
+            if (EditModeHelper.SelectedGameObject != null)
+                EditModeHelper.MoveToObject(EditModeHelper.SelectedGameObject);
+        }
+
+
+        /// <summary>
+        /// Reload object
+        /// </summary>
+        private void btnReloadObject_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (EditModeHelper.SelectedGameObject != null && EditModeHelper.SelectedGameObject.Parent != null)
+                {
+                    int index = EditModeHelper.SelectedGameObject.ChildIndex;
+                    GameObject parent = EditModeHelper.SelectedGameObject.Parent;
+                    parent.Remove(EditModeHelper.SelectedGameObject);
+                    if (index >= 0)
+                        parent.Insert(index, EditModeHelper.SelectedGameObject);
+                    else
+                        parent.Add(EditModeHelper.SelectedGameObject);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>

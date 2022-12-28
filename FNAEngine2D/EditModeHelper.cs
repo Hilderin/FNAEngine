@@ -1,13 +1,16 @@
 ﻿using FNAEngine2D.Desginer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Linq;
+using SharpFont.TrueType;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Velentr.Font;
 
 namespace FNAEngine2D
 {
@@ -19,7 +22,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Camera speed
         /// </summary>
-        private const int CAMERA_SPEED_PIXEL_PER_SECONDS = 300;
+        private const int CAMERA_SPEED_PIXEL_PER_SECONDS = 500;
 
 
         /// <summary>
@@ -47,6 +50,27 @@ namespace FNAEngine2D
         /// </summary>
         private static bool _isGameRunning = false;
 
+        /// <summary>
+        /// Location of the player at the beginning of MoveLPlayerMode
+        /// </summary>
+        private static Vector2 _playerLocationOrigin;
+
+        /// <summary>
+        /// SpriteBatch
+        /// </summary>
+        private static SpriteBatch _spriteBatch;
+
+        /// <summary>
+        /// Font to display edit mode
+        /// </summary>
+        private static Font _font;
+
+        /// <summary>
+        /// Text
+        /// </summary>
+        private static Velentr.Font.Text _text;
+
+
 
         /// <summary>
         /// Selected game object in the designer
@@ -62,6 +86,16 @@ namespace FNAEngine2D
         /// DateTime when the Game or a designer was last activate
         /// </summary>
         public static DateTime LastTimeActivated { get; set; }
+
+        /// <summary>
+        /// Player object that can be moved
+        /// </summary>
+        public static GameObject PlayerObject { get; set; }
+
+        /// <summary>
+        /// Moving player mode enabled
+        /// </summary>
+        public static bool MovePlayerMode { get; set; }
 
         /// <summary>
         /// Indicate if we are in edit mode
@@ -109,6 +143,7 @@ namespace FNAEngine2D
                         if (_designer != null && !_designer.IsDisposed)
                         {
                             _designer.HidePreview();
+                            _designer.UpdatePausePlayUI();
                         }
 
                         if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
@@ -124,6 +159,11 @@ namespace FNAEngine2D
                     {
                         //Reshowing the mouse...
                         MouseManager.ShowMouse();
+
+                        if (_designer != null && !_designer.IsDisposed)
+                        {
+                            _designer.UpdatePausePlayUI();
+                        }
                     }
                 }
             }
@@ -174,6 +214,13 @@ namespace FNAEngine2D
 
                 }
             }
+
+            //Pause/play game
+            if (EditModeHelper.EditMode && Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Pause))
+            {
+                IsGameRunning = !IsGameRunning;
+            }
+
         }
 
 
@@ -187,6 +234,8 @@ namespace FNAEngine2D
             {
                 ClearSelection();
             }
+
+            Vector2 mousePosition = Input.MousePosition();
 
             if (GameHost.InternalGame.IsActive)
             {
@@ -206,28 +255,62 @@ namespace FNAEngine2D
                     GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
 
 
-                //Mouse left click to place a tile...
-                if (Input.MouseLeftDown() || Input.MouseRightDown())
+                //Moving player...
+                if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F11))
                 {
-                    if (IsTileSetEditorOpened)
+                    if (PlayerObject != null)
                     {
-                        Vector2 mousePosition = Input.MousePosition();
-                        if (Input.MouseLeftDown())
-                            _tileSetEditor.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                        if (Input.MouseRightDown())
-                            _tileSetEditor.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                        if (MovePlayerMode)
+                        {
+                            //Revert player move mode...
+                            ResetMovePlayerMode();
+                        }
+                        else
+                        {
+                            //Enable player mode...
+                            _playerLocationOrigin = PlayerObject.Location;
+                            MovePlayerMode = true;
+                        }
                     }
                 }
 
-                if (Input.MouseLeftNewDown() || Input.MouseRightNewDown())
+
+                //Mouse left click to place a tile...
+                if (MovePlayerMode)
                 {
-                    if (_designer != null && !_designer.IsDisposed)
+                    if (Input.MouseLeftNewDown())
                     {
-                        Vector2 mousePosition = Input.MousePosition();
-                        if (Input.MouseLeftDown())
-                            _designer.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                        if (Input.MouseRightDown())
-                            _designer.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                        //Leaving moving player mode...
+                        MovePlayerMode = false;
+                    }
+                    else if (Input.MouseRightNewDown())
+                    {
+                        //Reset moving player mode...
+                        ResetMovePlayerMode();
+                    }
+                }
+                else
+                {
+                    if (Input.MouseLeftDown() || Input.MouseRightDown())
+                    {
+                        if (IsTileSetEditorOpened)
+                        {
+                            if (Input.MouseLeftDown())
+                                _tileSetEditor.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                            if (Input.MouseRightDown())
+                                _tileSetEditor.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                        }
+                    }
+
+                    if (Input.MouseLeftNewDown() || Input.MouseRightNewDown())
+                    {
+                        if (_designer != null && !_designer.IsDisposed)
+                        {
+                            if (Input.MouseLeftDown())
+                                _designer.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                            if (Input.MouseRightDown())
+                                _designer.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
+                        }
                     }
                 }
 
@@ -236,24 +319,86 @@ namespace FNAEngine2D
 
             //Even inactive i want to see the preview...
             //Showing preview on mouse cursor...
-            if (IsTileSetEditorOpened)
+            string text = "EditMode";
+            if (MovePlayerMode)
             {
-                Vector2 mousePosition = Input.MousePosition();
-                _tileSetEditor.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
+                //Moving player...
+                PlayerObject.Location = mousePosition;
+                text += " MovePlayerMode";
             }
-            else if(_designer != null && !_designer.IsDisposed)
+            else if (IsTileSetEditorOpened)
             {
-                Vector2 mousePosition = Input.MousePosition();
+                //TileSet mode...
+                _tileSetEditor.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
+                text += " TileSetMode";
+            }
+            else if (_designer != null && !_designer.IsDisposed)
+            {
+                //Content mode...
                 _designer.ShowPreview((int)mousePosition.X, (int)mousePosition.Y);
+                text += " ContentEditor";
             }
 
+
         }
+
+        /// <summary>
+        /// Process the Draw loop in edit mode
+        /// </summary>
+        public static void ProcessDrawEditMode()
+        {
+            if (_spriteBatch == null)
+                _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
+            if(_font == null)
+                _font = new Font(FontManager.ROBOTO_REGULAR, 12);
+
+
+            string text = "EditMode";
+            Color color = Color.White;
+            if (IsGameRunning)
+            {
+                //Game running...
+                text += " GameRunning";
+                color = Color.Green;
+            }
+            else if (MovePlayerMode)
+            {
+                //Moving player...
+                text += " MovePlayerMode";
+                color = Color.HotPink;
+            }
+            else if (IsTileSetEditorOpened)
+            {
+                //TileSet mode...
+                text += " TileSetMode";
+                color = Color.Purple;
+            }
+            else if (_designer != null && !_designer.IsDisposed)
+            {
+                //Content mode...
+                text += " ContentEditor";
+                color = Color.Orange;
+            }
+
+            if (_text == null || _text.String != text)
+                _text = _font.MakeText(text);
+
+            _spriteBatch.Begin();
+            _spriteBatch.DrawString(_text, new Vector2(GameHost.ScreenSize.X - _text.Width - 10, GameHost.ScreenSize.Y - _text.Height), color);
+            _spriteBatch.End();
+        }
+
 
         /// <summary>
         /// Remove the curret selection of object
         /// </summary>
         public static void ClearSelection()
         {
+            if (MovePlayerMode)
+            {
+                //Resetting player position...
+                ResetMovePlayerMode();
+            }
             if (IsTileSetEditorOpened)
                 _tileSetEditor.ClearSelection();
             if (_designer != null && !_designer.IsDisposed)
@@ -304,8 +449,8 @@ namespace FNAEngine2D
 
 
             if (focusWindowHandle == null)
-                //We will focus on the designer...
-                ShowAllGameForms(_designer.Handle);
+                //We will focus on the game...
+                ShowAllGameForms(GameHost.InternalGame.GameWindowHandle);
             else
                 ShowAllGameForms(focusWindowHandle.Value);
 
@@ -371,7 +516,7 @@ namespace FNAEngine2D
         /// </summary>
         public static void ShowTileSetEditor(TileSetRender gameObject, bool setFocus)
         {
-            
+
             if (_tileSetEditor == null || _tileSetEditor.IsDisposed)
             {
                 _tileSetEditor = new TileSetEditor();
@@ -401,7 +546,7 @@ namespace FNAEngine2D
 
 
             //We will focus on the editor...
-            if(setFocus)
+            if (setFocus)
                 ShowAllGameForms(_tileSetEditor.Handle);
         }
 
@@ -479,6 +624,32 @@ namespace FNAEngine2D
             return true;
         }
 
+        /// <summary>
+        /// Reset de MovePlayerMode
+        /// </summary>
+        private static void ResetMovePlayerMode()
+        {
+            if (MovePlayerMode)
+            {
+                if (PlayerObject != null)
+                    PlayerObject.Location = _playerLocationOrigin;
+                MovePlayerMode = false;
+            }
+        }
+
+        /// <summary>
+        /// Move to object
+        /// </summary>
+        public static void MoveToObject(GameObject gameObject)
+        {
+            if (gameObject == null)
+                return;
+
+
+            GameHost.MainCamera.Location = gameObject.Location - new Vector2(GameHost.Width / 2, GameHost.Height / 2);
+
+
+        }
 
 
     }

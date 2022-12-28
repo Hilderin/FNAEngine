@@ -56,12 +56,17 @@ namespace FNAEngine2D
         private Stopwatch _internalTimer = Stopwatch.StartNew();
 
         /// <summary>
-        /// Taille de l'écran
+        /// Real size of the screen
+        /// </summary>
+        private Point _screenSize;
+
+        /// <summary>
+        /// Size of the game
         /// </summary>
         private Point _gameSize;
 
         /// <summary>
-        /// Taille de l'écran
+        /// Bounds of the game
         /// </summary>
         private Rectangle _gameRectangle;
 
@@ -130,6 +135,11 @@ namespace FNAEngine2D
         public Point Size { get { return _gameSize; } }
 
         /// <summary>
+        /// ScreenSize
+        /// </summary>
+        public Point ScreenSize { get { return _screenSize; } }
+
+        /// <summary>
         /// Rectangle
         /// </summary>
         public Rectangle Rectangle { get { return _gameRectangle; } }
@@ -164,6 +174,7 @@ namespace FNAEngine2D
             //Default Camera = a static camera 
             _mainCamera = new Camera(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             //Init gameSize so the SetResolution cam calculate the diff for the resize of the camera...
+            _screenSize = new Point(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             _gameSize = new Point(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
             //Création du Content Manager..
@@ -200,6 +211,7 @@ namespace FNAEngine2D
 
 
             //Recalculate internal things...
+            _screenSize = new Point(screenWidth, screenHeight);
             _gameSize = new Point(internalWidth, internalHeight);
             _gameRectangle = new Rectangle(0, 0, internalWidth, internalHeight);
 
@@ -376,6 +388,12 @@ namespace FNAEngine2D
                     for (int index = 0; index < _extraCameras.Count; index++)
                         RenderCamera(_extraCameras[index]);
                 }
+            }
+
+            //Draw in edit mode...
+            if (EditModeHelper.EditMode)
+            {
+                EditModeHelper.ProcessDrawEditMode();
             }
 
             //Draw the things FNA handles for us underneath the hood:

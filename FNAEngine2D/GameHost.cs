@@ -117,6 +117,11 @@ namespace FNAEngine2D
         public static Point Size { get { return _internalGameHost.Size; } }
 
         /// <summary>
+        /// Real size of the screen
+        /// </summary>
+        public static Point ScreenSize { get { return _internalGameHost.ScreenSize; } }
+
+        /// <summary>
         /// Rectangle of the game
         /// </summary>
         public static Rectangle Rectangle { get { return _internalGameHost.Rectangle; } }
@@ -130,6 +135,11 @@ namespace FNAEngine2D
         /// Background color
         /// </summary>
         public static Color BackgroundColor { get; set; } = Color.Gray;
+
+        /// <summary>
+        /// The scale result of merging Internal size with Screen size.
+        /// </summary>
+        public static Vector2 ScreenScale { get { return _internalGameHost.ScreenScale; } }
 
 
         /// <summary>
@@ -218,7 +228,7 @@ namespace FNAEngine2D
             }
         }
 
-
+        
         /// <summary>
         /// Get the camera to use for a layermask
         /// </summary>

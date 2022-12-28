@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D
 {
+    
     public class SpriteAnimationRender : GameObject
     {
         /// <summary>
@@ -50,11 +53,24 @@ namespace FNAEngine2D
         /// <summary>
         /// Loop the animation
         /// </summary>
+        [DefaultValue(true)]
         public bool Loop { get; set; } = true;
+                /// <summary>
+        /// Hide if animation is stopped?
+        /// </summary>
+        [DefaultValue(false)]
+        public bool HideOnStop { get; set; } = false;
+
+        /// <summary>
+        /// Inverted on the X axis
+        /// </summary>
+        [DefaultValue(false)]
+        public bool InvertedX { get; set; } = false;
 
         /// <summary>
         /// Play the animation on start
         /// </summary>
+        [DefaultValue(true)]
         public bool PlayOnStart
         {
             get { return _playOnStart; }
@@ -76,6 +92,13 @@ namespace FNAEngine2D
 
 
         /// <summary>
+        /// Animation ended?
+        /// </summary>
+        [JsonIgnore]
+        public bool Ended { get { return _stopped; } }
+
+
+        /// <summary>
         /// Empty constructor
         /// </summary>
         public SpriteAnimationRender()
@@ -84,11 +107,30 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Renderer de texture
+        /// Constructor
         /// </summary>
         public SpriteAnimationRender(string spriteAnimationName): this()
         {
             this.SpriteAnimationName = spriteAnimationName;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public SpriteAnimationRender(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop) : this(spriteAnimationName)
+        {
+            this.Loop = loop;
+            this.PlayOnStart = playOnStart;
+            this.HideOnStop = hideOnStop;
+        }
+
+        /// <summary>
+        /// Start the animation
+        /// </summary>
+        public void Play()
+        {
+            if (_stopped)
+                Restart();
         }
 
         /// <summary>
@@ -140,7 +182,6 @@ namespace FNAEngine2D
 
                 if (!PlayOnStart)
                 {
-                    _currentFrame = -1;
                     _stopped = true;
                 }
             }
@@ -204,7 +245,7 @@ namespace FNAEngine2D
                     }
                     else
                     {
-                        _currentFrame = -1;
+                        _currentFrame = spriteAnimation.Frames.Length - 1;
                         _stopped = true;
                         break;
                     }
@@ -224,12 +265,17 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
-            if (_currentFrame < 0 || _stopped)
+            if (_currentFrame < 0 || (_stopped && HideOnStop))
                 return;
 
             SpriteAnimation spriteAnimation = _spriteAnimation.Data;
 
-            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].ColumnIndex * spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Frames[_currentFrame].RowIndex * spriteAnimation.Sprite.RowHeight, spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Sprite.RowHeight), this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+
+            if (InvertedX)
+                spriteEffects = SpriteEffects.FlipHorizontally;
+
+            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].ColumnIndex * spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Frames[_currentFrame].RowIndex * spriteAnimation.Sprite.RowHeight, spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Sprite.RowHeight), this.Color, 0f, Vector2.Zero, spriteEffects, this.Depth);
             
         }
 
