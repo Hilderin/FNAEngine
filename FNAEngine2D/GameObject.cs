@@ -1030,7 +1030,7 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(float nextX, float nextY, Type[] types)
         {
-            return GetCollision(this._location, new Vector2(nextX, nextY), types);
+            return GetCollision(new Vector2(nextX, nextY), types);
         }
 
         /// <summary>
