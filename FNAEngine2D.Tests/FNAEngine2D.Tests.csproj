@@ -51,6 +51,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="GameMathTest.cs" />
     <Compile Include="VectorHelperTest.cs" />
   </ItemGroup>
   <ItemGroup>

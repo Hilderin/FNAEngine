@@ -118,5 +118,23 @@ namespace FNAEngine2D
         {
             return new Vector2(vector.X - point.X, vector.Y - point.Y);
         }
+
+
+        /// <summary>
+        /// /// <summary>
+        /// Creates a Vector2 from an angle and magnitude.
+        /// </summary>
+        public static Vector2 FromPolar(float radians, float magnitude)
+        {
+            return magnitude * new Vector2((float)Math.Cos(radians), (float)Math.Sin(radians));
+        }
+
+        /// <summary>
+        /// Get the angle af a vector 2
+        /// </summary>
+        public static float ToAngle(Vector2 vector)
+        {
+            return (float)Math.Atan2(vector.Y, vector.X);
+        }
     }
 }

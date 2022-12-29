@@ -37,8 +37,12 @@ namespace FNAEngine2D
             _types = new List<Type>();
 
             //FNAEngine2D types...
-            foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                LoadGameObjectTypes(assembly, _types);
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                string name = assembly.GetName().Name;
+                if (name != "mscorlib" && name != "FNA" && name != "netstandard" && name != "Newtonsoft.Json" && !name.StartsWith("System") && !name.StartsWith("Velentr") && !name.StartsWith("SharpFont"))
+                    LoadGameObjectTypes(assembly, _types);
+            }
 
             _types.Sort((a, b) => a.FullName.CompareTo(b.FullName));
 

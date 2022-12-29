@@ -1,5 +1,4 @@
 ﻿using FNAEngine2D.Aseprite.Chunks;
-using FNAEngine2D.Aseprite.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -166,7 +165,7 @@ namespace FNAEngine2D.Aseprite
         {
             Frame frame = Frames[index];
 
-            Texture2D texture = Texture2DUtil.CreateTransparentTexture(Header.Width, Header.Height);
+            Texture2D texture = Texture2DHelper.CreateTransparentTexture(Header.Width, Header.Height);
 
             
             List<LayerChunk> layers = GetChunks<LayerChunk>();
@@ -174,6 +173,7 @@ namespace FNAEngine2D.Aseprite
 
             cels.Sort((ca, cb) => ca.LayerIndex.CompareTo(cb.LayerIndex));
 
+            bool firstLayer = true;
             for (int i = 0; i < cels.Count; i++)
             {
                 LayerChunk layer = layers[cels[i].LayerIndex];
@@ -201,10 +201,11 @@ namespace FNAEngine2D.Aseprite
 
                 Texture2D celTex = GetTextureFromCel(cels[i]);
 
-                //First player, we will keep this texture...
-                if (i == 0)
+                //First layer, we will keep this texture...
+                if (firstLayer)
                 {
                     texture = celTex;
+                    firstLayer = false;
                 }
                 else
                 {
@@ -245,7 +246,7 @@ namespace FNAEngine2D.Aseprite
             int canvasWidth = Header.Width;
             int canvasHeight = Header.Height;
             
-            Texture2D texture = Texture2DUtil.CreateTransparentTexture(canvasWidth, canvasHeight);
+            Texture2D texture = Texture2DHelper.CreateTransparentTexture(canvasWidth, canvasHeight);
             Color[] colors = new Color[canvasWidth * canvasHeight];
 
             int pixelIndex = 0;
@@ -354,7 +355,7 @@ namespace FNAEngine2D.Aseprite
         {
             Texture2D[] frames = this.GetFrames();
 
-            Texture2D atlas = Texture2DUtil.CreateTransparentTexture(Header.Width * frames.Length, Header.Height);
+            Texture2D atlas = Texture2DHelper.CreateTransparentTexture(Header.Width * frames.Length, Header.Height);
             List<Rectangle> spriteRects = new List<Rectangle>();
 
             int col = 0;
@@ -384,7 +385,7 @@ namespace FNAEngine2D.Aseprite
 
             //--------------
             //Reading frames...
-            Texture2D spriteTexture = Texture2DUtil­.CreateTexture(Header.Width * nbFrames, Header.Height);
+            Texture2D spriteTexture = Texture2DHelper­.CreateTexture(Header.Width * nbFrames, Header.Height);
 
             List<SpriteAnimationFrame> frames = new List<SpriteAnimationFrame>();
             for (int index = 0; index < nbFrames; index++)

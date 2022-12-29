@@ -19,12 +19,7 @@ namespace FNAEngine2D
         /// </summary>
         public static Color GetPixel(this Texture2D texture, int x, int y)
         {
-            Rectangle r = new Rectangle(x, y, 1, 1);
-            Color[] colors = new Color[1];
-            
-            texture.GetData(0, r, colors, 0, 1);
-
-            return colors[0];
+            return Texture2DHelper.GetPixel(texture, x, y);
         }
 
         /// <summary>
@@ -32,12 +27,7 @@ namespace FNAEngine2D
         /// </summary>
         public static Color[] GetPixels(this Texture2D texture)
         {
-            //Rectangle r = new Rectangle(0, 0, texture.Width, texture.Height);
-            Color[] colors = new Color[texture.Width * texture.Height];
-
-            texture.GetData(colors);
-
-            return colors;
+            return Texture2DHelper.GetPixels(texture);
         }
 
         /// <summary>
@@ -45,11 +35,7 @@ namespace FNAEngine2D
         /// </summary>
         public static void SetPixel(this Texture2D texture, int x, int y, Color color)
         {
-            Rectangle r = new Rectangle(x, y, 1, 1);
-            Color[] colors = new Color[1];
-            colors[0] = color;
-
-            texture.SetData<Color>(0, r, colors, 0, 1);
+            Texture2DHelper.SetPixel(texture, x, y, color);
         }
 
         /// <summary>
@@ -57,9 +43,7 @@ namespace FNAEngine2D
         /// </summary>
         public static void SetPixels(this Texture2D texture, int x, int y, int width, int height, Color[] colors)
         {
-            Rectangle r = new Rectangle(x, y, width, height);
-           
-            texture.SetData<Color>(0, r, colors, 0, colors.Length);
+            Texture2DHelper.SetPixels(texture, x, y, width, height, colors);
         }
 
     }

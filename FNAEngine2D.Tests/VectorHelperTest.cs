@@ -35,5 +35,14 @@ namespace FNAEngine2D.Tests
 
         }
 
+        [TestMethod]
+        public void ToAngle()
+        {
+            Assert.AreEqual(0f, VectorHelper.ToAngle(new Vector2(1, 0)));
+            Assert.AreEqual("1.5708", Math.Round(VectorHelper.ToAngle(new Vector2(0, 1)), 4).ToString("0.0000"));
+            Assert.AreEqual("-1.5708", Math.Round(VectorHelper.ToAngle(new Vector2(0, -1)), 4).ToString("0.0000"));
+            Assert.AreEqual("3.1416", Math.Round(VectorHelper.ToAngle(new Vector2(-1, 0)), 4).ToString("0.0000"));
+
+        }
     }
 }

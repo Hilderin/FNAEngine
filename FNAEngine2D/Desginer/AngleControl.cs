@@ -41,18 +41,13 @@ namespace FNAEngine2D.Desginer
             e.Graphics.FillEllipse(new SolidBrush(Color.SlateGray), originX - 1, originY - 1, 3, 3);
 
             // Draw angle markers.
-            //int startangle = (270 - rotation) % 360;
-            e.Graphics.DrawString("0", new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 5, 14);
-            //startangle = (startangle + 90) % 360;
-            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(90), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), this.Width - 20, (this.Height / 2) - 6);
-            //startangle = (startangle + 90) % 360;
-            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(180), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 6, this.Height - 18);
-            //startangle = (startangle + 90) % 360;
-            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(270), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), 4, (this.Height / 2) - 6);
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(270), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 5, 14);
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(0), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), this.Width - 20, (this.Height / 2) - 6);
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(90), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), (this.Width / 2) - 6, this.Height - 18);
+            e.Graphics.DrawString(Math.Round(GameMath.DegToRad(180), 1).ToString("0.0"), new System.Drawing.Font("Arial", 8), new SolidBrush(Color.DarkGray), 4, (this.Height / 2) - 6);
 
             // Draw line along the current angle.
-            //double radians = ((((angleDeg + rotation) + 360) % 360) * Math.PI) / (double)180;
-            double radians = GameMath.DegToRad(angleDeg) - GameMath.DegToRad(90);
+            double radians = GameMath.DegToRad(angleDeg);
             e.Graphics.DrawLine(new Pen(new SolidBrush(Color.Red), 1), originX, originY,
                 originX + (int)((double)originX * (double)Math.Cos(radians)),
                 originY + (int)((double)originY * (double)Math.Sin(radians)));
@@ -168,7 +163,7 @@ namespace FNAEngine2D.Desginer
                 tmy = (this.Height / 2) + (int)((double)(my - (this.Height / 2)) * widthToHeightRatio);
 
             // Retrieve updated angle based on rise over run.
-            angleDeg = (float)((GetAngle(this.Width / 2, this.Height / 2, mx, tmy) + 90) % 360);
+            angleDeg = (float)((GetAngle(this.Width / 2, this.Height / 2, mx, tmy)) % 360);
             angle = GameMath.DegToRad(angleDeg);
         }
 

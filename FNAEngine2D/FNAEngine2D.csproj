@@ -65,8 +65,7 @@
     <Compile Include="Asperite\PixelFormats\GrayscalePixel.cs" />
     <Compile Include="Asperite\PixelFormats\IndexedPixel.cs" />
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
-    <Compile Include="Asperite\Utils\Texture2DBlender.cs" />
-    <Compile Include="Asperite\Utils\Texture2DUtil.cs" />
+    <Compile Include="Texture2DBlender.cs" />
     <Compile Include="AverageCalculator.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CharacterInput.cs" />
@@ -131,6 +130,7 @@
     <Compile Include="TextRender.cs" />
     <Compile Include="SpriteRender.cs" />
     <Compile Include="Texture2DExtensions.cs" />
+    <Compile Include="Texture2DHelper.cs" />
     <Compile Include="TextureRender.cs" />
     <Compile Include="RectangleHelper.cs" />
     <Compile Include="RectangleExtensions.cs" />
@@ -180,6 +180,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\imgDelete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Asperite\Utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -64,7 +64,7 @@ namespace FNAEngine2D.Desginer
 
             // Draw line along the current angle.
             //double radians = (Convert.ToDouble(e.Value) * Math.PI) / (double)180;
-            double radians = Convert.ToDouble(e.Value) - GameMath.DegToRad(90);
+            double radians = Convert.ToDouble(e.Value);
             e.Graphics.DrawLine(new Pen(new SolidBrush(Color.Red), 1), normalX + e.Bounds.X, normalY + e.Bounds.Y,
                 e.Bounds.X + (normalX + (int)((double)normalX * Math.Cos(radians))),
                 e.Bounds.Y + (normalY + (int)((double)normalY * Math.Sin(radians))));

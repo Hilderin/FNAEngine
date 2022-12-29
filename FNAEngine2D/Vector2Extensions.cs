@@ -52,5 +52,13 @@ namespace FNAEngine2D
             return VectorHelper.Substract(vector, point);
         }
 
+        /// <summary>
+        /// Get the angle af a vector 2
+        /// </summary>
+        public static float ToAngle(this Vector2 vector)
+        {
+            return VectorHelper.ToAngle(vector);
+        }
+
     }
 }
