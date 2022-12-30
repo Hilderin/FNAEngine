@@ -103,7 +103,10 @@ namespace FNAEngine2D
             if (this.IsDown)
                 deltaY += 1f;
 
-            return new Vector2(deltaX, deltaY);
+            Vector2 movement = new Vector2(deltaX, deltaY);
+            if(movement != Vector2.Zero)
+                movement.Normalize();
+            return movement;
         }
 
     }
