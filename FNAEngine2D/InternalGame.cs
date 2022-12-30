@@ -183,7 +183,6 @@ namespace FNAEngine2D
 
             //Setting de default resolution...
             SetResolution(1200, 720, 1200, 720, false);
-            
         }
 
 
@@ -321,7 +320,7 @@ namespace FNAEngine2D
 
 
             //On update le gametime pour l'avoir partout...
-            GameHost.SetGameTime(gameTime);
+            GameHost.SetGameTime(gameTime.ElapsedGameTime);
 
 
             //Update des inputs...
@@ -370,7 +369,7 @@ namespace FNAEngine2D
         protected override void Draw(GameTime gameTime)
         {
             //On update le gametime pour l'avoir partout...
-            GameHost.SetGameTime(gameTime);
+            GameHost.SetGameTime(gameTime.ElapsedGameTime);
 
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
             _graphicsDevice.Clear(GameHost.BackgroundColor);
