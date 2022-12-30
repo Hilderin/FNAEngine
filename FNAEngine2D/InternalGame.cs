@@ -178,7 +178,7 @@ namespace FNAEngine2D
             _gameSize = new Point(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
             //Création du Content Manager..
-            _contentManager = new ContentManager(this.Services, ContentWatcher.ContentFolder);
+            _contentManager = new ContentManager(this.Services, ContentManager.ContentFolder);
             this.Content = _contentManager;
 
             //Setting de default resolution...
@@ -291,7 +291,7 @@ namespace FNAEngine2D
         {
             //Chargement du contenu...
             _rootGameObject._addAuthorized = true;
-            _rootGameObject.Load();
+            _rootGameObject.DoLoad();
 
 
             //Base LoadContent (i guess there's nothing there)

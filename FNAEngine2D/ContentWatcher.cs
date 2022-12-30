@@ -34,12 +34,6 @@ namespace FNAEngine2D
         ///// </summary>
         //public static event ContentChangedHandler ContentChanged;
 
-
-        /// <summary>
-        /// Root du content folder
-        /// </summary>
-        private static string _contentFolder;
-
         /// <summary>
         /// Date et heure du dernier changement de content
         /// </summary>
@@ -67,26 +61,6 @@ namespace FNAEngine2D
         public static bool Enabled { get; set; } = true;
 
 
-
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        static ContentWatcher()
-        {
-            string assemblyLocation = Assembly.GetCallingAssembly().Location;
-            if (assemblyLocation.IndexOf(@"bin\debug\", StringComparison.OrdinalIgnoreCase) > 0
-                || assemblyLocation.IndexOf(@"bin\release\", StringComparison.OrdinalIgnoreCase) > 0)
-                _contentFolder = Path.GetFullPath(@"..\..\Content\");
-            else
-                _contentFolder = Path.GetFullPath(@"Content\");
-        }
-
-        /// <summary>
-        /// Permet de retourner le path du content folder
-        /// </summary>
-        public static string ContentFolder { get { return _contentFolder; } }
-
-
         /// <summary>
         /// Permet de vérifier si du contenu change
         /// </summary>
@@ -94,9 +68,9 @@ namespace FNAEngine2D
         {
             if (GameHost.DevelopmentMode)
             {
-                if (Directory.Exists(ContentFolder))
+                if (Directory.Exists(ContentManager.ContentFolder))
                 {
-                    FileSystemWatcher fsw = new FileSystemWatcher(ContentFolder);
+                    FileSystemWatcher fsw = new FileSystemWatcher(ContentManager.ContentFolder);
                     fsw.IncludeSubdirectories = true;
 
                     fsw.Changed += Fsw_Changed;

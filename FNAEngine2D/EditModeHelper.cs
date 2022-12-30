@@ -191,7 +191,7 @@ namespace FNAEngine2D
                     EditModeHelper.Revert();
 
                     GameHost.InternalGame.RootGameObject.RemoveAll();
-                    GameHost.InternalGame.RootGameObject.Load();
+                    GameHost.InternalGame.RootGameObject.DoLoad();
 
                     EditModeHelper.ReloadDesigner();
                 }

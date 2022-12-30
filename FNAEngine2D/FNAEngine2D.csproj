@@ -65,6 +65,13 @@
     <Compile Include="Asperite\PixelFormats\GrayscalePixel.cs" />
     <Compile Include="Asperite\PixelFormats\IndexedPixel.cs" />
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
+    <Compile Include="Communication\CommandAttribute.cs" />
+    <Compile Include="Communication\CommandHelper.cs" />
+    <Compile Include="Communication\CommunicationChannel.cs" />
+    <Compile Include="Communication\SocketChannel.cs" />
+    <Compile Include="Communication\SocketServer.cs" />
+    <Compile Include="ErrorHelper.cs" />
+    <Compile Include="GameObjectEnums.cs" />
     <Compile Include="Texture2DBlender.cs" />
     <Compile Include="AverageCalculator.cs" />
     <Compile Include="Camera.cs" />

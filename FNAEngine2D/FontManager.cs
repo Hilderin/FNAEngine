@@ -13,7 +13,7 @@ namespace FNAEngine2D
     /// <summary>
     /// FontManager
     /// </summary>
-    internal static class FontManager
+    public static class FontManager
     {
         /// <summary>
         /// Embed font: Roboto-Regular
@@ -80,7 +80,7 @@ namespace FNAEngine2D
                 if (String.IsNullOrEmpty(Path.GetExtension(filename)))
                     filename += ".ttf";
 
-                return _fontManager.GetFont(ContentWatcher.ContentFolder + filename, fontSize);
+                return _fontManager.GetFont(ContentManager.ContentFolder + filename, fontSize);
             }
         }
     }

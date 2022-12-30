@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,28 @@ namespace FNAEngine2D
         /// Is newly Fireing
         /// </summary>
         public bool IsNewFire { get { return Input.IsKeyNewDown(FireKey); } }
+
+
+        /// <summary>
+        /// Get the movement Vector2
+        /// </summary>
+        public Vector2 GetMovement()
+        {
+            float deltaX = 0f;
+            float deltaY = 0f;
+
+            if (this.IsLeft)
+                deltaX -= 1f;
+            if (this.IsRight)
+                deltaX += 1f;
+
+            if (this.IsUp)
+                deltaY -= 1f;
+            if (this.IsDown)
+                deltaY += 1f;
+
+            return new Vector2(deltaX, deltaY);
+        }
 
     }
 }

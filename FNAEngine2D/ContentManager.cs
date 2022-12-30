@@ -91,6 +91,35 @@ namespace FNAEngine2D
         /// Disposable objets avec leur nom
         /// </summary>
         private static Dictionary<string, IDisposable> _disposableAssetsPerName = new Dictionary<string, IDisposable>(StringComparer.OrdinalIgnoreCase);
+        
+        /// <summary>
+        /// Root du content folder
+        /// </summary>
+        private static string _contentFolder;
+
+        /// <summary>
+        /// Permet de retourner le path du content folder
+        /// </summary>
+        public static string ContentFolder
+        { 
+            get { return _contentFolder; }
+            set { _contentFolder = value; }
+        }
+
+        
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        static ContentManager()
+        {
+            string assemblyLocation = Assembly.GetCallingAssembly().Location;
+            if (assemblyLocation.IndexOf(@"bin\debug\", StringComparison.OrdinalIgnoreCase) > 0
+                || assemblyLocation.IndexOf(@"bin\release\", StringComparison.OrdinalIgnoreCase) > 0)
+                _contentFolder = Path.GetFullPath(@"..\..\Content\");
+            else
+                _contentFolder = Path.GetFullPath(@"Content\");
+        }
+
 
         /// <summary>
         /// Constructeur

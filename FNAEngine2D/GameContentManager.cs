@@ -104,6 +104,9 @@ namespace FNAEngine2D
                 if (childExist != null && childExist.GetType().Name == childToCreate.ClassName)
                 {
                     objToUse = childExist;
+
+                    //Applying properties....
+                    ApplyGameObjectProperties(objToUse, childToCreate);
                 }
                 else
                 {
@@ -115,8 +118,7 @@ namespace FNAEngine2D
                     isNew = true;
                 }
 
-                //Applying properties....
-                ApplyGameObjectProperties(objToUse, childToCreate);
+                
 
                 if (isNew)
                 {
@@ -125,7 +127,7 @@ namespace FNAEngine2D
                 else
                 {
                     objToUse.RemoveAll();
-                    objToUse.Load();
+                    objToUse.DoLoad();
                 }
             }
 
@@ -190,13 +192,18 @@ namespace FNAEngine2D
         /// <summary>
         /// Create the game object...
         /// </summary>
-        private static GameObject CreateGameObject(GameContentObject obj)
+        public static GameObject CreateGameObject(GameContentObject contentObj)
         {
 
-            Type type = GameObjectTypesLoader.GetGameObjectType(obj.ClassName);
+            Type type = GameObjectTypesLoader.GetGameObjectType(contentObj.ClassName);
 
-            return (GameObject)Activator.CreateInstance(type);
+            
+            GameObject obj = (GameObject)Activator.CreateInstance(type);
 
+            //Applying properties....
+            ApplyGameObjectProperties(obj, contentObj);
+
+            return obj;
 
         }
 

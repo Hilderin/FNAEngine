@@ -75,6 +75,11 @@ namespace FNAEngine2D
         /// </summary>
         private float _depth = 0f;
 
+        /// <summary>
+        /// Unique ID of the GameObject
+        /// </summary>
+        [Browsable(false)]
+        public Guid ID { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// RootGameObject
@@ -413,6 +418,13 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Update version
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public int Version { get; set; }
+
 
         /// <summary>
         /// Empty constructor
@@ -478,7 +490,7 @@ namespace FNAEngine2D
             if (!gameObject._loaded)
             {
                 gameObject._addAuthorized = true;
-                gameObject.Load();
+                gameObject.DoLoad();
             }
 
             return gameObject;
@@ -549,6 +561,14 @@ namespace FNAEngine2D
         public GameObject Find(string name)
         {
             return Find(o => o.Name == name);
+        }
+
+        /// <summary>
+        /// Find a GameObjet by name
+        /// </summary>
+        public GameObject FindByID(Guid id)
+        {
+            return Find(o => o.ID == id);
         }
 
         /// <summary>
@@ -689,6 +709,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Loading on the client
+        /// </summary>
+        public virtual void LoadClient()
+        {
+
+        }
+
+        /// <summary>
         /// Chargement du content
         /// </summary>
         public virtual void Load()
@@ -696,32 +724,29 @@ namespace FNAEngine2D
 
         }
 
-        ///// <summary>
-        ///// Chargement du content
-        ///// </summary>
-        //internal void LoadWithChildren()
-        //{
-        //    //_isLoading = true;
+        /// <summary>
+        /// Execte the loading of the GameObject
+        /// </summary>
+        public void DoLoad()
+        {
+            if (GameHost.IsClient)
+                this.LoadClient();
 
-        //    this.Load();
-
-        //    if (this.Childrens.Count > 0)
-        //    {
-        //        for (int index = 0; index < this.Childrens.Count; index++)
-        //        {
-        //            if (!this.Childrens[index]._loaded)
-        //                this.Childrens[index].LoadWithChildren();
-        //        }
-        //    }
-
-        //    _loaded = true;
-
-        //}
+            this.Load();
+        }
 
         /// <summary>
-        /// Logique d'update
+        /// Update logic for the server
         /// </summary>
         public virtual void Update()
+        {
+
+        }
+
+        /// <summary>
+        /// Update logic for the client
+        /// </summary>
+        public virtual void UpdateClient()
         {
 
         }
@@ -738,6 +763,10 @@ namespace FNAEngine2D
             //Update GameContent if needed...
             if (GameHost.DevelopmentMode)
                 GameContentManager.ReloadModifiedContent(this);
+
+            //Update login from the client site
+            if (GameHost.IsClient)
+                this.UpdateClient();
 
             this.Update();
 

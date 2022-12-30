@@ -141,6 +141,15 @@ namespace FNAEngine2D
         /// </summary>
         public static Vector2 ScreenScale { get { return _internalGameHost.ScreenScale; } }
 
+        /// <summary>
+        /// Indicate if we are the server process
+        /// </summary>
+        public static bool IsServer { get; set; } = false;
+
+        /// <summary>
+        /// Indicate if we are the client process
+        /// </summary>
+        public static bool IsClient { get; set; } = false;
 
         /// <summary>
         /// Default Camera
@@ -260,6 +269,9 @@ namespace FNAEngine2D
         {
             try
             {
+                //We are a client...
+                GameHost.IsClient = true;
+
                 _internalGameHost.RootGameObject = rootGameObject;
 
                 _internalGameHost.Run();

@@ -125,7 +125,7 @@ namespace FNAEngine2D.Desginer
                 UpdatePreviewTileSet();
 
                 _gameObject.RemoveAll();
-                _gameObject.Load();
+                _gameObject.DoLoad();
             }
 
         }
@@ -142,7 +142,7 @@ namespace FNAEngine2D.Desginer
                 UpdatePreviewTileSet();
 
                 _gameObject.RemoveAll();
-                _gameObject.Load();
+                _gameObject.DoLoad();
             }
         }
 

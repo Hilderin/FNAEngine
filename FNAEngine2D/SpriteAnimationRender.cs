@@ -39,6 +39,10 @@ namespace FNAEngine2D
         /// </summary>
         private bool _playOnStart = true;
 
+        /// <summary>
+        /// StartPosition
+        /// </summary>
+        private StartPosition _startPosition = StartPosition.TopLeft;
 
         /// <summary>
         /// Information on the sprite animation
@@ -66,6 +70,7 @@ namespace FNAEngine2D
         /// </summary>
         [DefaultValue(false)]
         public bool InvertedX { get; set; } = false;
+
 
         /// <summary>
         /// Play the animation on start
@@ -117,11 +122,27 @@ namespace FNAEngine2D
         /// <summary>
         /// Constructor
         /// </summary>
+        public SpriteAnimationRender(string spriteAnimationName, StartPosition startPosition) : this(spriteAnimationName)
+        {
+            _startPosition = startPosition;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public SpriteAnimationRender(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop) : this(spriteAnimationName)
         {
             this.Loop = loop;
             this.PlayOnStart = playOnStart;
             this.HideOnStop = hideOnStop;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public SpriteAnimationRender(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop, StartPosition startPosition) : this(spriteAnimationName, loop, playOnStart, hideOnStop)
+        {
+            _startPosition = startPosition;
         }
 
         /// <summary>
@@ -173,6 +194,14 @@ namespace FNAEngine2D
                     this.Width = _spriteAnimation.Data.Sprite.ColumnScreenWidth;
                 if (this.Height == 0)
                     this.Height = _spriteAnimation.Data.Sprite.RowScreenHeight;
+
+                //Adjust the starting position...
+                if (this.Location == Vector2.Zero)
+                {
+                    if (_startPosition == StartPosition.CenterBottom)
+                        this.Bounds = this.Parent.Bounds.CenterBottom(this.Width, this.Height);
+                }
+
 
                 if (_spriteAnimation.Data.Frames.Length == 0 || _spriteAnimation.Data.Sprite == null || _spriteAnimation.Data.Sprite.Texture == null)
                 {

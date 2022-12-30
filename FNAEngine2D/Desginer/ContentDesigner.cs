@@ -594,7 +594,7 @@ namespace FNAEngine2D.Desginer
                 if (propertyGrid.SelectedObject != null)
                 {
                     ((GameObject)propertyGrid.SelectedObject).RemoveAll();
-                    ((GameObject)propertyGrid.SelectedObject).Load();
+                    ((GameObject)propertyGrid.SelectedObject).DoLoad();
 
                     if (e.ChangedItem.PropertyDescriptor.Name == "Name")
                     {
