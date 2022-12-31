@@ -89,7 +89,5 @@ namespace FNAEngine2D
                 
             }
         }
-
-
     }
 }

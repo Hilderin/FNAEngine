@@ -27,9 +27,9 @@ namespace FNAEngine2D.Communication
         /// <summary>
         /// Start the server
         /// </summary>
-        public void Start(int port)
+        public void Start(bool localOnly, int port)
         {
-            EndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, port);
+            EndPoint ipEndPoint = new IPEndPoint((localOnly ? IPAddress.Loopback : IPAddress.Any), port);
             _listener = new Socket(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             _listener.Bind(ipEndPoint);

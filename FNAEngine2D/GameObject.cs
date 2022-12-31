@@ -566,13 +566,15 @@ namespace FNAEngine2D
             {
                 gameObject._addAuthorized = true;
                 gameObject.DoLoad();
+                gameObject.OnAdded();
             }
+            else
+            {
+                gameObject.OnAdded();
 
-            //Little event OnAdded...
-            gameObject.OnAdded();
-
-            //And the children because if the parent was removed, we want to trap the add also on the children
-            ForEach(o => o.OnAdded(), true);
+                //And the children because if the parent was removed, we want to trap the add also on the children
+                ForEach(o => o.OnAdded(), true);
+            }
 
             return gameObject;
         }
@@ -592,11 +594,13 @@ namespace FNAEngine2D
 
             Mouse.RemoveGameObject(gameObject);
 
+            //And the children because they are not really removed but we will want to known if the parent is removed.
+            gameObject.ForEach(o => o.OnRemoved(), true);
+
             //Little event OnRemoved...
             gameObject.OnRemoved();
 
-            //And the children because they are not really removed but we will want to known if the parent is removed.
-            ForEach(o => o.OnRemoved(), true);
+            
 
         }
 
@@ -858,12 +862,13 @@ namespace FNAEngine2D
             if (GameManager.DevelopmentMode)
                 GameContentManager.ReloadModifiedContent(this);
 
-            
-            this.Update();
 
             //Update login from the client site
             if (this.IsClient)
                 this.UpdateClient();
+
+
+            this.Update();
 
 
             if (this._childrens.Count == 0)

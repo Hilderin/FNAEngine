@@ -22,6 +22,11 @@ namespace FNAEngine2D
     public class Game : Microsoft.Xna.Framework.Game
     {
         /// <summary>
+        /// Server loop
+        /// </summary>
+        private GameLoop _serverLoop;
+
+        /// <summary>
         /// Content Manager
         /// </summary>
         private ContentManager _contentManager;
@@ -171,8 +176,8 @@ namespace FNAEngine2D
                     //Removing the old one, in case we are changing the root game object...
                     if (_rootGameObject != null)
                     {
-                        _rootGameObject.OnRemoved();
                         _rootGameObject.ForEach(o => o.OnRemoved());
+                        _rootGameObject.OnRemoved();                        
                     }
 
                     _rootGameObject = value;
@@ -338,7 +343,6 @@ namespace FNAEngine2D
             _graphics.IsFullScreen = graphicSettings.IsFullscreen;
             _graphics.ApplyChanges();
 
-
             //Default Camera = a static camera 
             _mainCamera = new Camera(graphicSettings.GameSize.X, graphicSettings.GameSize.Y);
             _mainCamera.Game = this;
@@ -382,6 +386,7 @@ namespace FNAEngine2D
 
         }
 
+
         /// <summary>
         /// Add a camera
         /// </summary>
@@ -415,15 +420,20 @@ namespace FNAEngine2D
         public void UpdateGraphicSettings(GraphicSettings graphicSettings)
         {
             //Update graphics...
-            _graphics.PreferredBackBufferWidth = graphicSettings.ScreenSize.X;
-            _graphics.PreferredBackBufferHeight = graphicSettings.ScreenSize.Y;
-            _graphics.IsFullScreen = graphicSettings.IsFullscreen;
-            _graphics.ApplyChanges();
+            if (_graphics.PreferredBackBufferWidth != graphicSettings.ScreenSize.X
+                || _graphics.PreferredBackBufferHeight != graphicSettings.ScreenSize.Y
+                || _graphics.IsFullScreen != graphicSettings.IsFullscreen)
+            {
+                _graphics.PreferredBackBufferWidth = graphicSettings.ScreenSize.X;
+                _graphics.PreferredBackBufferHeight = graphicSettings.ScreenSize.Y;
+                _graphics.IsFullScreen = graphicSettings.IsFullscreen;
+                _graphics.ApplyChanges();
+            }
 
             //Basic settings...
             this.NbPixelPerMeter = graphicSettings.NbPixelPerMeter;
             this.BackgroundColor = graphicSettings.BackgroundColor;
-                      
+                     
 
 
             //Recalculate internal things...
