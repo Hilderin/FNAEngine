@@ -73,7 +73,7 @@ namespace FNAEngine2D
             }
             else
             {
-                _texture = GameHost.GetContent<Texture2D>(this.TextureName);
+                _texture = GetContent<Texture2D>(this.TextureName);
 
                 if (this.Width == 0)
                     this.Width = _texture.Data.Width;

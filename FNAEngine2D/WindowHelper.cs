@@ -30,7 +30,7 @@ namespace FNAEngine2D
         {
             return System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
         }
-        
+
 
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace FNAEngine2D
         /// </summary>
         public static void ShowAllWindows(List<IntPtr> windowHandles, IntPtr focusWindowHandle)
         {
-            
+
             if (!IsIntervalOKToSwitchWindow())
                 return;
 
@@ -62,5 +62,12 @@ namespace FNAEngine2D
 
         }
 
+        /// <summary>
+        /// Hide a window
+        /// </summary>
+        public static void HideWindow(IntPtr windowHandle)
+        {
+            Win32.ShowWindow(windowHandle, Win32.SW_HIDE);
+        }
     }
 }

@@ -12,44 +12,45 @@ using Velentr.Font;
 namespace FNAEngine2D
 {
     /// <summary>
-    /// Context on the current drawing
+    /// Content to do the drawing for cameras
     /// </summary>
-    internal static class DrawingContext
+    public class DrawingContext
     {
         private const int INCREMENT_BUFFER = 1024;
-        private static DrawInfoComparer _drawInfoComparer = new DrawInfoComparer();
+        private DrawInfoComparer _drawInfoComparer = new DrawInfoComparer();
 
 
-        private static int _bufferLength = 0;
-        private static DrawInfo[] _drawings = new DrawInfo[0];
+        private int _bufferLength = 0;
+        private DrawInfo[] _drawings = new DrawInfo[0];
 
-        private static int _drawIndex = -1;
-
-
-        /// <summary>
-        /// Current camera
-        /// </summary>
-        private static Camera _camera;
+        private int _drawIndex = -1;
 
 
         /// <summary>
         /// Current camera
         /// </summary>
-        public static Camera Camera  { get { return _camera; } }
-        
+        private Camera _camera;
+
+
+        /// <summary>
+        /// Current camera
+        /// </summary>
+        public Camera Camera  { get { return _camera; } }
+
 
         /// <summary>
         /// Constructor
         /// </summary>
-        static DrawingContext()
+        public DrawingContext()
         {
+            //Resizing drawing array with the initial size
             ResizeDrawingsArray();
         }
 
         /// <summary>
         /// Begin drawing
         /// </summary>
-        public static void Begin(Camera camera)
+        public void Begin(Camera camera)
         {
             _drawIndex = -1;
             _camera = camera;
@@ -58,7 +59,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Draw a texture
         /// </summary>
-        public static void Draw(Texture2D texture,
+        public void Draw(Texture2D texture,
                          Rectangle destinationRectangle,
                          Rectangle? sourceRectangle,
                          Color color,
@@ -97,7 +98,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Draw a texture
         /// </summary>
-        public static void Draw(Texture2D texture,
+        public void Draw(Texture2D texture,
                          Vector2 position,
                          Rectangle? sourceRectangle,
                          Color color,
@@ -144,7 +145,7 @@ namespace FNAEngine2D
         /// <summary>
         /// DrawString
         /// </summary>
-        public static void DrawString(Text text, 
+        public void DrawString(Text text, 
                                Vector2 position, 
                                Color color, 
                                float rotation, 
@@ -190,7 +191,7 @@ namespace FNAEngine2D
         /// <summary>
         /// End the drawing
         /// </summary>
-        public static void End()
+        public void End()
         {
             Array.Sort(_drawings, 0, _drawIndex + 1, _drawInfoComparer);
 
@@ -224,7 +225,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Grow the drawings array
         /// </summary>
-        private static void ResizeDrawingsArray()
+        private void ResizeDrawingsArray()
         {
             int newSize = _bufferLength + INCREMENT_BUFFER;
 

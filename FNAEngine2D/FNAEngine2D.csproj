@@ -70,10 +70,15 @@
     <Compile Include="Communication\CommunicationChannel.cs" />
     <Compile Include="Communication\SocketChannel.cs" />
     <Compile Include="Communication\SocketServer.cs" />
+    <Compile Include="ContentService.cs" />
     <Compile Include="Databases\JsonDatabase.cs" />
     <Compile Include="ErrorHelper.cs" />
     <Compile Include="GameLoop.cs" />
+    <Compile Include="GameManager.cs" />
     <Compile Include="GameObjectEnums.cs" />
+    <Compile Include="GameTimeService.cs" />
+    <Compile Include="GraphicSettings.cs" />
+    <Compile Include="ServiceProvider.cs" />
     <Compile Include="Texture2DBlender.cs" />
     <Compile Include="AverageCalculator.cs" />
     <Compile Include="Camera.cs" />
@@ -103,7 +108,7 @@
     <Compile Include="Desginer\TileSetEditor.Designer.cs">
       <DependentUpon>TileSetEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditModeHelper.cs" />
+    <Compile Include="EditModeService.cs" />
     <Compile Include="DebugInfoRender.cs" />
     <Compile Include="GameObjectTypesLoader.cs" />
     <Compile Include="DrawingContext.cs" />
@@ -115,9 +120,8 @@
     <Compile Include="GameMath.cs" />
     <Compile Include="GameContentObject.cs" />
     <Compile Include="IMouseEventHandler.cs" />
-    <Compile Include="Input.cs" />
-    <Compile Include="InternalGame.cs" />
-    <Compile Include="GameHost.cs" />
+    <Compile Include="InputManager.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="Layers.cs" />
     <Compile Include="MouseAction.cs" />
     <Compile Include="MouseManager.cs" />

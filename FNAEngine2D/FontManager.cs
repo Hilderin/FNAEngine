@@ -20,7 +20,6 @@ namespace FNAEngine2D
         /// </summary>
         public const string ROBOTO_REGULAR = "Roboto-Regular";
 
-
         /// <summary>
         /// Graphics device
         /// </summary>

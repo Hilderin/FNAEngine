@@ -46,22 +46,5 @@ namespace FNAEngine2D
         {
             return _font.MakeText(text);
         }
-
-        ///// <summary>
-        ///// Render le text
-        ///// </summary>
-        //public void DrawString(string text, Vector2 position, Color color)
-        //{
-        //    DrawingContext.DrawString(_font, text, position, color);
-        //}
-
-        ///// <summary>
-        ///// Render le text
-        ///// </summary>
-        //public void DrawString(string text, Vector2 position, Color color, float rotation, Vector2 origin, float layerDepth)
-        //{
-        //    DrawingContext.DrawString(_font, text, position, color, rotation, origin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, layerDepth);
-        //}
-
     }
 }

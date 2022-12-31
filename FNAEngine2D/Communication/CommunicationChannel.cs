@@ -6,17 +6,48 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D.Communication
 {
+
+    /// <summary>
+    /// Status of a channel
+    /// </summary>
+    public enum ChannelState
+    {
+        NotConnected,
+        Connected,
+        Connecting,
+        Error,
+        Disconnected
+    }
+
+
+
+
     public interface CommunicationChannel
     {
         /// <summary>
-        /// Indicate if the communication is opened
+        /// Indicate the state of the channel
         /// </summary>
-        bool IsOpen { get; }
+        ChannelState State { get; }
+
+        /// <summary>
+        /// Error detail
+        /// </summary>
+        string Error { get; }
 
         /// <summary>
         /// Check if commands available for reading
         /// </summary>
         bool Available { get; }
+
+        /// <summary>
+        /// Connect to the server
+        /// </summary>
+        void Connect(Action actionAfterConnect);
+
+        /// <summary>
+        /// Disconnect from the server
+        /// </summary>
+        void Disconnect();
 
         /// <summary>
         /// Send data

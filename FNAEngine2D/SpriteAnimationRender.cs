@@ -188,7 +188,7 @@ namespace FNAEngine2D
             }
             else
             {
-                _spriteAnimation = GameHost.GetContent<SpriteAnimation>(this.SpriteAnimationName);
+                _spriteAnimation = GetContent<SpriteAnimation>(this.SpriteAnimationName);
 
                 if (this.Width == 0)
                     this.Width = _spriteAnimation.Data.Sprite.ColumnScreenWidth;
@@ -222,7 +222,7 @@ namespace FNAEngine2D
         /// </summary>
         public override void Update()
         {
-            UpdateInternal(GameHost.ElapsedGameTimeMilliseconds);
+            UpdateInternal(this.ElapsedGameTimeMilliseconds);
 
         }
 

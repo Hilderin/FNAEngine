@@ -20,53 +20,59 @@ namespace FNAEngine2D
     /// <summary>
     /// Content Manager
     /// </summary>
-    internal static class ContentWatcher
+    public class ContentWatcher
     {
 
         /// <summary>
         /// Extensions traités
         /// </summary>
-        private static readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png", ".json", ".aseprite" };
+        private readonly string[] EXTENSIONS = new string[] { ".jpg", ".jpeg", ".wav", ".ogg", ".png", ".json", ".aseprite" };
 
-
-        ///// <summary>
-        ///// Event quand des changements se font sur le content
-        ///// </summary>
-        //public static event ContentChangedHandler ContentChanged;
+        /// <summary>
+        /// Game
+        /// </summary>
+        private Game _game;
 
         /// <summary>
         /// Date et heure du dernier changement de content
         /// </summary>
-        private static DateTime _lastUpdatedContent = DateTime.MinValue;
+        private DateTime _lastUpdatedContent = DateTime.MinValue;
 
         /// <summary>
         /// Task pour l'update du contenu
         /// </summary>
-        private static Task _taskUpdateContent = null;
+        private Task _taskUpdateContent = null;
 
         /// <summary>
         /// Liste des changements
         /// </summary>
-        private static List<string> ListChanges = new List<string>();
+        private List<string> ListChanges = new List<string>();
 
         /// <summary>
         /// Indique si du contenu doit être reloadé
         /// </summary>
-        public static bool _contentToReload = false;
+        public bool _contentToReload = false;
 
 
         /// <summary>
         /// Indicate if we should watch the modifications
         /// </summary>
-        public static bool Enabled { get; set; } = true;
+        public bool Enabled { get; set; } = true;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public ContentWatcher(Game game)
+        {
+            _game = game;
+        }
 
         /// <summary>
         /// Permet de vérifier si du contenu change
         /// </summary>
-        public static void StartWatchUpdateContent()
+        public void StartWatchUpdateContent()
         {
-            if (GameHost.DevelopmentMode)
+            if (GameManager.DevelopmentMode)
             {
                 if (Directory.Exists(ContentManager.ContentFolder))
                 {
@@ -87,7 +93,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de reloader le contenu modifié
         /// </summary>
-        public static void ReloadModifiedContent()
+        public void ReloadModifiedContent()
         {
             if (!_contentToReload)
                 return;
@@ -101,7 +107,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de reloader le contenu modifié
         /// </summary>
-        private static void ReloadModifiedContentInternal()
+        private void ReloadModifiedContentInternal()
         {
             List<string> changes;
 
@@ -114,21 +120,7 @@ namespace FNAEngine2D
             foreach (string fullPath in changes)
             {
                 //Reload the asset...
-                GameHost.InternalGame.ContentManager.Reload(fullPath);
-
-                //if (ContentChanged != null)
-                //{
-                //    string assetName = fullPath.Substring(ContentFolder.Length);
-
-                //    //Retrait de l'extension...
-                //    int index = assetName.LastIndexOf('.');
-                //    if (index > 0)
-                //    {
-                //        assetName = assetName.Substring(0, index);
-
-                //        ContentChanged(assetName);
-                //    }
-                //}
+                _game.ContentManager.Reload(fullPath);
             }
 
         }
@@ -136,7 +128,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Event quand des changements sont lancés
         /// </summary>
-        private static void Fsw_Renamed(object sender, RenamedEventArgs e)
+        private void Fsw_Renamed(object sender, RenamedEventArgs e)
         {
             ProcessChange(e.FullPath);
         }
@@ -144,7 +136,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Event quand des changements sont lancés
         /// </summary>
-        private static void Fsw_Changed(object sender, FileSystemEventArgs e)
+        private void Fsw_Changed(object sender, FileSystemEventArgs e)
         {
             ProcessChange(e.FullPath);
         }
@@ -152,7 +144,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Process le changement
         /// </summary>
-        private static void ProcessChange(string fullPath)
+        private void ProcessChange(string fullPath)
         {
             if (!Enabled)
                 return;
@@ -182,7 +174,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'attendre que les updates soient terminées pour éviter de lancer pleins de refresh de content
         /// </summary>
-        private static void TaskWaitBeforeForNotification()
+        private void TaskWaitBeforeForNotification()
         {
             try
             {

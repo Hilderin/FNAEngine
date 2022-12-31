@@ -19,10 +19,16 @@ namespace FNAEngine2D
     /// </summary>
     public class GameObject
     {
+
+        /// <summary>
+        /// Link the the Internal game
+        /// </summary>
+        internal Game _game = Game.Current;
+
         /// <summary>
         /// Gère le loading des childrens
         /// </summary>
-        private bool _loaded = false;
+        internal bool _loaded = false;
 
         /// <summary>
         /// Add children autorized
@@ -33,11 +39,6 @@ namespace FNAEngine2D
         /// Visible
         /// </summary>
         private bool _visible = true;
-
-        /// <summary>
-        /// Collider container
-        /// </summary>
-        private ColliderContainer _colliderContainer = null;
 
         /// <summary>
         /// Avons-nous un collider?
@@ -425,6 +426,77 @@ namespace FNAEngine2D
         [JsonIgnore]
         public int Version { get; set; }
 
+        /// <summary>
+        /// DrawingContext to draw on screen
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public DrawingContext DrawingContext { get { return _game.DrawingContext; } }
+
+        /// <summary>
+        /// GameContentManager
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public GameContentManager GameContentManager { get { return _game.GameContentManager; } }
+
+        /// <summary>
+        /// Mouse
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public MouseManager Mouse { get { return _game.Mouse; } }
+
+        /// <summary>
+        /// Input
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public InputManager Input { get { return _game.Input; } }
+
+        /// <summary>
+        /// Game
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public Game Game { get { return _game; } internal set { _game = value; } }
+
+        /// <summary>
+        /// ElapsedGameTimeSeconds
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public float ElapsedGameTimeSeconds { get { return _game.ElapsedGameTimeSeconds; } }
+
+        /// <summary>
+        /// ElapsedGameTimeMilliseconds
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public float ElapsedGameTimeMilliseconds { get { return _game.ElapsedGameTimeMilliseconds; } }
+
+        /// <summary>
+        /// Number of pixels = 1 meter
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public float NbPixelPerMeter { get { return _game.NbPixelPerMeter; } }
+
+
+        /// <summary>
+        /// Indicate if we are the client
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool IsClient { get { return _game.IsClient; } }
+
+        /// <summary>
+        /// Indicate if we are the server
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool IsServer { get { return _game.IsServer; } }
+
 
         /// <summary>
         /// Empty constructor
@@ -472,6 +544,9 @@ namespace FNAEngine2D
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
 
+            if (_game == null)
+                _game = Game.Current;
+            
             //Propagate the layermask...
             if (gameObject.LayerMask == Layers.Layer1 && this.LayerMask != Layers.Layer1)
                 gameObject.LayerMask = this.LayerMask;
@@ -493,6 +568,12 @@ namespace FNAEngine2D
                 gameObject.DoLoad();
             }
 
+            //Little event OnAdded...
+            gameObject.OnAdded();
+
+            //And the children because if the parent was removed, we want to trap the add also on the children
+            ForEach(o => o.OnAdded(), true);
+
             return gameObject;
         }
 
@@ -509,7 +590,14 @@ namespace FNAEngine2D
 
             this._childrens.Remove(gameObject);
 
-            MouseManager.RemoveGameObject(gameObject);
+            Mouse.RemoveGameObject(gameObject);
+
+            //Little event OnRemoved...
+            gameObject.OnRemoved();
+
+            //And the children because they are not really removed but we will want to known if the parent is removed.
+            ForEach(o => o.OnRemoved(), true);
+
         }
 
         /// <summary>
@@ -520,14 +608,13 @@ namespace FNAEngine2D
             GameObject gameObject = _childrens[index];
 
             gameObject.Parent = null;
-            gameObject.RootGameObject = null;
 
             //Remove de colliders for the gameobject and all children...
             RemoveColliders(gameObject);
 
             this._childrens.RemoveAt(index);
 
-            MouseManager.RemoveGameObject(gameObject);
+            Mouse.RemoveGameObject(gameObject);
         }
 
         /// <summary>
@@ -699,13 +786,18 @@ namespace FNAEngine2D
         /// <summary>
         /// Execute an action for each GameObjet in childrens
         /// </summary>
-        public void ForEach(Action<GameObject> action)
+        public void ForEach(Action<GameObject> action, bool recursive = false)
         {
             if (_childrens.Count == 0)
                 return;
 
             for (int index = 0; index < _childrens.Count; index++)
+            {
                 action(_childrens[index]);
+
+                if (recursive)
+                    _childrens[index].ForEach(action, true);
+            }
         }
 
         /// <summary>
@@ -717,7 +809,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Chargement du content
+        /// Loading content
         /// </summary>
         public virtual void Load()
         {
@@ -725,14 +817,16 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Execte the loading of the GameObject
+        /// Execute the loading of the GameObject
         /// </summary>
         public void DoLoad()
         {
-            if (GameHost.IsClient)
+            this.Load();
+
+            if (this.IsClient)
                 this.LoadClient();
 
-            this.Load();
+            _loaded = true;
         }
 
         /// <summary>
@@ -754,27 +848,29 @@ namespace FNAEngine2D
         /// <summary>
         /// Logique d'update
         /// </summary>
-        internal void UpdateWithChildren()
+        internal void DoUpdate()
         {
             //Paused or disabled?
             if (this.Paused || !this.Enabled)
                 return;
 
             //Update GameContent if needed...
-            if (GameHost.DevelopmentMode)
+            if (GameManager.DevelopmentMode)
                 GameContentManager.ReloadModifiedContent(this);
 
+            
+            this.Update();
+
             //Update login from the client site
-            if (GameHost.IsClient)
+            if (this.IsClient)
                 this.UpdateClient();
 
-            this.Update();
 
             if (this._childrens.Count == 0)
                 return;
 
             for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].UpdateWithChildren();
+                this._childrens[index].DoUpdate();
         }
 
         /// <summary>
@@ -788,8 +884,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Draw à l'écran
         /// </summary>
-        internal void DrawWithChildren()
+        internal void DoDraw()
         {
+            //No drawing on the client...
+            if (!this.IsClient)
+                return;
+
             //Disabled?
             if (!this.Enabled)
                 return;
@@ -804,8 +904,25 @@ namespace FNAEngine2D
             for (int index = 0; index < this._childrens.Count; index++)
             {
                 if (this._childrens[index].Visible)
-                    this._childrens[index].DrawWithChildren();
+                    this._childrens[index].DoDraw();
             }
+        }
+
+
+        /// <summary>
+        /// Called when the game object is added in another game object as a child
+        /// </summary>
+        public virtual void OnAdded()
+        {
+
+        }
+
+        /// <summary>
+        /// Called when the game object is removed in another game object as a child
+        /// </summary>
+        public virtual void OnRemoved()
+        {
+
         }
 
 
@@ -986,11 +1103,6 @@ namespace FNAEngine2D
             if (_collider != null)
                 return this;
 
-            //RootGameObject is never really added anywhere...
-            if (this == GameHost.RootGameObject)
-                throw new InvalidOperationException("Impossible to enable collider on root game object.");
-
-
             _collider = new Collider(this);
 
             //If not already added, we will add it in the ColliderContainer on Add
@@ -1014,11 +1126,6 @@ namespace FNAEngine2D
             //Already disabled?
             if (_collider == null)
                 return this;
-
-            //RootGameObject is never really added anywhere...
-            if (this == GameHost.RootGameObject)
-                throw new InvalidOperationException("Impossible to enable collider on root game object.");
-
 
             GetColliderContainer().Remove(_collider);
 
@@ -1115,13 +1222,15 @@ namespace FNAEngine2D
         /// </summary>
         private ColliderContainer GetColliderContainer()
         {
-            if (this.RootGameObject == null)
-                return new ColliderContainer();
+            return _game.ColliderContainer;
 
-            if (this.RootGameObject._colliderContainer == null)
-                this.RootGameObject._colliderContainer = new ColliderContainer();
+            //if (this.RootGameObject == null)
+            //    return new ColliderContainer();
 
-            return this.RootGameObject._colliderContainer;
+            //if (this.RootGameObject._colliderContainer == null)
+            //    this.RootGameObject._colliderContainer = new ColliderContainer();
+
+            //return this.RootGameObject._colliderContainer;
         }
 
         /// <summary>
@@ -1164,6 +1273,21 @@ namespace FNAEngine2D
 
         }
 
+        /// <summary>
+        /// Get a service
+        /// </summary>
+        public T GetService<T>()
+        {
+            return (T)_game.Services.GetService(typeof(T));
+        }
+
+        /// <summary>
+        /// Get a content
+        /// </summary>
+        public Content<T> GetContent<T>(string assetName)
+        {
+            return _game.ContentManager.GetContent<T>(assetName);
+        }
 
         /// <summary>
         /// Override of ToString to help in debug.

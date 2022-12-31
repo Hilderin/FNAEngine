@@ -158,7 +158,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Permet de loader un asset
+        /// Returns an assent content
         /// </summary>
         public Content<T> GetContent<T>(string assetName)
         {

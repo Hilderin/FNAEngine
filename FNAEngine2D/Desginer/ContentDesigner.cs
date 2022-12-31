@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace FNAEngine2D.Desginer
 {
     public partial class ContentDesigner : Form
     {
+
+        /// <summary>
+        /// Edit mode service
+        /// </summary>
+        private EditModeService _editModeService;
 
         /// <summary>
         /// Types of all game object
@@ -88,9 +94,11 @@ namespace FNAEngine2D.Desginer
             InitializeComponent();
 
             //Enabling the edit mode...
-            EditModeHelper.EditMode = true;
+            _editModeService = ServiceProvider.GetService<EditModeService>();
 
-            btnPausePlay.Text = EditModeHelper.IsGameRunning ? "&Pause" : "&Play";
+            _editModeService.EditMode = true;
+
+            btnPausePlay.Text = _editModeService.IsGameRunning ? "&Pause" : "&Play";
 
 
             //Populate game object types...
@@ -150,9 +158,9 @@ namespace FNAEngine2D.Desginer
                     }
                 }
 
-                if (EditModeHelper.SelectedGameObject != null)
+                if (_editModeService.SelectedGameObject != null)
                 {
-                    if (!(EditModeHelper.SelectedGameObject is TileSetRender))
+                    if (!(_editModeService.SelectedGameObject is TileSetRender))
                     {
                         if (_previewEditObject == null)
                         {
@@ -162,8 +170,8 @@ namespace FNAEngine2D.Desginer
                         }
 
                         //Camera camera = GetCameraForLayer(EditModeHelper.SelectedGameObject.LayerMask);
-                        _previewEditObject.Bounds = GetGameObjectBounds(EditModeHelper.SelectedGameObject);
-                        _previewEditObject.LayerMask = EditModeHelper.SelectedGameObject.LayerMask;
+                        _previewEditObject.Bounds = GetGameObjectBounds(_editModeService.SelectedGameObject);
+                        _previewEditObject.LayerMask = _editModeService.SelectedGameObject.LayerMask;
                     }
                 }
 
@@ -277,7 +285,7 @@ namespace FNAEngine2D.Desginer
                 if (selectObjects.Count > 0)
                 {
                     //Already selected?
-                    if (EditModeHelper.SelectedGameObject != null && selectObjects.Contains(EditModeHelper.SelectedGameObject))
+                    if (_editModeService.SelectedGameObject != null && selectObjects.Contains(_editModeService.SelectedGameObject))
                         return;
 
                     //Change selection to the last game...
@@ -322,7 +330,7 @@ namespace FNAEngine2D.Desginer
             //}
 
             //Fetch all containers...
-            _containers = GameHost.RootGameObject.FindAll<GameContentContainer>();
+            _containers = _editModeService.Game.RootGameObject.FindAll<GameContentContainer>();
 
             _previewEditObject = null;
             _previewAddObject = null;
@@ -352,13 +360,13 @@ namespace FNAEngine2D.Desginer
         private void SetTileSetEditorAfterReload()
         {
             //Reopening the TileSetEditor...
-            if (EditModeHelper.IsTileSetEditorOpened)
+            if (_editModeService.IsTileSetEditorOpened)
             {
                 if (cboGameObjects.SelectedItem is TileSetRender)
                     //Reopenning the tileset editor for the new tileset...
-                    EditModeHelper.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
+                    _editModeService.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
                 else
-                    EditModeHelper.HideTileSetEditor();
+                    _editModeService.HideTileSetEditor();
             }
         }
 
@@ -430,13 +438,13 @@ namespace FNAEngine2D.Desginer
             {
                 cboGameContentContainer.SelectedItem = _gameObjects[0];
                 propertyGrid.SelectedObject = _gameObjects[0];
-                EditModeHelper.SelectedGameObject = _gameObjects[0];
+                _editModeService.SelectedGameObject = _gameObjects[0];
             }
             else
             {
                 //No selected object...
                 propertyGrid.SelectedObject = null;
-                EditModeHelper.SelectedGameObject = null;
+                _editModeService.SelectedGameObject = null;
             }
         }
 
@@ -553,17 +561,17 @@ namespace FNAEngine2D.Desginer
             if (cboGameObjects.SelectedItem != null)
             {
                 propertyGrid.SelectedObject = cboGameObjects.SelectedItem;
-                EditModeHelper.SelectedGameObject = (GameObject)cboGameObjects.SelectedItem;
+                _editModeService.SelectedGameObject = (GameObject)cboGameObjects.SelectedItem;
 
                 if (!_loadingSelectedGameObject)
                 {
-                    if (EditModeHelper.IsTileSetEditorOpened)
+                    if (_editModeService.IsTileSetEditorOpened)
                     {
                         if (cboGameObjects.SelectedItem is TileSetRender)
                             //Reopenning the tileset editor for the new tileset...
-                            EditModeHelper.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
+                            _editModeService.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
                         else
-                            EditModeHelper.HideTileSetEditor();
+                            _editModeService.HideTileSetEditor();
                     }
                 }
             }
@@ -571,14 +579,14 @@ namespace FNAEngine2D.Desginer
             {
                 //No selection...
                 propertyGrid.SelectedObject = null;
-                EditModeHelper.SelectedGameObject = null;
+                _editModeService.SelectedGameObject = null;
                 HideEditPreview();
 
                 if (!_loadingSelectedGameObject)
                 {
-                    if (EditModeHelper.IsTileSetEditorOpened)
+                    if (_editModeService.IsTileSetEditorOpened)
                     {
-                        EditModeHelper.HideTileSetEditor();
+                        _editModeService.HideTileSetEditor();
                     }
                 }
             }
@@ -662,17 +670,17 @@ namespace FNAEngine2D.Desginer
 
 
                 //Saving....
-                string fullPath = Path.Combine(GameHost.InternalGame.ContentManager.RootDirectory, _currentContainer.AssetName + ".json").Replace('\\', '/');
+                string fullPath = Path.Combine(_editModeService.Game.ContentManager.RootDirectory, _currentContainer.AssetName + ".json").Replace('\\', '/');
 
                 //Disable watching to prevent double reloading...
-                ContentWatcher.Enabled = false;
+                _editModeService.ContentWatcher.Enabled = false;
 
                 //Creation of the content...
                 GameContent gameContent = _currentContainer.GameContent.Data;
                 gameContent.Objects.Clear();
                 foreach (GameObject gameObject in _gameObjects)
                 {
-                    gameContent.Objects.Add(GameContentManager.GetGameContentObject(gameObject));
+                    gameContent.Objects.Add(_editModeService.Game.GameContentManager.GetGameContentObject(gameObject));
                 }
 
 
@@ -704,7 +712,7 @@ namespace FNAEngine2D.Desginer
             }
             finally
             {
-                ContentWatcher.Enabled = true;
+                _editModeService.ContentWatcher.Enabled = true;
             }
         }
 
@@ -745,7 +753,7 @@ namespace FNAEngine2D.Desginer
         private void ContentDesigner_FormClosed(object sender, FormClosedEventArgs e)
         {
             //Disabling the edit mode...
-            EditModeHelper.EditMode = false;
+            _editModeService.EditMode = false;
         }
 
         /// <summary>
@@ -753,7 +761,7 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void btnPausePlay_Click(object sender, EventArgs e)
         {
-            EditModeHelper.IsGameRunning = !EditModeHelper.IsGameRunning;
+            _editModeService.IsGameRunning = !_editModeService.IsGameRunning;
             UpdatePausePlayUI();
         }
 
@@ -762,7 +770,7 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void UpdatePausePlayUI()
         {
-            btnPausePlay.Text = EditModeHelper.IsGameRunning ? "&Pause" : "&Play";
+            btnPausePlay.Text = _editModeService.IsGameRunning ? "&Pause" : "&Play";
         }
 
         /// <summary>
@@ -771,8 +779,8 @@ namespace FNAEngine2D.Desginer
         private void ContentDesigner_Activated(object sender, EventArgs e)
         {
             //Reopening the designer forms and refocusing on ourself...
-            if (EditModeHelper.IsReshowWindowNeeded())
-                EditModeHelper.ShowDesigner(this.Handle);
+            if (_editModeService.IsReshowWindowNeeded())
+                _editModeService.ShowDesigner(this.Handle);
 
         }
 
@@ -784,10 +792,10 @@ namespace FNAEngine2D.Desginer
             if (keyData == Keys.F12)
             {
                 //Hide the designer...
-                EditModeHelper.HideDesigner();
+                _editModeService.HideDesigner();
 
                 //Refocusing on 
-                Win32.SetForegroundWindow(GameHost.InternalGame.GameWindowHandle);
+                Win32.SetForegroundWindow(_editModeService.Game.GameWindowHandle);
 
                 return true;
             }
@@ -804,7 +812,7 @@ namespace FNAEngine2D.Desginer
         private void tmrUpdateLastActive_Tick(object sender, EventArgs e)
         {
             if (Form.ActiveForm != null)
-                EditModeHelper.LastTimeActivated = DateTime.Now;
+                _editModeService.LastTimeActivated = DateTime.Now;
         }
 
         /// <summary>
@@ -834,7 +842,7 @@ namespace FNAEngine2D.Desginer
             GameContent gameContent = new GameContent();
             foreach (GameObject gameObject in _gameObjects)
             {
-                gameContent.Objects.Add(GameContentManager.GetGameContentObject(gameObject));
+                gameContent.Objects.Add(_editModeService.Game.GameContentManager.GetGameContentObject(gameObject));
             }
 
             history.JsonGameContent = JsonConvert.SerializeObject(gameContent);
@@ -892,7 +900,7 @@ namespace FNAEngine2D.Desginer
             GameContent gameContent = JsonConvert.DeserializeObject<GameContent>(history.JsonGameContent);
 
 
-            GameContentManager.ReplaceContent(_currentContainer, gameContent);
+            _editModeService.Game.GameContentManager.ReplaceContent(_currentContainer, gameContent);
 
             ReloadGameObjectsFromContainer();
 
@@ -944,7 +952,7 @@ namespace FNAEngine2D.Desginer
                 Microsoft.Xna.Framework.Vector2 coord = new Microsoft.Xna.Framework.Vector2(x, y);
 
                 //We remove the main camera because it's been added, we will rehad it in the IsObjectAtCoord...
-                coord -= GameHost.MainCamera.Location.Substract(GameHost.MainCamera.ViewLocation);
+                coord -= _editModeService.Game.MainCamera.Location.Substract(_editModeService.Game.MainCamera.ViewLocation);
 
                 list.AddRange(_currentContainer.FindAll(o => IsObjectAtCoord(o, coord)));
             }
@@ -961,7 +969,7 @@ namespace FNAEngine2D.Desginer
                 return false;
 
             //We need the camera for the offset location...
-            Camera camera = GameHost.GetCameraForObject(gameObject);
+            Camera camera = _editModeService.Game.GetCameraForObject(gameObject);
 
             return VectorHelper.Intersects(coord + camera.Location, GetGameObjectBounds(gameObject));
         }
@@ -980,8 +988,8 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void btnMoveTo_Click(object sender, EventArgs e)
         {
-            if (EditModeHelper.SelectedGameObject != null)
-                EditModeHelper.MoveToObject(EditModeHelper.SelectedGameObject);
+            if (_editModeService.SelectedGameObject != null)
+                _editModeService.MoveToObject(_editModeService.SelectedGameObject);
         }
 
 
@@ -992,15 +1000,15 @@ namespace FNAEngine2D.Desginer
         {
             try
             {
-                if (EditModeHelper.SelectedGameObject != null && EditModeHelper.SelectedGameObject.Parent != null)
+                if (_editModeService.SelectedGameObject != null && _editModeService.SelectedGameObject.Parent != null)
                 {
-                    int index = EditModeHelper.SelectedGameObject.ChildIndex;
-                    GameObject parent = EditModeHelper.SelectedGameObject.Parent;
-                    parent.Remove(EditModeHelper.SelectedGameObject);
+                    int index = _editModeService.SelectedGameObject.ChildIndex;
+                    GameObject parent = _editModeService.SelectedGameObject.Parent;
+                    parent.Remove(_editModeService.SelectedGameObject);
                     if (index >= 0)
-                        parent.Insert(index, EditModeHelper.SelectedGameObject);
+                        parent.Insert(index, _editModeService.SelectedGameObject);
                     else
-                        parent.Add(EditModeHelper.SelectedGameObject);
+                        parent.Add(_editModeService.SelectedGameObject);
 
                 }
             }

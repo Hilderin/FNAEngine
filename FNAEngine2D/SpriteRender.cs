@@ -67,7 +67,7 @@ namespace FNAEngine2D
             }
             else
             {
-                _sprite = GameHost.GetContent<Sprite>(this.SpriteName);
+                _sprite = GetContent<Sprite>(this.SpriteName);
 
                 if (this.Width == 0)
                     this.Width = _sprite.Data.ColumnScreenWidth;

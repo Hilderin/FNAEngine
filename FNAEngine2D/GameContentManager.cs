@@ -15,32 +15,36 @@ namespace FNAEngine2D
     /// <summary>
     /// Helper for GameContent management
     /// </summary>
-    public static class GameContentManager
+    public class GameContentManager
     {
         /// <summary>
         /// Game objects per asset names
         /// </summary>
-        private static Dictionary<string, List<GameObject>> _gameObjectsPerAssetName = new Dictionary<string, List<GameObject>>();
+        private Dictionary<string, List<GameObject>> _gameObjectsPerAssetName = new Dictionary<string, List<GameObject>>();
 
         /// <summary>
         /// Game objects to reload
         /// </summary>
-        private static Dictionary<GameObject, List<string>> _gameObjectsToReload = new Dictionary<GameObject, List<string>>();
-
+        private Dictionary<GameObject, List<string>> _gameObjectsToReload = new Dictionary<GameObject, List<string>>();
 
         /// <summary>
-        /// Static constructor
+        /// Game
         /// </summary>
-        static GameContentManager()
+        private Game _game;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public GameContentManager(Game game)
         {
-            
+            _game = game;
         }
 
 
         /// <summary>
         /// Apply game content in the game obect
         /// </summary>
-        public static GameObject Apply(GameObject gameObject, string assetName)
+        public GameObject Apply(GameObject gameObject, string assetName)
         {
             return Apply(gameObject, assetName, false);
         }
@@ -48,9 +52,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Apply game content in the game obect
         /// </summary>
-        private static GameObject Apply(GameObject gameObject, string assetName, bool fromRefresh)
+        private GameObject Apply(GameObject gameObject, string assetName, bool fromRefresh)
         {
-            var content = GameHost.GetContent<GameContent>(assetName);
+            var content = _game.ContentManager.GetContent<GameContent>(assetName);
 
             //We all in a container to facilitate the update...
             GameContentContainer container = GetContainer(gameObject, assetName);
@@ -67,7 +71,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Get the container or create it
         /// </summary>
-        private static GameContentContainer GetContainer(GameObject gameObject, string assetName)
+        private GameContentContainer GetContainer(GameObject gameObject, string assetName)
         {
             GameContentContainer container = gameObject.Find<GameContentContainer>(o => o.AssetName == assetName);
 
@@ -82,7 +86,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Apply game content in the game object
         /// </summary>
-        public static void ReplaceContent(GameContentContainer container, GameContent gameContent)
+        public void ReplaceContent(GameContentContainer container, GameContent gameContent)
         {
             //We have content?
             if (gameContent.Objects == null || gameContent.Objects.Count == 0)
@@ -142,10 +146,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Update game object if needed
         /// </summary>
-        internal static void ReloadModifiedContent(GameObject gameObject)
+        internal void ReloadModifiedContent(GameObject gameObject)
         {
 
-            if (GameHost.DevelopmentMode)
+            if (GameManager.DevelopmentMode)
             {
 
                 try
@@ -175,7 +179,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Add a gameobject in the usage list
         /// </summary>
-        private static void AddGameObjectUsage(GameObject gameObject, string assetName)
+        private void AddGameObjectUsage(GameObject gameObject, string assetName)
         {
             List<GameObject> gameObjects;
 
@@ -192,7 +196,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Create the game object...
         /// </summary>
-        public static GameObject CreateGameObject(GameContentObject contentObj)
+        public GameObject CreateGameObject(GameContentObject contentObj)
         {
 
             Type type = GameObjectTypesLoader.GetGameObjectType(contentObj.ClassName);
@@ -211,7 +215,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Create the game object...
         /// </summary>
-        private static void ApplyGameObjectProperties(GameObject gameObject, GameContentObject obj)
+        private void ApplyGameObjectProperties(GameObject gameObject, GameContentObject obj)
         {
             if (obj.Props == null)
                 return;
@@ -240,7 +244,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Get the GameContentObject from a GameObject
         /// </summary>
-        public static GameContentObject GetGameContentObject(GameObject gameObject)
+        public GameContentObject GetGameContentObject(GameObject gameObject)
         {
             Type type = gameObject.GetType();
 
@@ -261,7 +265,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Color creation...
         /// </summary>
-        private static Color CreateColor(string value)
+        private Color CreateColor(string value)
         {
             PropertyInfo propColor = typeof(Color).GetProperty(value, BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty);
             if (propColor != null)
@@ -301,7 +305,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Vector2 creation...
         /// </summary>
-        private static Vector2 CreateVector2(string value)
+        private Vector2 CreateVector2(string value)
         {
             string[] parts = value.Trim().Replace(" ", String.Empty).Split(',');
 
@@ -316,7 +320,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Changement du content
         /// </summary>
-        private static void ContentManager_ContentChanged(string assetName)
+        private void ContentManager_ContentChanged(string assetName)
         {
             lock (_gameObjectsPerAssetName)
             {

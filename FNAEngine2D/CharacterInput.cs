@@ -14,6 +14,11 @@ namespace FNAEngine2D
     public class CharacterInput
     {
         /// <summary>
+        /// Linked game object
+        /// </summary>
+        private GameObject _gameObject;
+
+        /// <summary>
         /// Left key
         /// </summary>
         public Keys LeftKey = Keys.A;
@@ -47,42 +52,50 @@ namespace FNAEngine2D
         /// <summary>
         /// Is moving left?
         /// </summary>
-        public bool IsLeft { get { return Input.IsKeyDown(LeftKey) && !Input.IsKeyDown(RightKey); } }
+        public bool IsLeft { get { return _gameObject.Input.IsKeyDown(LeftKey) && !_gameObject.Input.IsKeyDown(RightKey); } }
 
         /// <summary>
         /// Is moving right?
         /// </summary>
-        public bool IsRight { get { return Input.IsKeyDown(RightKey) && !Input.IsKeyDown(LeftKey); } }
+        public bool IsRight { get { return _gameObject.Input.IsKeyDown(RightKey) && !_gameObject.Input.IsKeyDown(LeftKey); } }
 
         /// <summary>
         /// Is moving up?
         /// </summary>
-        public bool IsUp { get { return Input.IsKeyDown(UpKey) && !Input.IsKeyDown(DownKey); } }
+        public bool IsUp { get { return _gameObject.Input.IsKeyDown(UpKey) && !_gameObject.Input.IsKeyDown(DownKey); } }
 
         /// <summary>
         /// Is moving down?
         /// </summary>
-        public bool IsDown { get { return Input.IsKeyDown(DownKey) && !Input.IsKeyDown(UpKey); } }
+        public bool IsDown { get { return _gameObject.Input.IsKeyDown(DownKey) && !_gameObject.Input.IsKeyDown(UpKey); } }
 
         /// <summary>
         /// Is jumping
         /// </summary>
-        public bool IsJump { get { return Input.IsKeyDown(JumpKey); } }
+        public bool IsJump { get { return _gameObject.Input.IsKeyDown(JumpKey); } }
 
         /// <summary>
         /// Is newly jumping
         /// </summary>
-        public bool IsNewJump { get { return Input.IsKeyNewDown(JumpKey); } }
+        public bool IsNewJump { get { return _gameObject.Input.IsKeyNewDown(JumpKey); } }
 
         /// <summary>
         /// Is Firing
         /// </summary>
-        public bool IsFire { get { return Input.IsKeyDown(FireKey); } }
+        public bool IsFire { get { return _gameObject.Input.IsKeyDown(FireKey); } }
 
         /// <summary>
         /// Is newly Fireing
         /// </summary>
-        public bool IsNewFire { get { return Input.IsKeyNewDown(FireKey); } }
+        public bool IsNewFire { get { return _gameObject.Input.IsKeyNewDown(FireKey); } }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public CharacterInput(GameObject gameObject)
+        {
+            _gameObject = gameObject;
+        }
 
 
         /// <summary>
@@ -103,10 +116,10 @@ namespace FNAEngine2D
             if (this.IsDown)
                 deltaY += 1f;
 
-            Vector2 movement = new Vector2(deltaX, deltaY);
-            if(movement != Vector2.Zero)
-                movement.Normalize();
-            return movement;
+            if (deltaX == 0 && deltaY == 0)
+                return Vector2.Zero;
+
+            return VectorHelper.Normalize(deltaX, deltaY);
         }
 
     }

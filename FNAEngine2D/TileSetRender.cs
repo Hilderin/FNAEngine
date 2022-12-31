@@ -52,7 +52,7 @@ namespace FNAEngine2D
         /// </summary>
         public override void Load()
         {
-            _editModeOverlayTexture = GameHost.GetContent<Texture2D>("pixel");
+            _editModeOverlayTexture = GetContent<Texture2D>("pixel");
             
             if (this.TileSet == null)
                 return;
@@ -108,9 +108,9 @@ namespace FNAEngine2D
             Color color = Color.White;
             bool editMode = false;
 
-            if (EditModeHelper.EditMode && !EditModeHelper.IsGameRunning)
+            if (this.Game.EditModeService != null && this.Game.EditModeService.EditMode && !this.Game.EditModeService.IsGameRunning)
             {
-                if (EditModeHelper.IsTileSetEditorOpened && EditModeHelper.SelectedGameObject == this)
+                if (this.Game.EditModeService.IsTileSetEditorOpened && this.Game.EditModeService.SelectedGameObject == this)
                 {
                     //color = Color.DimGray;
                     editMode = true;

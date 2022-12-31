@@ -23,6 +23,11 @@ namespace FNAEngine2D
         private float _totalElapsedTimeSeconds = 0f;
 
         /// <summary>
+        /// Parent game object
+        /// </summary>
+        private GameObject _gameObject;
+
+        /// <summary>
         /// Last vector applied
         /// </summary>
         private Vector2 _lastVectorApplied = Vector2.Zero;
@@ -45,17 +50,19 @@ namespace FNAEngine2D
         /// <summary>
         /// Constructor
         /// </summary>
-        public Force(Vector2 target, float speedMps)
+        public Force(Vector2 target, float speedMps, GameObject gameObject)
         {
             this.Target = target;
             this.SpeedMps = speedMps;
+
+            _gameObject = gameObject;
 
             //If we need to move for 100 pixels
             //with 30 pixels per seconds
             //it shound take 3.33 seconds
             //each second, we should move for 1 / 3.33 of the total path
 
-            float totalDistanceInMeter = target.Length() / GameHost.NbPixelPerMeter;
+            float totalDistanceInMeter = target.Length() / _gameObject.NbPixelPerMeter;
             _totalTravelTime = totalDistanceInMeter / this.SpeedMps;
 
         }
@@ -65,7 +72,7 @@ namespace FNAEngine2D
         /// </summary>
         public Vector2 Apply(Vector2 vector)
         {
-            return Apply(vector, GameHost.ElapsedGameTimeSeconds);
+            return Apply(vector, _gameObject.ElapsedGameTimeSeconds);
         }
 
         /// <summary>

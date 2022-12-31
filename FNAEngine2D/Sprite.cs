@@ -12,6 +12,7 @@ namespace FNAEngine2D
     /// </summary>
     public class Sprite
     {
+
         /// <summary>
         /// Texture
         /// </summary>
@@ -64,7 +65,7 @@ namespace FNAEngine2D
                     if (String.IsNullOrEmpty(value))
                         _texture = null;
                     else
-                        _texture = GameHost.GetContent<Texture2D>(value);
+                        _texture = ServiceProvider.GetService<ContentService>().GetContent<Texture2D>(value);
                 }
             }
         }

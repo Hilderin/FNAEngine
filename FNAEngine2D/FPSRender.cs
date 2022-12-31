@@ -62,6 +62,11 @@ namespace FNAEngine2D
         private TextRender _textRender;
 
         /// <summary>
+        /// Game time service
+        /// </summary>
+        private GameTimeService _gameTimeService;
+
+        /// <summary>
         /// Renderer de texture
         /// </summary>
         public FPSRender()
@@ -80,15 +85,17 @@ namespace FNAEngine2D
 
         public override void Load()
         {
+            _gameTimeService = GetService<GameTimeService>();
+
             _textRender = this.Add(new TextRender(GetText(0, 0, 0, 0), this.FontName, this.FontSize, Vector2.Zero, this.Color));
         }
 
         public override void Update()
         {
             
-            _lastFrameUpdateTimeMillisecondsAverage.Add(GameHost.LastFrameUpdateTimeMilliseconds);
-            _lastFrameDrawTimeMillisecondsAverage.Add(GameHost.LastFrameDrawTimeMilliseconds);
-            _lastFrameTimeMillisecondsAverage.Add(GameHost.LastFrameTimeMilliseconds);
+            _lastFrameUpdateTimeMillisecondsAverage.Add(_gameTimeService.LastFrameUpdateTimeMilliseconds);
+            _lastFrameDrawTimeMillisecondsAverage.Add(_gameTimeService.LastFrameDrawTimeMilliseconds);
+            _lastFrameTimeMillisecondsAverage.Add(_gameTimeService.LastFrameTimeMilliseconds);
 
 
             _textRender.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());

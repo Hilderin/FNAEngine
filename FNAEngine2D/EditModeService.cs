@@ -17,90 +17,109 @@ namespace FNAEngine2D
     /// <summary>
     /// Helper for the edit mode
     /// </summary>
-    public static class EditModeHelper
+    public class EditModeService
     {
         /// <summary>
         /// Camera speed
         /// </summary>
         private const int CAMERA_SPEED_PIXEL_PER_SECONDS = 500;
 
+        /// <summary>
+        /// Content designer
+        /// </summary>
+        private ContentDesigner _designer = null;
 
         /// <summary>
         /// Content designer
         /// </summary>
-        private static ContentDesigner _designer = null;
-
-        /// <summary>
-        /// Content designer
-        /// </summary>
-        private static TileSetEditor _tileSetEditor = null;
+        private TileSetEditor _tileSetEditor = null;
 
         /// <summary>
         /// Indicate if the mouse was showned when we displayed the mouse
         /// </summary>
-        private static bool _isMouseWasShowned = false;
+        private bool _isMouseWasShowned = false;
 
         /// <summary>
         /// Indicate if we are in edit mode
         /// </summary>
-        private static bool _editMode = false;
+        private bool _editMode = false;
 
         /// <summary>
         /// Indicate if we when to run the game in edit mode
         /// </summary>
-        private static bool _isGameRunning = false;
+        private bool _isGameRunning = false;
 
         /// <summary>
         /// Location of the player at the beginning of MoveLPlayerMode
         /// </summary>
-        private static Vector2 _playerLocationOrigin;
+        private Vector2 _playerLocationOrigin;
 
         /// <summary>
         /// SpriteBatch
         /// </summary>
-        private static SpriteBatch _spriteBatch;
+        private SpriteBatch _spriteBatch;
 
         /// <summary>
         /// Font to display edit mode
         /// </summary>
-        private static Font _font;
+        private Font _font;
 
         /// <summary>
         /// Text
         /// </summary>
-        private static Velentr.Font.Text _text;
+        private Velentr.Font.Text _text;
 
+        /// <summary>
+        /// Internal game
+        /// </summary>
+        private Game _game;
+
+
+        /// <summary>
+        /// Content watcher
+        /// </summary>
+        private ContentWatcher _contentWatcher;
 
 
         /// <summary>
         /// Selected game object in the designer
         /// </summary>
-        public static GameObject SelectedGameObject { get; set; }
+        public GameObject SelectedGameObject { get; set; }
 
         /// <summary>
         /// Indicate we the TileSet editor is opened
         /// </summary>
-        public static bool IsTileSetEditorOpened { get { return _tileSetEditor != null && _tileSetEditor.Visible; } }
+        public bool IsTileSetEditorOpened { get { return _tileSetEditor != null && _tileSetEditor.Visible; } }
 
         /// <summary>
         /// DateTime when the Game or a designer was last activate
         /// </summary>
-        public static DateTime LastTimeActivated { get; set; }
+        public DateTime LastTimeActivated { get; set; }
 
         /// <summary>
         /// Player object that can be moved
         /// </summary>
-        public static GameObject PlayerObject { get; set; }
+        public GameObject PlayerObject { get; set; }
 
         /// <summary>
         /// Moving player mode enabled
         /// </summary>
-        public static bool MovePlayerMode { get; set; }
+        public bool MovePlayerMode { get; set; }
+
+        /// <summary>
+        /// Game
+        /// </summary>
+        public Game Game { get { return _game; } }
+
+        /// <summary>
+        /// ContentWatcher
+        /// </summary>
+        public ContentWatcher ContentWatcher { get { return _contentWatcher; } }
 
         /// <summary>
         /// Indicate if we are in edit mode
         /// </summary>
-        public static bool EditMode
+        public bool EditMode
         {
             get { return _editMode; }
             set
@@ -130,7 +149,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Indicate if we when to run the game in edit mode
         /// </summary>
-        public static bool IsGameRunning
+        public bool IsGameRunning
         {
             get { return _isGameRunning; }
             set
@@ -153,12 +172,12 @@ namespace FNAEngine2D
 
 
                         if (!_isMouseWasShowned)
-                            MouseManager.HideMouse();
+                            _game.Mouse.HideMouse();
                     }
                     else
                     {
                         //Reshowing the mouse...
-                        MouseManager.ShowMouse();
+                        _game.Mouse.ShowMouse();
 
                         if (_designer != null && !_designer.IsDisposed)
                         {
@@ -169,54 +188,75 @@ namespace FNAEngine2D
             }
         }
 
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public EditModeService(Game game)
+        {
+            _game = game;
+
+            //Add to the service provider...
+            _game.Services.AddService(typeof(EditModeService), this);
+
+            _contentWatcher = new ContentWatcher(game);
+
+        }
+
+
+
+
         /// <summary>
         /// Process the Update loop for DevMode
         /// </summary>
-        public static void ProcessUpdateDevMode()
+        public void ProcessUpdateDevMode()
         {
-            //We will need the current main windows Win32
-            if (GameHost.InternalGame.GameWindowHandle == IntPtr.Zero)
-                GameHost.InternalGame.GameWindowHandle = WindowHelper.GetMainWindowHandle();
 
-            if (!GameHost.InternalGame.IsActive)
+            //Content to reload?
+            _contentWatcher.ReloadModifiedContent();
+
+
+            if (!_game.IsActive)
                 return;
 
-            EditModeHelper.LastTimeActivated = DateTime.Now;
+
+            LastTimeActivated = DateTime.Now;
 
             //Reload the content...
-            if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
+            if (_game.Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F5))
             {
-                if (EditModeHelper.ConfirmBeforeClose(true))
+                if (ConfirmBeforeClose(true))
                 {
-                    EditModeHelper.Revert();
+                    Revert();
 
-                    GameHost.InternalGame.RootGameObject.RemoveAll();
-                    GameHost.InternalGame.RootGameObject.DoLoad();
+                    _game.RootGameObject.RemoveAll();
+                    _game.RootGameObject.DoLoad();
 
-                    EditModeHelper.ReloadDesigner();
+                    ReloadDesigner();
                 }
 
 
             }
 
             //Designer...
-            if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
+            if (_game.Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F12))
             {
-                if (EditModeHelper.EditMode)
+                if (EditMode)
                 {
                     //We must close the designer...
-                    EditModeHelper.HideDesigner();
+                    HideDesigner();
                 }
                 else
                 {
                     //Opening the designer...
-                    EditModeHelper.ShowDesigner();
+                    ShowDesigner();
 
                 }
             }
 
             //Pause/play game
-            if (EditModeHelper.EditMode && Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Pause))
+            if (EditMode && _game.Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Pause))
             {
                 IsGameRunning = !IsGameRunning;
             }
@@ -227,36 +267,36 @@ namespace FNAEngine2D
         /// <summary>
         /// Process the Update loop in edit mode
         /// </summary>
-        public static void ProcessUpdateEditMode()
+        public void ProcessUpdateEditMode()
         {
             //Cancel selection...
-            if (Input.IsKeyDown(Keys.Escape))
+            if (_game.Input.IsKeyDown(Keys.Escape))
             {
                 ClearSelection();
             }
 
-            Vector2 mousePosition = Input.MousePosition();
+            Vector2 mousePosition = _game.Input.MousePosition();
 
-            if (GameHost.InternalGame.IsActive)
+            if (_game.IsActive)
             {
                 //Game active...
-                if (Input.IsKeyDown(Keys.A))
+                if (_game.Input.IsKeyDown(Keys.A))
                     //Moving camera to the left
-                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddX(-CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
-                else if (Input.IsKeyDown(Keys.D))
+                    _game.MainCamera.Location = _game.MainCamera.Location.AddX(-CAMERA_SPEED_PIXEL_PER_SECONDS * _game.ElapsedGameTimeSeconds);
+                else if (_game.Input.IsKeyDown(Keys.D))
                     //Moving camera to the right
-                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddX(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
+                    _game.MainCamera.Location = _game.MainCamera.Location.AddX(CAMERA_SPEED_PIXEL_PER_SECONDS * _game.ElapsedGameTimeSeconds);
 
-                if (Input.IsKeyDown(Keys.W))
+                if (_game.Input.IsKeyDown(Keys.W))
                     //Moving camera to the top
-                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(-CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
-                else if (Input.IsKeyDown(Keys.S))
+                    _game.MainCamera.Location = _game.MainCamera.Location.AddY(-CAMERA_SPEED_PIXEL_PER_SECONDS * _game.ElapsedGameTimeSeconds);
+                else if (_game.Input.IsKeyDown(Keys.S))
                     //Moving camera to the down
-                    GameHost.MainCamera.Location = GameHost.MainCamera.Location.AddY(CAMERA_SPEED_PIXEL_PER_SECONDS * GameHost.ElapsedGameTimeSeconds);
+                    _game.MainCamera.Location = _game.MainCamera.Location.AddY(CAMERA_SPEED_PIXEL_PER_SECONDS * _game.ElapsedGameTimeSeconds);
 
 
                 //Moving player...
-                if (Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F11))
+                if (_game.Input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F11))
                 {
                     if (PlayerObject != null)
                     {
@@ -278,12 +318,12 @@ namespace FNAEngine2D
                 //Mouse left click to place a tile...
                 if (MovePlayerMode)
                 {
-                    if (Input.MouseLeftNewDown())
+                    if (_game.Input.MouseLeftNewDown())
                     {
                         //Leaving moving player mode...
                         MovePlayerMode = false;
                     }
-                    else if (Input.MouseRightNewDown())
+                    else if (_game.Input.MouseRightNewDown())
                     {
                         //Reset moving player mode...
                         ResetMovePlayerMode();
@@ -291,24 +331,24 @@ namespace FNAEngine2D
                 }
                 else
                 {
-                    if (Input.MouseLeftDown() || Input.MouseRightDown())
+                    if (_game.Input.MouseLeftDown() || _game.Input.MouseRightDown())
                     {
                         if (IsTileSetEditorOpened)
                         {
-                            if (Input.MouseLeftDown())
+                            if (_game.Input.MouseLeftDown())
                                 _tileSetEditor.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                            if (Input.MouseRightDown())
+                            if (_game.Input.MouseRightDown())
                                 _tileSetEditor.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
                         }
                     }
 
-                    if (Input.MouseLeftNewDown() || Input.MouseRightNewDown())
+                    if (_game.Input.MouseLeftNewDown() || _game.Input.MouseRightNewDown())
                     {
                         if (_designer != null && !_designer.IsDisposed)
                         {
-                            if (Input.MouseLeftDown())
+                            if (_game.Input.MouseLeftDown())
                                 _designer.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                            if (Input.MouseRightDown())
+                            if (_game.Input.MouseRightDown())
                                 _designer.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
                         }
                     }
@@ -345,10 +385,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Process the Draw loop in edit mode
         /// </summary>
-        public static void ProcessDrawEditMode()
+        public void ProcessDrawEditMode()
         {
             if (_spriteBatch == null)
-                _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
+                _spriteBatch = new SpriteBatch(_game.GraphicsDevice);
             if(_font == null)
                 _font = new Font(FontManager.ROBOTO_REGULAR, 12);
 
@@ -384,7 +424,7 @@ namespace FNAEngine2D
                 _text = _font.MakeText(text);
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_text, new Vector2(GameHost.ScreenSize.X - _text.Width - 10, GameHost.ScreenSize.Y - _text.Height), color);
+            _spriteBatch.DrawString(_text, new Vector2(_game.ScreenSize.X - _text.Width - 10, _game.ScreenSize.Y - _text.Height), color);
             _spriteBatch.End();
         }
 
@@ -392,7 +432,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Remove the curret selection of object
         /// </summary>
-        public static void ClearSelection()
+        public void ClearSelection()
         {
             if (MovePlayerMode)
             {
@@ -408,9 +448,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if a reshowing of all window is needed
         /// </summary>
-        public static bool IsReshowWindowNeeded()
+        public bool IsReshowWindowNeeded()
         {
-            return DateTime.Now.Subtract(EditModeHelper.LastTimeActivated).TotalMilliseconds > 300;
+            return DateTime.Now.Subtract(LastTimeActivated).TotalMilliseconds > 300;
         }
 
 
@@ -419,7 +459,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Show the designer
         /// </summary>
-        public static void ShowDesigner(IntPtr? focusWindowHandle = null)
+        public void ShowDesigner(IntPtr? focusWindowHandle = null)
         {
             _editMode = true;
 
@@ -429,7 +469,7 @@ namespace FNAEngine2D
 
                 _designer.Show();
 
-                _isMouseWasShowned = MouseManager.IsMouseVisible;
+                _isMouseWasShowned = _game.Mouse.IsMouseVisible;
 
                 WindowHelper.LastWindowSwitch = DateTime.MinValue;
             }
@@ -450,18 +490,18 @@ namespace FNAEngine2D
 
             if (focusWindowHandle == null)
                 //We will focus on the game...
-                ShowAllGameForms(GameHost.InternalGame.GameWindowHandle);
+                ShowAllGameForms(_game.GameWindowHandle);
             else
                 ShowAllGameForms(focusWindowHandle.Value);
 
             //Et on affiche la souris...
-            MouseManager.ShowMouse();
+            _game.Mouse.ShowMouse();
         }
 
         /// <summary>
         /// Hide the designer
         /// </summary>
-        public static void HideDesigner()
+        public void HideDesigner()
         {
             _editMode = false;
 
@@ -472,13 +512,13 @@ namespace FNAEngine2D
             }
 
             if (!_isMouseWasShowned)
-                MouseManager.HideMouse();
+                _game.Mouse.HideMouse();
         }
 
         /// <summary>
         /// Reload the designer
         /// </summary>
-        public static void ReloadDesigner()
+        public void ReloadDesigner()
         {
             if (_designer != null && !_designer.IsDisposed)
                 _designer.Reload();
@@ -487,7 +527,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Revert all modifications
         /// </summary>
-        public static void Revert()
+        public void Revert()
         {
             if (_designer != null && !_designer.IsDisposed)
                 _designer.Revert();
@@ -496,7 +536,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Set the IsDirty
         /// </summary>
-        public static void SetDirty(bool dirty)
+        public void SetDirty(bool dirty)
         {
             if (_designer != null && !_designer.IsDisposed)
                 _designer.SetDirty(dirty);
@@ -505,7 +545,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Add the Game Content state in the history
         /// </summary>
-        public static void AddHistory()
+        public void AddHistory()
         {
             if (_designer != null && !_designer.IsDisposed)
                 _designer.AddHistory();
@@ -514,7 +554,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Show tileset editor
         /// </summary>
-        public static void ShowTileSetEditor(TileSetRender gameObject, bool setFocus)
+        public void ShowTileSetEditor(TileSetRender gameObject, bool setFocus)
         {
 
             if (_tileSetEditor == null || _tileSetEditor.IsDisposed)
@@ -553,7 +593,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Show tileset editor
         /// </summary>
-        public static void HideTileSetEditor()
+        public void HideTileSetEditor()
         {
             if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
             {
@@ -565,7 +605,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Show all game forms
         /// </summary>
-        private static void ShowAllGameForms(IntPtr focusWindowHandle)
+        private void ShowAllGameForms(IntPtr focusWindowHandle)
         {
 
             if (!WindowHelper.IsIntervalOKToSwitchWindow())
@@ -580,7 +620,7 @@ namespace FNAEngine2D
             if (_tileSetEditor != null && !_tileSetEditor.IsDisposed)
                 windowHandles.Add(_tileSetEditor.Handle);
 
-            windowHandles.Add(GameHost.InternalGame.GameWindowHandle);
+            windowHandles.Add(_game.GameWindowHandle);
 
             WindowHelper.ShowAllWindows(windowHandles, focusWindowHandle);
 
@@ -589,7 +629,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Ask confirmation if changes in designer
         /// </summary>
-        internal static bool ConfirmBeforeClose(bool canCancel = true)
+        internal bool ConfirmBeforeClose(bool canCancel = true)
         {
             //Check if modification in the designer before closing
             if (_designer != null && !_designer.IsDisposed)
@@ -605,7 +645,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Quit designer
         /// </summary>
-        internal static bool Quit(bool canCancel = true)
+        internal bool Quit(bool canCancel = true)
         {
 
             if (_designer != null && !_designer.IsDisposed)
@@ -627,7 +667,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Reset de MovePlayerMode
         /// </summary>
-        private static void ResetMovePlayerMode()
+        private void ResetMovePlayerMode()
         {
             if (MovePlayerMode)
             {
@@ -640,13 +680,13 @@ namespace FNAEngine2D
         /// <summary>
         /// Move to object
         /// </summary>
-        public static void MoveToObject(GameObject gameObject)
+        public void MoveToObject(GameObject gameObject)
         {
             if (gameObject == null)
                 return;
 
 
-            GameHost.MainCamera.Location = gameObject.Location - new Vector2(GameHost.Width / 2, GameHost.Height / 2);
+            _game.MainCamera.Location = gameObject.Location - new Vector2(_game.Width / 2, _game.Height / 2);
 
 
         }

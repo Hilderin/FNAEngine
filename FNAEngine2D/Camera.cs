@@ -61,15 +61,16 @@ namespace FNAEngine2D
         /// </summary>
         private Point _viewLocation = Point.Zero;
 
-        /// <summary>
-        /// Graghics device
-        /// </summary>
-        private GraphicsDevice _graphicsDevice;
 
         /// <summary>
         /// Bounds of the displayed area
         /// </summary>
         private Rectangle _displayBounds;
+
+        /// <summary>
+        /// Game
+        /// </summary>
+        private Game _game;
 
 
         /// <summary>
@@ -115,14 +116,31 @@ namespace FNAEngine2D
         /// </summary>
         public int CameraIndex { get; private set; }
 
+        // <summary>
+        /// Game
+        /// </summary>
+        public Game Game
+        {
+            get { return _game; }
+            set
+            {
+                if (_game != value)
+                {
+                    _game = value;
+                    RecalculteViewPort();
+                }
+            }
+
+        }
+
         /// <summary>
         /// Spritebatch of the camera
         /// </summary>
         public SpriteBatch SpriteBatch
-        { 
+        {
             get
             {
-                return _spriteBatch; 
+                return _spriteBatch;
             }
         }
 
@@ -184,7 +202,7 @@ namespace FNAEngine2D
         public float Zoom
         {
             get { return _zoom; }
-            set 
+            set
             {
                 if (_zoom != value)
                 {
@@ -222,16 +240,16 @@ namespace FNAEngine2D
             RecalculteDisplayBounds();
         }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Camera()
-        {
-            //Default size
-            _size = new Point(GameHost.Width, GameHost.Height);
-            RecalculteViewPort();
-            RecalculteDisplayBounds();
-        }
+        ///// <summary>
+        ///// Constructor
+        ///// </summary>
+        //public Camera()
+        //{
+        //    //Default size
+        //    _size = new Point(this.Game.Width, this.Game.Height);
+        //    RecalculteViewPort();
+        //    RecalculteDisplayBounds();
+        //}
 
         /// <summary>
         /// Check if a rectangle is in the field of view of the camera
@@ -257,17 +275,15 @@ namespace FNAEngine2D
         /// </summary>
         public virtual void BeginDraw()
         {
-            if (_graphicsDevice == null)
-                _graphicsDevice = GameHost.InternalGame.GraphicsDevice;
-
+            GraphicsDevice graphicsDevice = _game.GraphicsDevice;
 
             //Set le ViewPort
-            if(_graphicsDevice.Viewport.X != _viewPort.X || _graphicsDevice.Viewport.Y != _viewPort.Y || _graphicsDevice.Viewport.Width != _viewPort.Width || _graphicsDevice.Viewport.Height != _viewPort.Height)
-                _graphicsDevice.Viewport = _viewPort;
+            if (graphicsDevice.Viewport.X != _viewPort.X || graphicsDevice.Viewport.Y != _viewPort.Y || graphicsDevice.Viewport.Width != _viewPort.Width || graphicsDevice.Viewport.Height != _viewPort.Height)
+                graphicsDevice.Viewport = _viewPort;
 
             //Creation of the spritebatch...
             if (_spriteBatch == null)
-                _spriteBatch = new SpriteBatch(GameHost.InternalGame.GraphicsDevice);
+                _spriteBatch = new SpriteBatch(graphicsDevice);
 
             //FrontToBack has problem if we have multiple layerDepth, the Array.Sort will not always keep the order of drawing even on the same
             //layerDepth. So, i created a DrawingContext that sort correctly the draw calls and we can just keep using SpriteSortMode.Deferred
@@ -302,23 +318,23 @@ namespace FNAEngine2D
                 //we'll calculate them once each frame and store them... when someone needs these variables we will simply return the stored variable instead of re cauclating them every time.
 
                 //Calculate the camera transform matrix:
-                //Matrix matrix = Matrix.CreateTranslation(new Vector3(-(_location.X - (GameHost.Width / 2)), -(_location.Y - (GameHost.Height / 2)), 0));
+                //Matrix matrix = Matrix.CreateTranslation(new Vector3(-(_location.X - (this.Game.Width / 2)), -(_location.Y - (this.Game.Height / 2)), 0));
                 Matrix matrix = Matrix.CreateTranslation(new Vector3(-_location, 0));
 
 
                 if (_rotation != 0)
                 {
                     matrix *= Matrix.CreateRotationZ(_rotation);
-                    matrix *= Matrix.CreateTranslation(new Vector3(GameHost.Width / 2, GameHost.Height / 2, 0));
+                    matrix *= Matrix.CreateTranslation(new Vector3(_game.Width / 2, _game.Height / 2, 0));
                 }
 
                 if (_zoom != 1)
                     matrix *= Matrix.CreateScale(new Vector3(_zoom, _zoom, 1));
 
-                
+
 
                 //Now combine the camera's matrix with the Resolution Manager's transform matrix to get our final working matrix:
-                matrix *= GameHost.InternalGame.ScaleMatrix;
+                matrix *= _game.ScaleMatrix;
 
                 //Round the X and Y translation so the camera doesn't jerk as it moves:
                 matrix.M41 = (float)Math.Round(matrix.M41, 0);
@@ -336,13 +352,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Recalculate the view port to use
         /// </summary>
-        private void RecalculteViewPort()
+        public void RecalculteViewPort()
         {
             Vector2 scale = Vector2.One;
-            if (GameHost.InternalGame != null)
-                scale = GameHost.InternalGame.ScreenScale;
 
-            _viewPort = new Viewport((int)(_viewLocation.X * scale.X), 
+            if (_game != null)
+                scale = _game.ScreenScale;
+
+            _viewPort = new Viewport((int)(_viewLocation.X * scale.X),
                                     (int)(_viewLocation.Y * scale.Y),
                                     (int)(_size.X * scale.X),
                                     (int)(_size.Y * scale.Y));

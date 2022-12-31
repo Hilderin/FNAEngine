@@ -73,7 +73,7 @@ namespace FNAEngine2D
         /// </summary>
         public Force AddForce(Vector2 target, float speedMps)
         {
-            Force force = new Force(target, speedMps);
+            Force force = new Force(target, speedMps, _gameObject);
 
             _forces.Add(force);
 
@@ -90,9 +90,9 @@ namespace FNAEngine2D
             Vector2 delta = Vector2.Zero;
             
             if(IsMovingLeft)
-                delta.X -= SpeedMps * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeter;
+                delta.X -= SpeedMps * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter;
             if (IsMovingRight)
-                delta.X += SpeedMps * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeter;
+                delta.X += SpeedMps * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter;
 
 
             //-------------
@@ -102,10 +102,10 @@ namespace FNAEngine2D
                 //Did not fall...
                 _timeBeginFall = 0f;
 
-            _timeBeginFall += GameHost.ElapsedGameTimeSeconds;
+            _timeBeginFall += _gameObject.ElapsedGameTimeSeconds;
             float acceleration = GravityMps * _timeBeginFall;
 
-            delta.Y = acceleration * GameHost.ElapsedGameTimeSeconds * GameHost.NbPixelPerMeter;
+            delta.Y = acceleration * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter;
 
             //------------
             //Other forces...

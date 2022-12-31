@@ -45,7 +45,7 @@ namespace FNAEngine2D
         /// </summary>
         public override void Load()
         {
-            this.GameContent = GameHost.GetContent<GameContent>(this.AssetName);
+            this.GameContent = GetContent<GameContent>(this.AssetName);
 
             GameContentManager.ReplaceContent(this, this.GameContent.Data);
         }

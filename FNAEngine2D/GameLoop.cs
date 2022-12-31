@@ -18,7 +18,7 @@ namespace FNAEngine2D
         private TimeSpan _accumulatedElapsedTime;
         private long _previousTicks = 0;
         private TimeSpan _targetElapsedTime = TimeSpan.FromTicks(166667); // 60fps
-        private TimeSpan _maxElapsedTime = TimeSpan.FromMilliseconds(2000);
+        private TimeSpan _maxElapsedTime = TimeSpan.FromMilliseconds(500);
 
         // must be a power of 2 so we can do a bitmask optimization when checking worst case
         private const int PREVIOUS_SLEEP_TIME_COUNT = 128;
@@ -90,10 +90,10 @@ namespace FNAEngine2D
                 }
 
                 /* Now that we have slept into the sleep precision threshold, we need to wait
-                     * for just a little bit longer until the target elapsed time has been reached.
-                     * SpinWait(1) works by pausing the thread for very short intervals, so it is
-                     * an efficient and time-accurate way to wait out the rest of the time.
-                     */
+                 * for just a little bit longer until the target elapsed time has been reached.
+                 * SpinWait(1) works by pausing the thread for very short intervals, so it is
+                 * an efficient and time-accurate way to wait out the rest of the time.
+                 */
                 while (_accumulatedElapsedTime < _targetElapsedTime)
                 {
                     System.Threading.Thread.SpinWait(1);

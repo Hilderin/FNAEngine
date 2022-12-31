@@ -13,6 +13,12 @@ namespace FNAEngine2D.Desginer
 {
     public partial class TileSetEditor : Form
     {
+
+        /// <summary>
+        /// Edit mode service
+        /// </summary>
+        private EditModeService _editModeService = ServiceProvider.GetService<EditModeService>();
+
         /// <summary>
         /// TileSet that we are editing...
         /// </summary>
@@ -82,7 +88,7 @@ namespace FNAEngine2D.Desginer
         {
             if (gameObject is TileSetRender)
             {
-                _gameObject = EditModeHelper.SelectedGameObject;
+                _gameObject = _editModeService.SelectedGameObject;
                 this.Text = "Tile Set Editor - " + _gameObject.DisplayName;
 
                 TileSetRender tileSetRender = (TileSetRender)gameObject;
@@ -120,8 +126,8 @@ namespace FNAEngine2D.Desginer
 
             if (updated)
             {
-                EditModeHelper.SetDirty(true);
-                EditModeHelper.AddHistory();
+                _editModeService.SetDirty(true);
+                _editModeService.AddHistory();
                 UpdatePreviewTileSet();
 
                 _gameObject.RemoveAll();
@@ -137,8 +143,8 @@ namespace FNAEngine2D.Desginer
         {
             if (SetTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null, _tileSet))
             {
-                EditModeHelper.SetDirty(true);
-                EditModeHelper.AddHistory();
+                _editModeService.SetDirty(true);
+                _editModeService.AddHistory();
                 UpdatePreviewTileSet();
 
                 _gameObject.RemoveAll();
@@ -315,7 +321,7 @@ namespace FNAEngine2D.Desginer
                 else
                 {
                     
-                    string fullPath = GameHost.InternalGame.ContentManager.GetAssetFullPath(assetName, ContentManager.TEXTURES_EXTENSIONS);
+                    string fullPath = _editModeService.Game.ContentManager.GetAssetFullPath(assetName, ContentManager.TEXTURES_EXTENSIONS);
 
                     picTileSet.Image = Image.FromFile(fullPath);
 
@@ -341,8 +347,8 @@ namespace FNAEngine2D.Desginer
                     _tileSet.TextureName = txtTexture.Text;
                     LoadTileSet(_tileSet.TextureName);
 
-                    EditModeHelper.SetDirty(true);
-                    EditModeHelper.AddHistory();
+                    _editModeService.SetDirty(true);
+                    _editModeService.AddHistory();
                     UpdatePreviewTileSet();
                 }
             }
@@ -381,8 +387,8 @@ namespace FNAEngine2D.Desginer
                 {
                     _tileSet.TileSize = size;
 
-                    EditModeHelper.SetDirty(true);
-                    EditModeHelper.AddHistory();
+                    _editModeService.SetDirty(true);
+                    _editModeService.AddHistory();
                     UpdatePreviewTileSet();
                 }
             }
@@ -399,8 +405,8 @@ namespace FNAEngine2D.Desginer
                 {
                     _tileSet.TileScreenSize = size;
 
-                    EditModeHelper.SetDirty(true);
-                    EditModeHelper.AddHistory();
+                    _editModeService.SetDirty(true);
+                    _editModeService.AddHistory();
                     UpdatePreviewTileSet();
                 }
             }
@@ -438,7 +444,7 @@ namespace FNAEngine2D.Desginer
                 _gameObject.RootGameObject.Remove(_previewObject);
             }
 
-            EditModeHelper.HideTileSetEditor();
+            _editModeService.HideTileSetEditor();
         }
 
         /// <summary>
@@ -558,8 +564,8 @@ namespace FNAEngine2D.Desginer
         private void TileSetEditor_Activated(object sender, EventArgs e)
         {
             //Reopening the designer forms and refocusing on ourself...
-            if (EditModeHelper.IsReshowWindowNeeded())
-                EditModeHelper.ShowDesigner(this.Handle);
+            if (_editModeService.IsReshowWindowNeeded())
+                _editModeService.ShowDesigner(this.Handle);
         }
 
     }

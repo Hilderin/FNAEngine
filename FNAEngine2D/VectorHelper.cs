@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,5 +137,15 @@ namespace FNAEngine2D
         {
             return (float)Math.Atan2(vector.Y, vector.X);
         }
+
+        /// <summary>
+		/// Creates a new <see cref="Vector2"/> that contains a normalized values from x and y
+		/// </summary>
+		public static Vector2 Normalize(float x, float y)
+        {
+            float val = 1.0f / (float)Math.Sqrt((x * x) + (y * y));
+            return new Vector2(x * val, y * val);
+        }
+
     }
 }

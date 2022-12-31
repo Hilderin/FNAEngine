@@ -13,58 +13,70 @@ namespace FNAEngine2D
     /// <summary>
     /// Manage the mouse
     /// </summary>
-    public static class MouseManager
+    public class MouseManager
     {
+        /// <summary>
+        /// Game
+        /// </summary>
+        private Game _game;
 
         /// <summary>
         /// Indique si la souris est visible
         /// </summary>
-        public static bool IsMouseVisible { get; private set; }
+        public bool IsMouseVisible { get; private set; }
 
         /// <summary>
         /// Liste des derniers games objects où on était par dessus
         /// </summary>
-        private static List<IMouseEventHandler> _lastOverGameObjects = new List<IMouseEventHandler>();
+        private List<IMouseEventHandler> _lastOverGameObjects = new List<IMouseEventHandler>();
 
         /// <summary>
         /// Objects with mouse left down
         /// </summary>
-        private static List<IMouseEventHandler> _mouseLeftDownObjects = new List<IMouseEventHandler>();
+        private List<IMouseEventHandler> _mouseLeftDownObjects = new List<IMouseEventHandler>();
 
         /// <summary>
         /// Objects with mouse right down
         /// </summary>
-        private static List<IMouseEventHandler> _mouseRightDownObjects = new List<IMouseEventHandler>();
+        private List<IMouseEventHandler> _mouseRightDownObjects = new List<IMouseEventHandler>();
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public MouseManager(Game game)
+        {
+            _game = game;
+        }
 
         /// <summary>
         /// Display the mouse cursor
         /// </summary>
-        public static void ShowMouse()
+        public void ShowMouse()
         {
-            MouseManager.IsMouseVisible = true;
+            IsMouseVisible = true;
 
             //Si on a un gamehost, on va le setter...
-            if (GameHost.InternalGame != null && GameHost.InternalGame.IsInitialized)
-                GameHost.InternalGame.IsMouseVisible = true;
+            if (_game != null && _game.IsInitialized)
+                _game.IsMouseVisible = true;
         }
 
 
         /// <summary>
         /// Hide the mouse cursor
         /// </summary>
-        public static void HideMouse()
+        public void HideMouse()
         {
-            MouseManager.IsMouseVisible = false;
+            IsMouseVisible = false;
 
             //Si on a un gamehost, on va le setter...
-            if (GameHost.InternalGame != null && GameHost.InternalGame.IsInitialized)
-                GameHost.InternalGame.IsMouseVisible = false;
+            if (_game != null && _game.IsInitialized)
+                _game.IsMouseVisible = false;
         }
 
         /// <summary>
         /// Process the removal of a game object
         /// </summary>
-        internal static void RemoveGameObject(GameObject gameObject)
+        internal void RemoveGameObject(GameObject gameObject)
         {
             if (gameObject is IMouseEventHandler)
             {
@@ -81,21 +93,21 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de processer les mouses events
         /// </summary>
-        internal static void ProcessMouseEvents()
+        internal void ProcessMouseEvents()
         {
 
             if (!IsMouseVisible)
                 return;
 
             //We will need the mouse position...
-            Vector2 mousePosition = Input.MousePosition();
+            Vector2 mousePosition = _game.Input.MousePosition();
 
             //We remove the main camera because it's been added, we will rehad it in the IsObjectAtCoord...
-            mousePosition -= GameHost.MainCamera.Location.Substract(GameHost.MainCamera.ViewLocation);
+            mousePosition -= _game.MainCamera.Location.Substract(_game.MainCamera.ViewLocation);
 
             List<IMouseEventHandler> newOverGameObjects = new List<IMouseEventHandler>(_lastOverGameObjects.Count);
 
-            ProcessGameObject(GameHost.InternalGame.RootGameObject, mousePosition, newOverGameObjects);
+            ProcessGameObject(_game.RootGameObject, mousePosition, newOverGameObjects);
 
             if (newOverGameObjects.Count > 0 || _lastOverGameObjects.Count > 0)
             {
@@ -111,12 +123,12 @@ namespace FNAEngine2D
                             //Enter...
                             newOverGameObjects[index].HandleMouseEvent(MouseAction.Enter);
 
-                            if (Input.MouseLeftDown())
+                            if (_game.Input.MouseLeftDown())
                             {
                                 newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
                                 _mouseLeftDownObjects.Add(newOverGameObjects[index]);
                             }
-                            if (Input.MouseRightDown())
+                            if (_game.Input.MouseRightDown())
                             {
                                 newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
                                 _mouseRightDownObjects.Add(newOverGameObjects[index]);
@@ -138,12 +150,12 @@ namespace FNAEngine2D
                         else
                         {
                             //Object was already there...
-                            if (Input.MouseLeftNewDown())
+                            if (_game.Input.MouseLeftNewDown())
                             {
                                 _lastOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
                                 _mouseLeftDownObjects.Add(_lastOverGameObjects[index]);
                             }
-                            if (Input.MouseRightNewDown())
+                            if (_game.Input.MouseRightNewDown())
                             {
                                 _lastOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
                                 _mouseRightDownObjects.Add(_lastOverGameObjects[index]);
@@ -153,7 +165,7 @@ namespace FNAEngine2D
                 }
 
                 //Left Clicked... ??
-                if (Input.MouseLeftClicked())
+                if (_game.Input.MouseLeftClicked())
                 {
                     for (int index = 0; index < newOverGameObjects.Count; index++)
                     {
@@ -169,7 +181,7 @@ namespace FNAEngine2D
                 }
 
                 //Right Clicked... ??
-                if (Input.MouseRightClicked())
+                if (_game.Input.MouseRightClicked())
                 {
                     for (int index = 0; index < newOverGameObjects.Count; index++)
                     {
@@ -194,11 +206,11 @@ namespace FNAEngine2D
         /// <summary>
         /// Process the game objects
         /// </summary>
-        private static void ProcessGameObject(GameObject gameObject, Vector2 mousePosition, List<IMouseEventHandler> newOverGameObjects)
+        private void ProcessGameObject(GameObject gameObject, Vector2 mousePosition, List<IMouseEventHandler> newOverGameObjects)
         {
             if (gameObject is IMouseEventHandler)
             {
-                Camera camera = GameHost.GetCameraForObject(gameObject);
+                Camera camera = _game.GetCameraForObject(gameObject);
                 
                 if (VectorHelper.Intersects(mousePosition + camera.Location, gameObject.Bounds))
                 {

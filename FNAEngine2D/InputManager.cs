@@ -8,25 +8,40 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D
 {
-    public static class Input //Static classes can easily be accessed anywhere in our codebase. They always stay in memory so you should only do it for universal things like input.
+    /// <summary>
+    /// Mamange the input system
+    /// </summary>
+    public class InputManager 
     {
-        private static KeyboardState _keyboardState = Keyboard.GetState();
-        private static KeyboardState _lastKeyboardState;
+        private Game _game;
 
-        private static MouseState _mouseState;
-        private static MouseState _lastMouseState;
+        private KeyboardState _keyboardState = Keyboard.GetState();
+        private KeyboardState _lastKeyboardState;
 
-        private static Vector2 _mousePosition;
+        private MouseState _mouseState;
+        private MouseState _lastMouseState;
+
+        private Vector2 _mousePosition;
 
         /// <summary>
         /// Consumed key pressed
         /// </summary>
-        private static List<Keys> _consumedKeyPressed = new List<Keys>();
+        private List<Keys> _consumedKeyPressed = new List<Keys>();
+
+        
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public InputManager(Game game)
+        {
+            _game = game;
+        }
 
         /// <summary>
         /// Call at each Update
         /// </summary>
-        public static void Update()
+        public void Update()
         {
             _lastKeyboardState = _keyboardState;
             _keyboardState = Keyboard.GetState();
@@ -34,7 +49,7 @@ namespace FNAEngine2D
             _lastMouseState = _mouseState;
             _mouseState = Mouse.GetState();
 
-            _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / GameHost.InternalGame.ScreenScale) + GameHost.MainCamera.Location.Substract(GameHost.MainCamera.ViewLocation);
+            _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / _game.ScreenScale) + _game.MainCamera.Location.Substract(_game.MainCamera.ViewLocation);
 
             _consumedKeyPressed.Clear();
         }
@@ -42,7 +57,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if key is currently pressed.
         /// </summary>
-        public static bool IsKeyDown(Keys input)
+        public bool IsKeyDown(Keys input)
         {
             return _keyboardState.IsKeyDown(input);
         }
@@ -50,7 +65,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if key newly down
         /// </summary>
-        public static bool IsKeyNewDown(Keys input)
+        public bool IsKeyNewDown(Keys input)
         {
             return _keyboardState.IsKeyDown(input) && !_lastKeyboardState.IsKeyDown(input);
         }
@@ -58,7 +73,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if key is currently up.
         /// </summary>
-        public static bool IsKeyUp(Keys input)
+        public bool IsKeyUp(Keys input)
         {
             return _keyboardState.IsKeyUp(input);
         }
@@ -66,7 +81,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if key was just pressed.
         /// </summary>
-        public static bool IsKeyPressed(Keys input, bool consume = true)
+        public bool IsKeyPressed(Keys input, bool consume = true)
         {
             if (_keyboardState.IsKeyDown(input) == true && _lastKeyboardState.IsKeyDown(input) == false
                 && !_consumedKeyPressed.Contains(input))
@@ -84,7 +99,7 @@ namespace FNAEngine2D
         /// Remove the key pressed from the state, we processed it
         /// The goal is to prevent multiple gamepobject to process the keypressed
         /// </summary>
-        public static void ConsumeKeyPressed(Keys input)
+        public void ConsumeKeyPressed(Keys input)
         {
             _consumedKeyPressed.Add(input);
         }
@@ -92,7 +107,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the left mouse button is being pressed.
         /// </summary>
-        public static bool MouseLeftDown()
+        public bool MouseLeftDown()
         {
             if (_mouseState.LeftButton == ButtonState.Pressed)
                 return true;
@@ -103,7 +118,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the left mouse button is newlly down
         /// </summary>
-        public static bool MouseLeftNewDown()
+        public bool MouseLeftNewDown()
         {
             if (_mouseState.LeftButton == ButtonState.Pressed && _lastMouseState.LeftButton == ButtonState.Released)
                 return true;
@@ -114,7 +129,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the right mouse button is newlly down
         /// </summary>
-        public static bool MouseRightNewDown()
+        public bool MouseRightNewDown()
         {
             if (_mouseState.RightButton == ButtonState.Pressed && _lastMouseState.RightButton == ButtonState.Released)
                 return true;
@@ -125,7 +140,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the right mouse button is being pressed.
         /// </summary>
-        public static bool MouseRightDown()
+        public bool MouseRightDown()
         {
             if (_mouseState.RightButton == ButtonState.Pressed)
                 return true;
@@ -136,7 +151,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if the left mouse button was clicked.
         /// </summary>
-        public static bool MouseLeftClicked()
+        public bool MouseLeftClicked()
         {
             if (_mouseState.LeftButton == ButtonState.Released && _lastMouseState.LeftButton == ButtonState.Pressed)
                 return true;
@@ -147,7 +162,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if the right mouse button was clicked.
         /// </summary>
-        public static bool MouseRightClicked()
+        public bool MouseRightClicked()
         {
             if (_mouseState.RightButton == ButtonState.Pressed && _lastMouseState.RightButton == ButtonState.Released)
                 return true;
@@ -158,7 +173,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Gets mouse coordinates adjusted for virtual resolution and camera position.
         /// </summary>
-        public static Vector2 MousePosition()
+        public Vector2 MousePosition()
         {
             return _mousePosition;
         }
@@ -166,7 +181,7 @@ namespace FNAEngine2D
         ///// <summary>
         ///// Gets the last mouse coordinates adjusted for virtual resolution and camera position.
         ///// </summary>
-        //public static Vector2 LastMousePositionCamera()
+        //public Vector2 LastMousePositionCamera()
         //{
         //    Vector2 mousePosition = Vector2.Zero;
         //    mousePosition.X = _lastMouseState.X;
@@ -178,7 +193,7 @@ namespace FNAEngine2D
         ///// <summary>
         ///// Takes screen coordinates (2D position like where the mouse is on screen) then converts it to world position (where we clicked at in the world). 
         ///// </summary>
-        //private static Vector2 ScreenToWorld(Vector2 input)
+        //private Vector2 ScreenToWorld(Vector2 input)
         //{
         //    input.X -= Resolution.VirtualViewportX;
         //    input.Y -= Resolution.VirtualViewportY;

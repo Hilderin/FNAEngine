@@ -59,6 +59,11 @@ namespace FNAEngine2D.Communication
         private Socket _socket;
 
         /// <summary>
+        /// Port number
+        /// </summary>
+        private int _port;
+
+        /// <summary>
         /// Queue of objects to send
         /// </summary>
         private Queue<object> _sendQueue = new Queue<object>();
@@ -70,9 +75,14 @@ namespace FNAEngine2D.Communication
 
 
         /// <summary>
-        /// Indicate if the communication is opened
+        /// Indicate the state of the channel
         /// </summary>
-        public bool IsOpen { get; private set; }
+        public ChannelState State { get; private set; } = ChannelState.NotConnected;
+
+        /// <summary>
+        /// Error detail
+        /// </summary>
+        public string Error { get; private set; }
 
         /// <summary>
         /// Check if commands available for reading
@@ -85,21 +95,88 @@ namespace FNAEngine2D.Communication
         /// </summary>
         public SocketChannel(Socket socket)
         {
+            if (!socket.Connected)
+                throw new InvalidOperationException("The socket must be connected.");
+
             _socket = socket;
+
+            this.State = ChannelState.Connected;
 
             //Already wait for something...
             BeginReceive();
         }
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        public SocketChannel(int port)
+        {
+            _port = port;
+        }
+
+        /// <summary>
         /// Connect to the server
         /// </summary>
-        public static SocketChannel Connect(int port)
+        public void Connect(Action actionAfterConnect)
         {
-            Socket client = new Socket(SocketType.Stream, ProtocolType.Tcp);
-            client.Connect(new IPEndPoint(IPAddress.Loopback, port));
+            
+            Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
 
-            return new SocketChannel(client);
+            this.State = ChannelState.Connecting;
+
+            var result = socket.BeginConnect(new IPEndPoint(IPAddress.Loopback, _port), BeginConnectCallback, new object[] { socket, actionAfterConnect });
+
+            if (result.CompletedSynchronously)
+                BeginConnectCallback(result);
+
+        }
+
+        /// <summary>
+        /// Disconnect from the server
+        /// </summary>
+        public void Disconnect()
+        {
+
+            if (_socket != null && _socket.Connected)
+            {
+                _socket.Close();
+            }
+
+            _socket = null;
+            this.State = ChannelState.Disconnected;
+
+        }
+
+        /// <summary>
+        /// Connect callback
+        /// </summary>
+        private void BeginConnectCallback(IAsyncResult ar)
+        {
+            try
+            {
+                object[] args = (object[])ar.AsyncState;
+                Socket socket = (Socket)args[0];
+                Action actionAfterConnect = (Action)args[1];
+
+                socket.EndConnect(ar);
+
+                //We are connected...
+                _socket = socket;
+
+                //Already wait for something...
+                BeginReceive();
+
+                this.State = ChannelState.Connected;
+
+                if (actionAfterConnect != null)
+                    actionAfterConnect();
+
+            }
+            catch (Exception ex)
+            {
+                this.Error = ex.Message;
+                this.State = ChannelState.Error;
+            }
         }
 
         /// <summary>
@@ -227,10 +304,11 @@ namespace FNAEngine2D.Communication
             {
                 _socket.BeginSend(_bufferSend, 0, len, SocketFlags.None, SendCallback, null);
             }
-            catch (SocketException)
+            catch (Exception ex)
             {
                 //Probably the connection was closed...
-                this.IsOpen = false;
+                this.Error = ex.Message;
+                this.State = ChannelState.Error;
             }
         }
 
@@ -259,10 +337,11 @@ namespace FNAEngine2D.Communication
                 if (nextCommandToSend != null)
                     SendCommand(nextCommandToSend);
             }
-            catch (SocketException)
+            catch (Exception ex)
             {
                 //Probably the connection was closed...
-                this.IsOpen = false;
+                this.Error = ex.Message;
+                this.State = ChannelState.Error;
             }
         }
 
@@ -289,7 +368,7 @@ namespace FNAEngine2D.Communication
                 if (read == 0)
                 {
                     //Socket closed...
-                    this.IsOpen = false;
+                    this.State = ChannelState.Disconnected;
                 }
                 else
                 {
@@ -305,10 +384,11 @@ namespace FNAEngine2D.Communication
                     BeginReceive();
                 }
             }
-            catch (SocketException)
+            catch (Exception ex)
             {
                 //Probably the connection was closed...
-                this.IsOpen = false;
+                this.Error = ex.Message;
+                this.State = ChannelState.Error;
             }
         }
 

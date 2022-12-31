@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,35 @@ namespace FNAEngine2D
     public static class Texture2DHelper
     {
         /// <summary>
+        /// Graphic device
+        /// </summary>
+        private static GraphicsDevice _graphicsDevice;
+
+        /// <summary>
+        /// Get the graphics device
+        /// </summary>
+        private static GraphicsDevice GetGraphicsDevice()
+        {
+            if (_graphicsDevice == null)
+            {
+                IGraphicsDeviceService graphicsDeviceService = ServiceProvider.GetService<IGraphicsDeviceService>();
+                if (graphicsDeviceService == null)
+                    throw new InvalidOperationException("Service IGraphicsDeviceService not initialized.");
+
+                _graphicsDevice = graphicsDeviceService.GraphicsDevice;
+                if(_graphicsDevice == null)
+                    throw new InvalidOperationException("GraphicsDevice not initialized.");
+
+            }
+            return _graphicsDevice;
+        }
+
+        /// <summary>
         /// Create a texture
         /// </summary>
         public static Texture2D CreateTexture(int width, int height)
         {
-            return new Texture2D(GameHost.InternalGame.GraphicsDevice, width, height, false, SurfaceFormat.Color);
+            return new Texture2D(GetGraphicsDevice(), width, height, false, SurfaceFormat.Color);
         }
 
         /// <summary>

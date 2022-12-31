@@ -67,7 +67,7 @@ namespace FNAEngine2D
         public override void Update()
         {
             if (!AllowMultiple)
-                _elapedStartSeconds += GameHost.ElapsedGameTimeSeconds;
+                _elapedStartSeconds += this.ElapsedGameTimeSeconds;
         }
 
 
@@ -76,7 +76,7 @@ namespace FNAEngine2D
         /// </summary>
         public Content<SoundEffect> GetContent(string assetName)
         {
-            return GameHost.GetContent<SoundEffect>(assetName);
+            return GetContent<SoundEffect>(assetName);
         }
 
 
@@ -142,29 +142,29 @@ namespace FNAEngine2D
             _currentlyPlaying = null;
         }
 
-        /// <summary>
-        /// Play 
-        /// </summary>
-        public static void PlayStatic(string assetName)
-        {
-            GameHost.GetContent<SoundEffect>(assetName).Data.Play();
-        }
+        ///// <summary>
+        ///// Play 
+        ///// </summary>
+        //public static void PlayStatic(string assetName)
+        //{
+        //    GetContent<SoundEffect>(assetName).Data.Play();
+        //}
 
-        /// <summary>
-        /// Play 
-        /// </summary>
-        public static void PlayStatic(Content<SoundEffect> sfx)
-        {
-            sfx.Data.Play();
-        }
+        ///// <summary>
+        ///// Play 
+        ///// </summary>
+        //public static void PlayStatic(Content<SoundEffect> sfx)
+        //{
+        //    sfx.Data.Play();
+        //}
 
-        /// <summary>
-        /// Play 
-        /// </summary>
-        public static void PlayStatic(string assetName, float volume)
-        {
-            GameHost.GetContent<SoundEffect>(assetName).Data.Play(volume, 0f, 0f);
-        }
+        ///// <summary>
+        ///// Play 
+        ///// </summary>
+        //public static void PlayStatic(string assetName, float volume)
+        //{
+        //    GetContent<SoundEffect>(assetName).Data.Play(volume, 0f, 0f);
+        //}
 
     }
 }

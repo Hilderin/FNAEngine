@@ -47,6 +47,8 @@ namespace FNAEngine2D
             float incrementAmount = 1f / nbLerp;
             float amount = 0;
             bool collided = false;
+            Collision lastCollision = null;
+
             for (int index = 1; index < nbLerp; index++)
             {
                 amount += incrementAmount;
@@ -55,8 +57,7 @@ namespace FNAEngine2D
                 Collision stepCollision = null;
                 if (GetCollision(movingColliderLocationLerped, movingColliderSize, collidesWith, ref stepCollision))
                 {
-                    collided = true;
-                    if (stepCollision.StopLocation == movingColliderDestinationLocation)
+                    if (stepCollision.StopLocation == movingColliderLocationLerped)
                     {
                         //Cannot move anymore...
                         collision = stepCollision;
@@ -69,20 +70,27 @@ namespace FNAEngine2D
                         movingColliderLocation.X = stepCollision.StopLocation.X;
                         movingColliderDestinationLocation.X = stepCollision.StopLocation.X;
                     }
+
                     if (stepCollision.StopLocation.Y != movingColliderLocationLerped.Y)
                     {
                         //Cannot move on Y...
                         movingColliderLocation.Y = stepCollision.StopLocation.Y;
                         movingColliderDestinationLocation.Y = stepCollision.StopLocation.Y;
                     }
+
+
+                    collided = true;
+                    lastCollision = stepCollision;
                 }
 
             }
 
+
             //Check the last one at destination...
             if (GetCollision(movingColliderDestinationLocation, movingColliderSize, collidesWith, ref collision))
-                collided = true;
+                return true;
 
+            collision = lastCollision;
             return collided;
 
         }

@@ -63,9 +63,9 @@ namespace FNAEngine2D
 
         private string GetText()
         {
-            MouseState mouseState = Mouse.GetState();
+            MouseState mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
 
-            return "Mouse: " + mouseState.X + ", " + mouseState.Y + ", Elapsed: "  + GameHost.ElapsedGameTimeMilliseconds + "ms";
+            return "Mouse: " + mouseState.X + ", " + mouseState.Y + ", Elapsed: "  + this.ElapsedGameTimeMilliseconds + "ms";
         }
 
         public override void Draw()

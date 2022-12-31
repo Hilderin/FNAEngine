@@ -18,68 +18,75 @@ namespace FNAEngine2D.Tests
         [TestMethod]
         public void LoadFile()
         {
-
-            using (MemoryStream ms = new MemoryStream(Resources.Base))
+            using (Game game = new Game())
             {
-                AseFile aseFile = new AseFile(ms);
+                game.RunOneFrame();
 
-                Assert.AreEqual(1, aseFile.Frames.Count);
-
-                List<LayerChunk> layers = aseFile.GetChunks<LayerChunk>();
-                Assert.AreEqual(1, layers.Count);
-
-                int nbFrames = aseFile.Frames.Count;
-                for (int index = 0; index < nbFrames; index++)
+                using (MemoryStream ms = new MemoryStream(Resources.Base))
                 {
-                    Assert.AreEqual(100f, aseFile.Frames[index].FrameDuration);
+                    AseFile aseFile = new AseFile(ms);
 
-                    List <CelChunk> cells = aseFile.Frames[index].GetChunks<CelChunk>();
+                    Assert.AreEqual(1, aseFile.Frames.Count);
 
-                    //On ajoute les linked cells...
-                    cells.AddRange(aseFile.Frames[index].GetChunks<LinkedCelChunk>().Select(l => l.LinkedCel));
+                    List<LayerChunk> layers = aseFile.GetChunks<LayerChunk>();
+                    Assert.AreEqual(1, layers.Count);
 
-                    Assert.AreEqual(1, cells.Count);
-
-                    foreach (CelChunk cell in cells)
+                    int nbFrames = aseFile.Frames.Count;
+                    for (int index = 0; index < nbFrames; index++)
                     {
+                        Assert.AreEqual(100f, aseFile.Frames[index].FrameDuration);
 
-                        //Layer..
-                        LayerChunk layer = layers[cell.LayerIndex];
-                        
-                        Assert.AreEqual("Layer 1", layer.LayerName);
+                        List<CelChunk> cells = aseFile.Frames[index].GetChunks<CelChunk>();
 
-                        
-                        using (Texture2D texture = aseFile.GetTextureFromCel(cell))
+                        //On ajoute les linked cells...
+                        cells.AddRange(aseFile.Frames[index].GetChunks<LinkedCelChunk>().Select(l => l.LinkedCel));
+
+                        Assert.AreEqual(1, cells.Count);
+
+                        foreach (CelChunk cell in cells)
                         {
-                            Color[] colors = texture.GetPixels();
 
-                            Assert.AreEqual(1024, colors.Length);
+                            //Layer..
+                            LayerChunk layer = layers[cell.LayerIndex];
+
+                            Assert.AreEqual("Layer 1", layer.LayerName);
+
+
+                            using (Texture2D texture = aseFile.GetTextureFromCel(cell))
+                            {
+                                Color[] colors = texture.GetPixels();
+
+                                Assert.AreEqual(1024, colors.Length);
+                            }
+
                         }
-
                     }
+
                 }
-
             }
-
+        
         }
 
         [TestMethod]
         public void GetTexture()
         {
-
-            using (MemoryStream ms = new MemoryStream(Resources.Base))
+            using (Game game = new Game())
             {
-                AseFile aseFile = new AseFile(ms);
+                game.RunOneFrame();
 
-                using (Texture2D texture = aseFile.GetFrame(0))
+                using (MemoryStream ms = new MemoryStream(Resources.Base))
                 {
-                    Color[] colors = texture.GetPixels();
+                    AseFile aseFile = new AseFile(ms);
 
-                    Assert.AreEqual(1024, colors.Length);
+                    using (Texture2D texture = aseFile.GetFrame(0))
+                    {
+                        Color[] colors = texture.GetPixels();
+
+                        Assert.AreEqual(1024, colors.Length);
+                    }
+
                 }
-
             }
-
         }
     }
 }

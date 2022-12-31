@@ -13,8 +13,12 @@ namespace FNAEngine2D.Desginer
     // properties to provide a design-mode angle selection interface.
     public class TileSetUITypeEditor : System.Drawing.Design.UITypeEditor
     {
+        private EditModeService _editModeService;
+
         public TileSetUITypeEditor()
         {
+            _editModeService = ServiceProvider.GetService<EditModeService>();
+
         }
 
         // Indicates whether the UITypeEditor provides a form-based (modal) dialog,
@@ -31,15 +35,15 @@ namespace FNAEngine2D.Desginer
             if (value != null && value.GetType() != typeof(TileSet))
                 return value;
 
-            if(EditModeHelper.SelectedGameObject == null || !(EditModeHelper.SelectedGameObject is TileSetRender))
+            if(_editModeService.SelectedGameObject == null || !(_editModeService.SelectedGameObject is TileSetRender))
                 return value;
 
-            TileSetRender tileSetRender = (TileSetRender)EditModeHelper.SelectedGameObject;
+            TileSetRender tileSetRender = (TileSetRender)_editModeService.SelectedGameObject;
 
             if (tileSetRender.TileSet == null)
                 tileSetRender.TileSet = new TileSet();
 
-            EditModeHelper.ShowTileSetEditor(tileSetRender, true);
+            _editModeService.ShowTileSetEditor(tileSetRender, true);
 
 
             //No changes...

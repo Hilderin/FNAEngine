@@ -66,6 +66,9 @@
     <PackageReference Include="MSTest.TestFramework">
       <Version>2.2.7</Version>
     </PackageReference>
+    <PackageReference Include="SharpFont.NetStandard">
+      <Version>1.0.5</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FNAEngine2D\FNAEngine2D.csproj">
