@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,11 +12,6 @@ namespace FNAEngine2D
     /// </summary>
     public static class GameManager
     {
-        /// <summary>
-        /// Internal GameHost
-        /// </summary>
-        private static Game _game;
-
         /// <summary>
         /// Is running?
         /// </summary>
@@ -37,7 +33,7 @@ namespace FNAEngine2D
         //public static bool IsServer { get; set; } = true;
 
         /// <summary>
-        /// Exécution du GameHost
+        /// Entrypoint client
         /// </summary>
         public static void Run(GameObject rootGameObject, GraphicSettings graphicSettings)
         {
@@ -49,9 +45,19 @@ namespace FNAEngine2D
 
                 _isRunning = true;
 
-                _game = new Game(graphicSettings);
+                try
+                {
+                    using (Game game = new Game(graphicSettings))
+                    {
+                        game.RootGameObject = rootGameObject;
 
-                RunInternal(rootGameObject);
+                        game.Run();
+                    }
+                }
+                finally
+                {
+                    _isRunning = false;
+                }
             }
             catch (Exception ex)
             {
@@ -59,35 +65,38 @@ namespace FNAEngine2D
             }
         }
 
-
         /// <summary>
-        /// Quit the game
+        /// Entrypoint server
         /// </summary>
-        public static void Quit()
-        {
-            if(_isRunning)
-                _game.Quit();
-        }
-
-
-
-        /// <summary>
-        /// Exécution du GameHost
-        /// </summary>
-        private static void RunInternal(GameObject rootGameObject)
+        public static void RunServer(GameObject rootGameObject, GraphicSettings graphicSettings)
         {
             try
             {
-                _game.RootGameObject = rootGameObject;
+                //We dispose of the _game at the end, Run cannot be called multiple times
+                if (_isRunning)
+                    throw new InvalidOperationException("Game already running.");
 
-                _game.Run();
+                _isRunning = true;
+
+                try
+                {
+                    using (Game game = new Game(graphicSettings))
+                    {
+                        game.RootGameObject = rootGameObject;
+
+                        game.RunServer();
+                    }
+                }
+                finally
+                {
+                    _isRunning = false;
+                }
             }
-            finally
+            catch (Exception ex)
             {
-                _isRunning = false;
-                _game.Dispose();
-                
+                ErrorHelper.Show("Error: " + ex.ToString());
             }
         }
+
     }
 }

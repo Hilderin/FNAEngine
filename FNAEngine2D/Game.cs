@@ -513,6 +513,26 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Run only the server
+        /// </summary>
+        public void RunServer()
+        {
+            this.LoadContent();
+
+            GameLoop gameLoop = new GameLoop(TickServer);
+            gameLoop.RunLoop();
+        }
+
+        /// <summary>
+        /// Tick the server
+        /// </summary>
+        private void TickServer()
+        {
+            DoUpdate();
+            DoAfterUpdate();
+        }
+
+        /// <summary>
         /// Trap the Exit
         /// </summary>
         protected override void OnExiting(object sender, EventArgs args)
@@ -608,6 +628,19 @@ namespace FNAEngine2D
         protected override void Update(GameTime gameTime)
         {
 
+            DoUpdate();
+
+            //Update the things FNA handles for us underneath the hood:
+            base.Update(gameTime);
+
+            DoAfterUpdate();
+        }
+
+        /// <summary>
+        /// Do update
+        /// </summary>
+        private void DoUpdate()
+        {
             _internalTimer.Restart();
 
 
@@ -640,20 +673,22 @@ namespace FNAEngine2D
             {
                 _editModeService.ProcessUpdateEditMode();
             }
-            else if(_rootGameObject != null)
+            else if (_rootGameObject != null)
             {
                 //Call du update du current game...
                 _rootGameObject.DoUpdate();
             }
+        }
 
-            //Update the things FNA handles for us underneath the hood:
-            base.Update(gameTime);
-
+        /// <summary>
+        /// Do after the update
+        /// </summary>
+        private void DoAfterUpdate()
+        {
             //We keep the last Update time
             //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
             _gameTimeService.LastFrameUpdateTimeMilliseconds = ((decimal)_internalTimer.ElapsedTicks / Stopwatch.Frequency) * 1000;
         }
-
 
 
         /// <summary>
