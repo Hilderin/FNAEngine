@@ -22,11 +22,6 @@ namespace FNAEngine2D
     public class Game : Microsoft.Xna.Framework.Game
     {
         /// <summary>
-        /// Server loop
-        /// </summary>
-        private GameLoop _serverLoop;
-
-        /// <summary>
         /// Content Manager
         /// </summary>
         private ContentManager _contentManager;
@@ -152,15 +147,15 @@ namespace FNAEngine2D
         /// </summary>
         public Color BackgroundColor { get; set; } = Color.Gray;
 
-        /// <summary>
-        /// Indicate if we are the client
-        /// </summary>
-        public bool IsClient { get { return GameManager.IsClient; } set { GameManager.IsClient = value; } }
+        ///// <summary>
+        ///// Indicate if we are the client
+        ///// </summary>
+        //public bool IsClient { get { return GameManager.IsClient; } set { GameManager.IsClient = value; } }
 
-        /// <summary>
-        /// Indicate if we are the server
-        /// </summary>
-        public bool IsServer { get { return GameManager.IsServer; } set { GameManager.IsServer = value; } }
+        ///// <summary>
+        ///// Indicate if we are the server
+        ///// </summary>
+        //public bool IsServer { get { return GameManager.IsServer; } set { GameManager.IsServer = value; } }
 
 
         /// <summary>
@@ -624,7 +619,7 @@ namespace FNAEngine2D
             {
                 this.GameWindowHandle = WindowHelper.GetMainWindowHandle();
 
-                if (!this.IsClient)
+                if (_rootGameObject != null && !_rootGameObject.IsClient)
                     WindowHelper.HideWindow(this.GameWindowHandle);
             }
 

@@ -23,7 +23,7 @@ namespace FNAEngine2D.Tests.Communication
 
             server = new SocketServer();
 
-            server.Start(port);
+            server.Start(true, port);
 
             Socket client = new Socket(SocketType.Stream, ProtocolType.Tcp);
             client.Connect(new IPEndPoint(IPAddress.Loopback, port));
@@ -51,7 +51,7 @@ namespace FNAEngine2D.Tests.Communication
 
             SocketServer server = new SocketServer();
 
-            server.Start(port);
+            server.Start(true, port);
 
             Socket client = new Socket(SocketType.Stream, ProtocolType.Tcp);
             client.Connect(new IPEndPoint(IPAddress.Loopback, port));

@@ -246,7 +246,7 @@ namespace FNAEngine2D
             }
 
             //Only one frame?
-            if (spriteAnimation.Frames.Length == 0)
+            if (spriteAnimation.Frames.Length == 1)
             {
                 _currentFrame = 0;
                 return;

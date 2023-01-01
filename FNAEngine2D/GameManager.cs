@@ -26,15 +26,15 @@ namespace FNAEngine2D
         /// </summary>
         public static bool DevelopmentMode { get; set; } = true;
 
-        /// <summary>
-        /// Indicate if we are the client
-        /// </summary>
-        public static bool IsClient { get; set; } = true;
+        ///// <summary>
+        ///// Indicate if we are the client
+        ///// </summary>
+        //public static bool IsClient { get; set; } = true;
 
-        /// <summary>
-        /// Indicate if we are the server
-        /// </summary>
-        public static bool IsServer { get; set; } = true;
+        ///// <summary>
+        ///// Indicate if we are the server
+        ///// </summary>
+        //public static bool IsServer { get; set; } = true;
 
         /// <summary>
         /// Exécution du GameHost

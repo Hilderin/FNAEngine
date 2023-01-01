@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -72,9 +73,24 @@ namespace FNAEngine2D
         private Layers _layerMask = Layers.Layer1;
 
         /// <summary>
+        /// IsClient
+        /// </summary>
+        private bool _isClient = true;
+
+        /// <summary>
+        /// IsServer
+        /// </summary>
+        private bool _isServer = true;
+
+        /// <summary>
         /// Depth
         /// </summary>
         private float _depth = 0f;
+
+        /// <summary>
+        /// Components
+        /// </summary>
+        private Dictionary<Type, object> _components = new Dictionary<Type, object>();
 
         /// <summary>
         /// Unique ID of the GameObject
@@ -488,14 +504,57 @@ namespace FNAEngine2D
         /// </summary>
         [Browsable(false)]
         [JsonIgnore]
-        public bool IsClient { get { return _game.IsClient; } }
+        public bool IsClient
+        {
+            get { return _isClient; }
+            set
+            {
+                if (_isClient != value)
+                {
+
+                    //Update children that were on the same layer...
+                    if (this._childrens.Count > 0)
+                    {
+                        for (int index = 0; index < this._childrens.Count; index++)
+                        {
+                            this._childrens[index].IsClient = value;
+                        }
+
+                    }
+
+                    _isClient = value;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Indicate if we are the server
         /// </summary>
         [Browsable(false)]
         [JsonIgnore]
-        public bool IsServer { get { return _game.IsServer; } }
+        public bool IsServer
+        {
+            get { return _isServer; }
+            set
+            {
+                if (_isServer != value)
+                {
+
+                    //Update children that were on the same layer...
+                    if (this._childrens.Count > 0)
+                    {
+                        for (int index = 0; index < this._childrens.Count; index++)
+                        {
+                            this._childrens[index].IsServer = value;
+                        }
+
+                    }
+
+                    _isServer = value;
+                }
+            }
+        }
 
 
         /// <summary>
@@ -543,10 +602,12 @@ namespace FNAEngine2D
 
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
+            gameObject.IsClient = this.IsClient;
+            gameObject.IsServer = this.IsServer;
 
             if (_game == null)
                 _game = Game.Current;
-            
+
             //Propagate the layermask...
             if (gameObject.LayerMask == Layers.Layer1 && this.LayerMask != Layers.Layer1)
                 gameObject.LayerMask = this.LayerMask;
@@ -600,7 +661,7 @@ namespace FNAEngine2D
             //Little event OnRemoved...
             gameObject.OnRemoved();
 
-            
+
 
         }
 
@@ -644,6 +705,34 @@ namespace FNAEngine2D
             {
                 Remove(this._childrens[index]);
             }
+        }
+
+
+        /// <summary>
+        /// Add a component
+        /// </summary>
+        public T AddComponent<T>(T component)
+        {
+            _components.Add(typeof(T), component);
+            return component;
+        }
+
+        /// <summary>
+        /// Remove a component
+        /// </summary>
+        public void RemoveComponent<T>()
+        {
+            _components.Remove(typeof(T));
+        }
+
+        /// <summary>
+        /// Get a component
+        /// </summary>
+        public T GetComponent<T>()
+        {
+            if (_components.TryGetValue(typeof(T), out object component))
+                return (T)component;
+            return default(T);
         }
 
         /// <summary>
@@ -805,12 +894,44 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Loading on the client
+        /// Find a parent GameObject of a certin type
         /// </summary>
-        public virtual void LoadClient()
+        public T FindParent<T>()
         {
+            object obj = FindParent(o => typeof(T).IsAssignableFrom(o.GetType()));
+            return (T)obj;
+        }
+
+        /// <summary>
+        /// Find a parent GameObject
+        /// </summary>
+        public GameObject FindParent(Func<GameObject, bool> findFunc)
+        {
+            if (this.Parent == null)
+                return null;
+
+            if (findFunc(this.Parent))
+                return this.Parent;
+
+            return this.Parent.FindParent(findFunc);
 
         }
+
+        ///// <summary>
+        ///// Loading on the client
+        ///// </summary>
+        //public virtual void LoadClient()
+        //{
+
+        //}
+
+        ///// <summary>
+        ///// Loading on the client
+        ///// </summary>
+        //public virtual void LoadServer()
+        //{
+
+        //}
 
         /// <summary>
         /// Loading content
@@ -827,8 +948,11 @@ namespace FNAEngine2D
         {
             this.Load();
 
-            if (this.IsClient)
-                this.LoadClient();
+            //if (this.IsClient)
+            //    this.LoadClient();
+
+            //if (this.IsServer)
+            //    this.LoadServer();
 
             _loaded = true;
         }
@@ -841,13 +965,21 @@ namespace FNAEngine2D
 
         }
 
-        /// <summary>
-        /// Update logic for the client
-        /// </summary>
-        public virtual void UpdateClient()
-        {
+        ///// <summary>
+        ///// Update logic for the client
+        ///// </summary>
+        //public virtual void UpdateClient()
+        //{
 
-        }
+        //}
+
+        ///// <summary>
+        ///// Update logic for the server
+        ///// </summary>
+        //public virtual void UpdateServer()
+        //{
+
+        //}
 
         /// <summary>
         /// Logique d'update
@@ -863,10 +995,13 @@ namespace FNAEngine2D
                 GameContentManager.ReloadModifiedContent(this);
 
 
-            //Update login from the client site
-            if (this.IsClient)
-                this.UpdateClient();
-
+            ////Update logic for the client side
+            //if (this.IsClient)
+            //    this.UpdateClient();
+            
+            ////Update logic for the server side
+            //if (this.IsServer)
+            //    this.UpdateServer();
 
             this.Update();
 
@@ -899,6 +1034,11 @@ namespace FNAEngine2D
             if (!this.Enabled)
                 return;
 
+            //If not visible...
+            if (!this.Visible)
+                return;
+
+
             //Check if object must be renderer by the camera...
             if ((DrawingContext.Camera.LayerMask & this.LayerMask) != 0)
                 this.Draw();
@@ -908,8 +1048,7 @@ namespace FNAEngine2D
 
             for (int index = 0; index < this._childrens.Count; index++)
             {
-                if (this._childrens[index].Visible)
-                    this._childrens[index].DoDraw();
+                this._childrens[index].DoDraw();
             }
         }
 
