@@ -200,6 +200,8 @@ namespace FNAEngine2D
                 {
                     if (_startPosition == StartPosition.CenterBottom)
                         this.Bounds = this.Parent.Bounds.CenterBottom(this.Width, this.Height);
+                    else if (_startPosition == StartPosition.TopLeft)
+                        this.Bounds = this.Parent.Bounds;
                 }
 
 

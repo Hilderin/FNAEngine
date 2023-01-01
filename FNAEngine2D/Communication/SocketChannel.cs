@@ -54,6 +54,11 @@ namespace FNAEngine2D.Communication
         private bool _sendInProgress = false;
 
         /// <summary>
+        /// Server
+        /// </summary>
+        private SocketServer _server;
+
+        /// <summary>
         /// Socket
         /// </summary>
         private Socket _socket;
@@ -89,16 +94,22 @@ namespace FNAEngine2D.Communication
         /// </summary>
         public bool Available { get { return _readQueue.Count > 0; } }
 
+        /// <summary>
+        /// Action on error
+        /// </summary>
+        public Action<Exception> OnError { get; set; }
+
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public SocketChannel(Socket socket)
+        public SocketChannel(Socket socket, SocketServer server)
         {
             if (!socket.Connected)
                 throw new InvalidOperationException("The socket must be connected.");
 
             _socket = socket;
+            _server = server;
 
             this.State = ChannelState.Connected;
 
@@ -126,7 +137,7 @@ namespace FNAEngine2D.Communication
 
             var result = socket.BeginConnect(new IPEndPoint(IPAddress.Loopback, _port), BeginConnectCallback, new object[] { socket, actionAfterConnect });
 
-            if (result.CompletedSynchronously)
+            if (result.IsCompleted)
                 BeginConnectCallback(result);
 
         }
@@ -145,6 +156,9 @@ namespace FNAEngine2D.Communication
             _socket = null;
             this.State = ChannelState.Disconnected;
 
+            if (_server != null)
+                _server.Channels.TryTake(out var bidon);
+
         }
 
         /// <summary>
@@ -157,7 +171,7 @@ namespace FNAEngine2D.Communication
                 object[] args = (object[])ar.AsyncState;
                 Socket socket = (Socket)args[0];
                 Action actionAfterConnect = (Action)args[1];
-
+                
                 socket.EndConnect(ar);
 
                 //We are connected...
@@ -176,6 +190,9 @@ namespace FNAEngine2D.Communication
             {
                 this.Error = ex.Message;
                 this.State = ChannelState.Error;
+
+                if (OnError != null)
+                    OnError(ex);
             }
         }
 
@@ -303,12 +320,19 @@ namespace FNAEngine2D.Communication
             try
             {
                 _socket.BeginSend(_bufferSend, 0, len, SocketFlags.None, SendCallback, null);
+
+
             }
             catch (Exception ex)
             {
                 //Probably the connection was closed...
+                Disconnect();
+
                 this.Error = ex.Message;
                 this.State = ChannelState.Error;
+
+                if (OnError != null)
+                    OnError(ex);
             }
         }
 
@@ -340,8 +364,13 @@ namespace FNAEngine2D.Communication
             catch (Exception ex)
             {
                 //Probably the connection was closed...
+                Disconnect();
+
                 this.Error = ex.Message;
                 this.State = ChannelState.Error;
+
+                if (OnError != null)
+                    OnError(ex);
             }
         }
 
@@ -350,10 +379,8 @@ namespace FNAEngine2D.Communication
         /// </summary>
         private void BeginReceive()
         {
-            var result = _socket.BeginReceive(_bufferReceive, _offsetBufferReceive, BUFFER_SIZE - _offsetBufferReceive, SocketFlags.None, ReceiveCallback, null);
+            _socket.BeginReceive(_bufferReceive, _offsetBufferReceive, BUFFER_SIZE - _offsetBufferReceive, SocketFlags.None, ReceiveCallback, null);
 
-            if (result.CompletedSynchronously)
-                ReceiveCallback(result);
         }
 
         /// <summary>
@@ -363,7 +390,13 @@ namespace FNAEngine2D.Communication
         {
             try
             {
-                int read = _socket.EndReceive(ar);
+                Socket socket = _socket;
+
+                if (socket == null)
+                    //We are disconnected..
+                    return;
+
+                int read = socket.EndReceive(ar);
 
                 if (read == 0)
                 {
@@ -387,8 +420,15 @@ namespace FNAEngine2D.Communication
             catch (Exception ex)
             {
                 //Probably the connection was closed...
+                Disconnect();
+
                 this.Error = ex.Message;
                 this.State = ChannelState.Error;
+
+                if (OnError != null)
+                    OnError(ex);
+
+
             }
         }
 

@@ -79,6 +79,7 @@
     <Compile Include="GameTimeService.cs" />
     <Compile Include="GraphicSettings.cs" />
     <Compile Include="ServiceProvider.cs" />
+    <Compile Include="MultiTextureRender.cs" />
     <Compile Include="Texture2DBlender.cs" />
     <Compile Include="AverageCalculator.cs" />
     <Compile Include="Camera.cs" />

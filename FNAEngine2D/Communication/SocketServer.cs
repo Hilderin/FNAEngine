@@ -25,6 +25,11 @@ namespace FNAEngine2D.Communication
         public ConcurrentQueue<SocketChannel> NewChannels { get; private set; } = new ConcurrentQueue<SocketChannel>();
 
         /// <summary>
+        /// Current connexions
+        /// </summary>
+        public ConcurrentBag<SocketChannel> Channels { get; private set; } = new ConcurrentBag<SocketChannel>();
+
+        /// <summary>
         /// Start the server
         /// </summary>
         public void Start(bool localOnly, int port)
@@ -50,6 +55,15 @@ namespace FNAEngine2D.Communication
                 _listener = null;
             }
 
+            foreach (SocketChannel channel in this.Channels)
+            {
+                try
+                {
+                    channel.Disconnect();
+                }
+                catch { }
+            }
+
         }
 
         /// <summary>
@@ -64,7 +78,9 @@ namespace FNAEngine2D.Communication
 
             _listener.BeginAccept(BeginAcceptCallback, null);
 
-            NewChannels.Enqueue(new SocketChannel(clientSocket));
+            SocketChannel socketChannel = new SocketChannel(clientSocket, this);
+            this.Channels.Add(socketChannel);
+            NewChannels.Enqueue(socketChannel);
 
         }
 

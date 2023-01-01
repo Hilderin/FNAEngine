@@ -27,7 +27,7 @@ namespace FNAEngine2D.Tests.Communication
 
             Socket client = new Socket(SocketType.Stream, ProtocolType.Tcp);
             client.Connect(new IPEndPoint(IPAddress.Loopback, port));
-            clientChannel = new SocketChannel(client);
+            clientChannel = new SocketChannel(client, null);
 
             Assert.IsTrue(client.Connected);
 

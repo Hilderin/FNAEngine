@@ -14,8 +14,6 @@ namespace FNAEngine2D
     /// </summary>
     public class SpriteAnimator<T> : GameObject where T : System.Enum
     {
-
-
         /// <summary>
         /// Animations of the character
         /// </summary>
@@ -216,7 +214,7 @@ namespace FNAEngine2D
             {
                 T characterAnimation = (T)anim;
 
-                string assetName = Path.Combine("animations", characterAnimation.ToString());
+                string assetName = Path.Combine(this.AnimationFolder, characterAnimation.ToString());
 
                 
                 SpriteAnimationRender spriteAnimationRender = new SpriteAnimationRender(assetName, _loop, _playOnStart, _hideOnStop);

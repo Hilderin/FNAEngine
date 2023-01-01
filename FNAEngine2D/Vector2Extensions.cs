@@ -60,5 +60,13 @@ namespace FNAEngine2D
             return VectorHelper.ToAngle(vector);
         }
 
+        /// <summary>
+        /// Get the distance between the Vector and another vector
+        /// </summary>
+        public static float Distance(this Vector2 vector, Vector2 target)
+        {
+            return Vector2.Distance(vector, target);
+        }
+
     }
 }

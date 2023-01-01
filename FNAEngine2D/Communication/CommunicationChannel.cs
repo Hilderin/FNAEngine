@@ -73,5 +73,10 @@ namespace FNAEngine2D.Communication
         /// Wait and read the next data
         /// </summary>
         T WaitNext<T>();
+
+        /// <summary>
+        /// Action on error
+        /// </summary>
+        Action<Exception> OnError { get; set; }
     }
 }

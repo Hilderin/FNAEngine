@@ -319,6 +319,16 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Center vector
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public Vector2 Center
+        {
+            get { return new Vector2(this.CenterX, this.CenterY); }
+        }
+
+        /// <summary>
         /// Center en X
         /// </summary>
         [Browsable(false)]

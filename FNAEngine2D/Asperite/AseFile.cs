@@ -161,6 +161,9 @@ namespace FNAEngine2D.Aseprite
             return textures;
         }
 
+        /// <summary>
+        /// Get the texture for one frame
+        /// </summary>
         public Texture2D GetFrame(int index)
         {
             Frame frame = Frames[index];
