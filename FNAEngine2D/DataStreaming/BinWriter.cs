@@ -36,7 +36,14 @@ namespace FNAEngine2D
         /// </summary>
         private static JsonSerializer _serializer = new JsonSerializer();
 
+        /// <summary>
+        /// Current buffer
+        /// </summary>
         private byte[] _buffer;
+
+        /// <summary>
+        /// Current position in the buffer
+        /// </summary>
         private int _position = 0;
 
         /// <summary>
@@ -118,6 +125,20 @@ namespace FNAEngine2D
             _position += _lenShort;
         }
 
+        /// <summary>
+        /// Write an UInt16
+        /// </summary>
+        public unsafe void Write(UInt16 value)
+        {
+
+            fixed (byte* pointer = &_buffer[_position])
+            {
+                *((ushort*)pointer) = value;
+            }
+
+            _position += _lenShort;
+        }
+
 
         /// <summary>
         /// Write an Int32
@@ -127,6 +148,19 @@ namespace FNAEngine2D
             fixed (byte* pointer = &_buffer[_position])
             {
                 *((int*)pointer) = value;
+            }
+
+            _position += _lenInt32;
+        }
+
+        /// <summary>
+        /// Write an UInt32
+        /// </summary>
+        public unsafe void Write(UInt32 value)
+        {
+            fixed (byte* pointer = &_buffer[_position])
+            {
+                *((uint*)pointer) = value;
             }
 
             _position += _lenInt32;
@@ -144,6 +178,20 @@ namespace FNAEngine2D
 
             _position += _lenInt64;
         }
+
+        /// <summary>
+        /// Write an UInt64
+        /// </summary>
+        public unsafe void Write(UInt64 value)
+        {
+            fixed (byte* pointer = &_buffer[_position])
+            {
+                *((ulong*)pointer) = value;
+            }
+
+            _position += _lenInt64;
+        }
+
 
         /// <summary>
         /// Write a char
@@ -306,6 +354,14 @@ namespace FNAEngine2D
         {
             Write(point.X);
             Write(point.Y);
+        }
+
+        /// <summary>
+        /// Write a Color
+        /// </summary>
+        public void Write(Color color)
+        {
+            Write(color.PackedValue);
         }
 
         /// <summary>

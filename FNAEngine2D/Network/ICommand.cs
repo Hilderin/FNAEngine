@@ -6,17 +6,11 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D.Network
 {
-    public interface ICommand
+    /// <summary>
+    /// Command basic
+    /// </summary>
+    public interface ICommand: INetworkSerializable
     {
-        /// <summary>
-        /// Serialization of the command
-        /// </summary>
-        void Serialize(BinWriter writer);
-
-        /// <summary>
-        /// Deserialization of the command
-        /// </summary>
-        void Deserialize(BinReader reader);
-
+        
     }
 }

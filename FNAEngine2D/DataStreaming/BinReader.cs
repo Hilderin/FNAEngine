@@ -20,9 +20,9 @@ namespace FNAEngine2D
         private static readonly int _lenInt64 = sizeof(Int64);
         private static readonly int _lenChar = sizeof(char);
         private static readonly int _lenGuid;
-        private static readonly int _lenDouble = 8;
-        private static readonly int _lenDecimal = 16;
-        private static readonly int _lenSingle = 4;
+        //private static readonly int _lenDouble = 8;
+        //private static readonly int _lenDecimal = 16;
+        //private static readonly int _lenSingle = 4;
 
         private static readonly Encoding _encoding = System.Text.Encoding.UTF8;
 
@@ -31,9 +31,21 @@ namespace FNAEngine2D
         /// </summary>
         private static JsonSerializer _serializer = new JsonSerializer();
 
+        /// <summary>
+        /// Current buffer
+        /// </summary>
         private byte[] _buffer;
-        private byte[] _bufferGuid;
+
+        /// <summary>
+        /// Current position in the buffer
+        /// </summary>
         private int _position = 0;
+        
+        /// <summary>
+        /// Buffer to serialize guid if needed
+        /// </summary>
+        private byte[] _bufferGuid;
+        
 
         /// <summary>
         /// Position in the array
@@ -126,6 +138,18 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Read an UInt16
+        /// </summary>
+        public unsafe UInt16 ReadUInt16()
+        {
+            fixed (byte* pointer = &_buffer[_position])
+            {
+                _position += _lenShort;
+                return *((ushort*)pointer);
+            }
+        }
+
+        /// <summary>
         /// Read an Int32
         /// </summary>
         public unsafe Int32 ReadInt32()
@@ -139,6 +163,19 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Read an UInt32
+        /// </summary>
+        public unsafe UInt32 ReadUInt32()
+        {
+            fixed (byte* pointer = &_buffer[_position])
+            {
+                _position += _lenInt32;
+                return *((uint*)pointer);
+            }
+
+        }
+
+        /// <summary>
         /// Read an Int64
         /// </summary>
         public unsafe Int64 ReadInt64()
@@ -147,6 +184,19 @@ namespace FNAEngine2D
             {
                 _position += _lenInt64;
                 return *((long*)pointer);
+            }
+
+        }
+
+        /// <summary>
+        /// Read an UInt64
+        /// </summary>
+        public unsafe UInt64 ReadUInt64()
+        {
+            fixed (byte* pointer = &_buffer[_position])
+            {
+                _position += _lenInt64;
+                return *((ulong*)pointer);
             }
 
         }
@@ -304,6 +354,15 @@ namespace FNAEngine2D
         public Point ReadPoint()
         {
             return new Point(ReadInt32(), ReadInt32());
+        }
+
+        /// <summary>
+        /// Read a Color
+        /// </summary>
+        public Color ReadColor()
+        {
+            uint packedValue = ReadUInt32();
+            return new Color((byte)packedValue, (byte)(packedValue >> 8), (byte)(packedValue >> 16), (byte)(packedValue >> 24));
         }
 
         /// <summary>

@@ -27,10 +27,10 @@ namespace FNAEngine2D.Network
         /// </summary>
         private static Type[] _commandsPerNumber = new Type[ushort.MaxValue];
 
-        /// <summary>
-        /// Serializer
-        /// </summary>
-        private static JsonSerializer _serializer = new JsonSerializer();
+        ///// <summary>
+        ///// Serializer
+        ///// </summary>
+        //private static JsonSerializer _serializer = new JsonSerializer();
 
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace FNAEngine2D.Network
                 if (commandAttribute != null)
                 {
                     if (_commandsPerNumber[commandAttribute.Number] != null)
-                        throw new InvalidOperationException("Multiple command with the same number: " + type.FullName + " and " + _commandsPerNumber[commandAttribute.Number].FullName);
+                        throw new InvalidOperationException("Multiple commands with the same number: " + type.FullName + " and " + _commandsPerNumber[commandAttribute.Number].FullName);
 
                     _commandsPerNumber[commandAttribute.Number] = type;
                 }

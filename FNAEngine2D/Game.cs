@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Security.Permissions;
+using FNAEngine2D.Network;
 
 namespace FNAEngine2D
 {
@@ -146,6 +147,11 @@ namespace FNAEngine2D
         /// Background color
         /// </summary>
         public Color BackgroundColor { get; set; } = Color.Gray;
+
+        /// <summary>
+        /// Run in a dedicated server mode
+        /// </summary>
+        public bool IsDedicatedServer { get; private set; }
 
         ///// <summary>
         ///// Indicate if we are the client
@@ -517,6 +523,8 @@ namespace FNAEngine2D
         /// </summary>
         public void RunServer()
         {
+            this.IsDedicatedServer = true;
+
             this.LoadContent();
 
             GameLoop gameLoop = new GameLoop(TickServer);
@@ -528,7 +536,14 @@ namespace FNAEngine2D
         /// </summary>
         private void TickServer()
         {
-            DoUpdate();
+            _internalTimer.Restart();
+
+            if (_rootGameObject != null)
+            {
+                //Call du update du current game...
+                _rootGameObject.DoUpdate();
+            }
+
             DoAfterUpdate();
         }
 
@@ -642,7 +657,6 @@ namespace FNAEngine2D
         private void DoUpdate()
         {
             _internalTimer.Restart();
-
 
             //Update des inputs...
             _input.Update();

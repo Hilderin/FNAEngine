@@ -8,19 +8,19 @@ namespace FNAEngine2D.Network
 {
 
     /// <summary>
-    /// Command attribute to specify the unique number of an command
+    /// NetworkObject attribute to specify the unique number of an object
     /// </summary>
-    public class CommandAttribute: Attribute
+    public class NetworkObjectAttribute : Attribute
     {
         /// <summary>
-        /// Command Number
+        /// Object Number
         /// </summary>
         public ushort Number { get; private set; }
 
         /// <summary>
-        /// Command number
+        /// Object number
         /// </summary>
-        public CommandAttribute(ushort number)
+        public NetworkObjectAttribute(ushort number)
         {
             this.Number = number;
         }

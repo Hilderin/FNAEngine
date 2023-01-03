@@ -3,6 +3,7 @@ using FNAEngine2D.Network.Commands;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Concurrent;
+using System.Reflection;
 using System.Threading;
 
 namespace FNAEngine2D.Network
@@ -207,12 +208,12 @@ namespace FNAEngine2D.Network
                         {
                             //Oh, this is the local player object...
                             this.Player = cwgo.GameObject;
-                            SendCommand(new SpawnPlayerObjectCommand() { Content = cwgo.GameObject.GameContentManager.GetGameContentObject(cwgo.GameObject) });
+                            SendCommand(GetSpawnCommand(cwgo.GameObject, true));
                         }
                         else
                         {
                             //Normal object...
-                            SendCommand(new SpawnObjectCommand() { Content = cwgo.GameObject.GameContentManager.GetGameContentObject(cwgo.GameObject) });
+                            SendCommand(GetSpawnCommand(cwgo.GameObject, false));
                         }
 
                         MovementComponent serverMovement = cwgo.GameObject.GetComponent<MovementComponent>();
@@ -222,6 +223,18 @@ namespace FNAEngine2D.Network
                 }
                 cwgo.Version = newVersion;
             }
+        }
+
+        /// <summary>
+        /// Get the command for a gameobject
+        /// </summary>
+        private IClientCommand GetSpawnCommand(NetworkGameObject gameObject, bool isLocalPlayer)
+        {
+            if (isLocalPlayer)
+                return new SpawnPlayerObjectCommand() { GameObject = gameObject };
+            else
+                return new SpawnObjectCommand() { GameObject = gameObject };
+
         }
 
 

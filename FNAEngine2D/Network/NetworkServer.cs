@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace FNAEngine2D.Network
@@ -282,6 +283,12 @@ namespace FNAEngine2D.Network
         /// </summary>
         public void SpawnObject(NetworkGameObject gameObject, ClientWorker localWorker = null)
         {
+            NetworkObjectAttribute attribute = gameObject.GetType().GetCustomAttribute<NetworkObjectAttribute>();
+
+            if (attribute == null)
+                throw new InvalidOperationException("Invalid NetworkGameObject to spawn, no NetworkObject attribute found on " + gameObject.GetType().FullName);
+
+
             lock (_gameObjects)
             {
                 _gameObjects[gameObject.ID] = gameObject;
