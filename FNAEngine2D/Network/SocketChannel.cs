@@ -26,7 +26,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Buffer size
         /// </summary>
-        private const int BUFFER_SIZE = short.MaxValue;
+        private const int BUFFER_SIZE = ushort.MaxValue;
 
         /// <summary>
         /// Header size

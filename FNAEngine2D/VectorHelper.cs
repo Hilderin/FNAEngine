@@ -12,6 +12,11 @@ namespace FNAEngine2D
     public static class VectorHelper
     {
         /// <summary>
+        /// Vector2 NaN
+        /// </summary>
+        public static Vector2 NaN = VectorHelper.Normalize(0, 0);
+
+        /// <summary>
         /// Permet de trouver le centre
         /// </summary>
         public static Vector2 Center(Point size, Point objectSize)

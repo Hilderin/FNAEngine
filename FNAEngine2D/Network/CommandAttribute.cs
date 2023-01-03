@@ -15,12 +15,12 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Command Number
         /// </summary>
-        public short Number { get; private set; }
+        public ushort Number { get; private set; }
 
         /// <summary>
         /// Command number
         /// </summary>
-        public CommandAttribute(short number)
+        public CommandAttribute(ushort number)
         {
             this.Number = number;
         }

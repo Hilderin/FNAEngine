@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using SharpFont.Cache;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,7 +21,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Textures
         /// </summary>
-        private Dictionary<T, Content<Texture2D>> _textures = new Dictionary<T, Content<Texture2D>>();
+        private Dictionary<T, TextureInfo> _textures = new Dictionary<T, TextureInfo>();
+
 
         /// <summary>
         /// Texture folder
@@ -44,7 +47,7 @@ namespace FNAEngine2D
         /// </summary>
         [JsonIgnore]
         [Browsable(false)]
-        public Texture2D CurrentTexture { get { return _textures[this.CurrentValue].Data; } }
+        public Texture2D CurrentTexture { get { return _textures[this.CurrentValue].Texture.Data; } }
 
         /// <summary>
         /// Constructor
@@ -76,8 +79,19 @@ namespace FNAEngine2D
         /// </summary>
         public override void Draw()
         {
-            DrawingContext.Draw(_textures[this.CurrentValue].Data, this.Bounds, null, this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+            TextureInfo textureInfo = _textures[this.CurrentValue];
+            DrawingContext.Draw(textureInfo.Texture.Data, this.Location, null, this.Color, 0f, Vector2.Zero, textureInfo.Scale, SpriteEffects.None, this.Depth);
         }
+
+
+        /// <summary>
+        /// On resized...
+        /// </summary>
+        public override void OnResized()
+        {
+            RecalculateScale();
+        }
+
 
         /// <summary>
         /// Load textures
@@ -97,10 +111,38 @@ namespace FNAEngine2D
                 if (this.Height == 0)
                     this.Height = texture.Data.Height;
 
-                _textures[textureEnum] = texture;
+                TextureInfo textureInfo = new TextureInfo()
+                {
+                    Texture = texture
+                };
+                _textures[textureEnum] = textureInfo;
+            }
+
+            RecalculateScale();
+        }
+
+        /// <summary>
+        /// Recalculate the scale
+        /// </summary>
+        private void RecalculateScale()
+        {
+            foreach (TextureInfo textureInfo in _textures.Values)
+            {
+                if (textureInfo.Texture.Data.Width == 0 || textureInfo.Texture.Data.Height == 0)
+                    textureInfo.Scale = Vector2.Zero;
+                else
+                    textureInfo.Scale = new Vector2(this.Width / textureInfo.Texture.Data.Width, this.Height / textureInfo.Texture.Data.Height);
             }
         }
 
+        /// <summary>
+        /// Info on the texture in memory
+        /// </summary>
+        private class TextureInfo
+        {
+            public Content<Texture2D> Texture;
+            public Vector2 Scale;
+        }
 
     }
 }

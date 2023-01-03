@@ -203,7 +203,13 @@ namespace FNAEngine2D
             set
             {
                 TranslateTo(value.GetLocation());
-                _size = value.GetSize();
+
+                Vector2 newSize = value.GetSize();
+                if (_size != newSize)
+                {
+                    _size = newSize;
+                    OnResized();
+                }
             }
         }
 
@@ -298,7 +304,14 @@ namespace FNAEngine2D
         public Vector2 Size
         {
             get { return _size; }
-            set { _size = value; }
+            set
+            {
+                if (_size != value)
+                {
+                    _size = value;
+                    OnResized();
+                }
+            }
 
         }
 
@@ -946,6 +959,13 @@ namespace FNAEngine2D
 
         }
 
+        /// <summary>
+        /// Called when the game object is resized
+        /// </summary>
+        public virtual void OnResized()
+        {
+
+        }
 
         /// <summary>
         /// Destruction du game object
@@ -1052,6 +1072,8 @@ namespace FNAEngine2D
         {
             _size.X += offsetX;
 
+            OnResized();
+
             if (this._childrens.Count == 0)
                 return;
 
@@ -1067,6 +1089,7 @@ namespace FNAEngine2D
         {
             _size.Y += offsetY;
 
+            OnResized();
 
             if (this._childrens.Count == 0)
                 return;
@@ -1085,6 +1108,7 @@ namespace FNAEngine2D
             _size.X += offsetX;
             _size.Y += offsetY;
 
+            OnResized();
 
             if (this._childrens.Count == 0)
                 return;

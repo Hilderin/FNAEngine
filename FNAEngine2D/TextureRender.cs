@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpFont.Cache;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +17,12 @@ namespace FNAEngine2D
         /// Texture à renderer
         /// </summary>
         private Content<Texture2D> _texture;
+
+        /// <summary>
+        /// Scale
+        /// </summary>
+        private Vector2 _scale = Vector2.One;
+
 
         /// <summary>
         /// TextureName
@@ -79,6 +86,31 @@ namespace FNAEngine2D
                     this.Width = _texture.Data.Width;
                 if (this.Height == 0)
                     this.Height = _texture.Data.Height;
+
+                RecalculateScale();
+            }
+        }
+
+        /// <summary>
+        /// On resized...
+        /// </summary>
+        public override void OnResized()
+        {
+            RecalculateScale();
+        }
+
+        /// <summary>
+        /// Recalculate the scale
+        /// </summary>
+        private void RecalculateScale()
+        {
+            if (_texture == null || _texture.Data.Width == 0 || _texture.Data.Height == 0)
+            {
+                _scale = Vector2.Zero;
+            }
+            else
+            {
+                _scale = new Vector2(this.Width / _texture.Data.Width, this.Height / _texture.Data.Height);
             }
         }
 
@@ -90,7 +122,7 @@ namespace FNAEngine2D
             if (_texture == null)
                 return;
 
-            DrawingContext.Draw(_texture.Data, this.Bounds, null, this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+            DrawingContext.Draw(_texture.Data, this.Location, null, this.Color, 0f, Vector2.Zero, _scale, SpriteEffects.None, this.Depth);
         }
 
     }

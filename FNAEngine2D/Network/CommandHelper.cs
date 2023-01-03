@@ -25,7 +25,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Command per number
         /// </summary>
-        private static Type[] _commandsPerNumber = new Type[short.MaxValue];
+        private static Type[] _commandsPerNumber = new Type[ushort.MaxValue];
 
         /// <summary>
         /// Serializer
@@ -93,7 +93,7 @@ namespace FNAEngine2D.Network
             //Structure of the data...
             //2 bytes: Command number
             //Command serialized
-            short commandNumber = (short)((buffer[1 + offset] << 8) + buffer[offset]);
+            ushort commandNumber = (ushort)((buffer[1 + offset] << 8) + buffer[offset]);
 
             if (_commandsPerNumber[commandNumber] == null)
                 throw new InvalidOperationException("Unknown command number: " + commandNumber);

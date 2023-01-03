@@ -33,11 +33,6 @@ namespace FNAEngine2D.Network
         private bool _shouldInvokeConnected = false;
 
         /// <summary>
-        /// Client ready?
-        /// </summary>
-        private bool _ready = false;
-
-        /// <summary>
         /// Current Network client
         /// </summary>
         public static NetworkClient Current { get; private set; }
@@ -81,7 +76,7 @@ namespace FNAEngine2D.Network
             Logguer.Info("New NetworkClient " + this.ID);
 
             //Creation of the communication channel
-            if (this.PortNumber <= 0)
+            if (this.RootGameObject.Find<NetworkServer>() != null)
                 _channel = new InProcessChannel();
             else
                 _channel = new SocketChannel(this.PortNumber);
@@ -96,8 +91,6 @@ namespace FNAEngine2D.Network
         public override void OnAdded()
         {
             Current = this;
-
-            _ready = false;
 
             Logguer.Info("Client connecting...");
             _channel.Connect(AfterConnect);
@@ -187,14 +180,6 @@ namespace FNAEngine2D.Network
             Logguer.Info("Command sent: " + command.ToString());
 
             _channel.Send(command);
-        }
-
-        /// <summary>
-        /// The client is ready!
-        /// </summary>
-        internal void SetReadyState()
-        {
-            _ready = true;
         }
 
         /// <summary>

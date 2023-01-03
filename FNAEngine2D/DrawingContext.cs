@@ -128,7 +128,7 @@ namespace FNAEngine2D
                 ResizeDrawingsArray();
             }
 
-            _drawings[_drawIndex].drawType = DrawType.TextureDestinationRectangle;
+            _drawings[_drawIndex].drawType = DrawType.TextureVector2;
             _drawings[_drawIndex].drawIndex = _drawIndex;
             _drawings[_drawIndex].texture = texture;
 			_drawings[_drawIndex].position = position;

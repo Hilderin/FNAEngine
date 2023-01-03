@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SharpFont;
+using SharpFont.Cache;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +18,12 @@ namespace FNAEngine2D
         /// Sprite
         /// </summary>
         private Content<Sprite> _sprite;
-        
+
+        /// <summary>
+        /// Scale
+        /// </summary>
+        private Vector2 _scale = Vector2.One;
+
         /// <summary>
         /// Information on the sprite
         /// </summary>
@@ -73,8 +80,34 @@ namespace FNAEngine2D
                     this.Width = _sprite.Data.ColumnScreenWidth;
                 if (this.Height == 0)
                     this.Height = _sprite.Data.RowScreenHeight;
+
+                RecalculateScale();
             }
 
+        }
+
+        /// <summary>
+        /// On resized...
+        /// </summary>
+        public override void OnResized()
+        {
+            RecalculateScale();
+        }
+
+
+        /// <summary>
+        /// Recalculate the scale
+        /// </summary>
+        private void RecalculateScale()
+        {
+            if (_sprite == null || _sprite.Data.Texture == null || _sprite.Data.ColumnScreenWidth == 0 || _sprite.Data.RowScreenHeight == 0)
+            {
+                _scale = Vector2.Zero;
+            }
+            else
+            {
+                _scale = new Vector2(this.Width / _sprite.Data.ColumnScreenWidth, this.Height / _sprite.Data.RowScreenHeight);
+            }
         }
 
         /// <summary>
@@ -87,7 +120,7 @@ namespace FNAEngine2D
 
             Sprite sprite = _sprite.Data;
 
-            DrawingContext.Draw(sprite.Texture, this.Bounds, new Rectangle(this.ColumnIndex * sprite.ColumnWidth, this.RowIndex * sprite.RowHeight, sprite.ColumnWidth, sprite.RowHeight), this.Color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+            DrawingContext.Draw(sprite.Texture, this.Location, new Rectangle(this.ColumnIndex * sprite.ColumnWidth, this.RowIndex * sprite.RowHeight, sprite.ColumnWidth, sprite.RowHeight), this.Color, 0f, Vector2.Zero, _scale, SpriteEffects.None, this.Depth);
 
         }
 

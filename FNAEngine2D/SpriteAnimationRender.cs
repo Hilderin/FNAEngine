@@ -35,9 +35,19 @@ namespace FNAEngine2D
         private Content<SpriteAnimation> _spriteAnimation;
 
         /// <summary>
+        /// Bounds of the sprites
+        /// </summary>
+        private Rectangle[] _frameBounds;
+
+        /// <summary>
         /// Play the animation on start
         /// </summary>
         private bool _playOnStart = true;
+
+        /// <summary>
+        /// Scale
+        /// </summary>
+        private Vector2 _scale = Vector2.One;
 
         /// <summary>
         /// StartPosition
@@ -201,14 +211,22 @@ namespace FNAEngine2D
                     if (_startPosition == StartPosition.CenterBottom)
                         this.Bounds = this.Parent.Bounds.CenterBottom(this.Width, this.Height);
                     else if (_startPosition == StartPosition.TopLeft)
-                        this.Bounds = this.Parent.Bounds;
+                        this.Location = this.Parent.Location;
                 }
 
+                RecalculateScale();
 
                 if (_spriteAnimation.Data.Frames.Length == 0 || _spriteAnimation.Data.Sprite == null || _spriteAnimation.Data.Sprite.Texture == null)
                 {
                     _currentFrame = -1;
                     return;
+                }
+
+                //Initisalisation of the rectangles for each frames...
+                _frameBounds = new Rectangle[_spriteAnimation.Data.Frames.Length];
+                for (int index = 0; index < _spriteAnimation.Data.Frames.Length; index++)
+                {
+                    _frameBounds[index] = new Rectangle(_spriteAnimation.Data.Frames[index].ColumnIndex * _spriteAnimation.Data.Sprite.ColumnWidth, _spriteAnimation.Data.Frames[index].RowIndex * _spriteAnimation.Data.Sprite.RowHeight, _spriteAnimation.Data.Sprite.ColumnWidth, _spriteAnimation.Data.Sprite.RowHeight);
                 }
 
                 if (!PlayOnStart)
@@ -220,6 +238,31 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// On resized...
+        /// </summary>
+        public override void OnResized()
+        {
+            RecalculateScale();
+        }
+
+
+        /// <summary>
+        /// Recalculate the scale
+        /// </summary>
+        private void RecalculateScale()
+        {
+            if (_spriteAnimation == null || _spriteAnimation.Data.Sprite == null || _spriteAnimation.Data.Sprite.ColumnScreenWidth == 0 || _spriteAnimation.Data.Sprite.RowScreenHeight == 0)
+            {
+                _scale = Vector2.Zero;
+            }
+            else
+            {
+                _scale = new Vector2(this.Width / _spriteAnimation.Data.Sprite.ColumnScreenWidth, this.Height / _spriteAnimation.Data.Sprite.RowScreenHeight);
+            }
+        }
+
+
+        /// <summary>
         /// Update
         /// </summary>
         public override void Update()
@@ -227,7 +270,6 @@ namespace FNAEngine2D
             UpdateInternal(this.ElapsedGameTimeMilliseconds);
 
         }
-
 
         /// <summary>
         /// Update
@@ -306,8 +348,8 @@ namespace FNAEngine2D
             if (InvertedX)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Bounds, new Rectangle(spriteAnimation.Frames[_currentFrame].ColumnIndex * spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Frames[_currentFrame].RowIndex * spriteAnimation.Sprite.RowHeight, spriteAnimation.Sprite.ColumnWidth, spriteAnimation.Sprite.RowHeight), this.Color, 0f, Vector2.Zero, spriteEffects, this.Depth);
-            
+            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Location, _frameBounds[_currentFrame], this.Color, 0f, Vector2.Zero, _scale, spriteEffects, this.Depth);
+
         }
 
     }

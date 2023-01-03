@@ -53,15 +53,15 @@ namespace FNAEngine2D
             get { return _server != null; }
         }
 
-        /// <summary>
-        /// Indicate if we are the client and the server (host mode)
-        /// </summary>
-        [Browsable(false)]
-        [JsonIgnore]
-        public bool IsClientAndServer
-        {
-            get { return _client != null && _server != null; }
-        }
+        ///// <summary>
+        ///// Indicate if we are the client and the server (host mode)
+        ///// </summary>
+        //[Browsable(false)]
+        //[JsonIgnore]
+        //public bool IsClientAndServer
+        //{
+        //    get { return _client != null && _server != null; }
+        //}
 
 
         /// <summary>

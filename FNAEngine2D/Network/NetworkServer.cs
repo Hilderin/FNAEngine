@@ -48,16 +48,6 @@ namespace FNAEngine2D.Network
         /// </summary>
         private ConcurrentDictionary<Guid, NetworkGameObject> _gameObjects = new ConcurrentDictionary<Guid, NetworkGameObject>();
 
-        ///// <summary>
-        ///// Dictionary of the last location of the game objects on the server
-        ///// </summary>
-        //private Dictionary<Guid, Vector2> _lastLocationGameObjects = new Dictionary<Guid, Vector2>();
-
-        /// <summary>
-        /// Dictionary of the last saved of the game objects on the server
-        /// </summary>
-        private Dictionary<Guid, int> _lastSavedVersionGameObjects = new Dictionary<Guid, int>();
-
         /// <summary>
         /// List of the current game objects
         /// </summary>
@@ -67,22 +57,6 @@ namespace FNAEngine2D.Network
         /// In Process New Connections
         /// </summary>
         public ConcurrentQueue<InProcessChannel> _inProcessNewConnections = new ConcurrentQueue<InProcessChannel>();
-
-
-        ///// <summary>
-        ///// Indicate if a game object has been added or removed
-        ///// </summary>
-        //private bool _gameObjectAddedRemoved = false;
-
-        ///// <summary>
-        ///// Elapsed time since last update locations
-        ///// </summary>
-        //private double _elapsedUpdateLocationsMilliseconds = 0;
-
-        /// <summary>
-        /// Elapsed time since last save
-        /// </summary>
-        private double _elapsedSaveMilliseconds = 0;
 
         /// <summary>
         /// Objects to add
@@ -116,10 +90,10 @@ namespace FNAEngine2D.Network
         /// </summary>
         public ServerMode ServerMode { get; set; }
 
-        /// <summary>
-        /// Action on new connection
-        /// </summary>
-        public Action<ClientWorker> OnNewConnection { get; set; }
+        ///// <summary>
+        ///// Action on new connection
+        ///// </summary>
+        //public Action<ClientWorker> OnNewConnection { get; set; }
 
         /// <summary>
         /// Creation of the NetworkServer
@@ -184,23 +158,20 @@ namespace FNAEngine2D.Network
         {
             try
             {
-                //_elapsedUpdateLocationsMilliseconds += this.ElapsedGameTimeMilliseconds;
-                _elapsedSaveMilliseconds += this.ElapsedGameTimeMilliseconds;
+                ////Execution of the OnNewConnection event
+                //while (_newConnections.Count > 0)
+                //{
+                //    ClientWorker clientWorker;
+                //    lock (_newConnections)
+                //    {
+                //        clientWorker = _newConnections.Dequeue();
+                //    }
+
+                //    if (OnNewConnection != null)
+                //        OnNewConnection(clientWorker);
 
 
-                while (_newConnections.Count > 0)
-                {
-                    ClientWorker clientWorker;
-                    lock (_newConnections)
-                    {
-                        clientWorker = _newConnections.Dequeue();
-                    }
-
-                    if (OnNewConnection != null)
-                        OnNewConnection(clientWorker);
-
-
-                }
+                //}
 
 
                 //Add object in the scene...
@@ -318,7 +289,7 @@ namespace FNAEngine2D.Network
                 //_gameObjectAddedRemoved = true;
             }
 
-            //
+            //Only in dedicated server mode we need to add the objet on the scene, otherwise, le object will be added twice!
             if (this.ServerMode == ServerMode.Dedicated)
             {
                 lock (_objectsToAdd)
@@ -341,6 +312,7 @@ namespace FNAEngine2D.Network
         {
             foreach (ClientWorker clientWorker in _clients)
             {
+                //Only if worker is ready and if it's not an in process channel, meaning we are working in Host mode or in Standalone mode
                 if(clientWorker.IsReady && clientWorker != clientToSkip && !(clientWorker.Channel is InProcessChannel))
                     clientWorker.SendCommand(command);
             }
@@ -417,7 +389,7 @@ namespace FNAEngine2D.Network
         }
 
         /// <summary>
-        /// Connection in process
+        /// Connection in process for the InProcessChannel
         /// </summary>
         internal void ConnectInProcess(InProcessChannel channel)
         {

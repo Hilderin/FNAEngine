@@ -26,6 +26,12 @@ namespace FNAEngine2D
         private Content<Texture2D> _editModeOverlayTexture;
 
         /// <summary>
+        /// Scale
+        /// </summary>
+        private Vector2 _scale = Vector2.One;
+
+
+        /// <summary>
         /// Information on tileset
         /// </summary>
         [EditorAttribute(typeof(TileSetUITypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -87,6 +93,8 @@ namespace FNAEngine2D
                 }
             }
 
+            _scale = new Vector2((float)this.TileSet.TileScreenSize / this.TileSet.TileSize, (float)this.TileSet.TileScreenSize / this.TileSet.TileSize);
+
         }
 
 
@@ -129,10 +137,10 @@ namespace FNAEngine2D
                     {
                         if (column[y] != null)
                         {
-                            DrawingContext.Draw(texture, new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), color, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+                            DrawingContext.Draw(texture, new Vector2(posX, posY), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), color, 0f, Vector2.Zero, _scale, SpriteEffects.None, this.Depth);
 
                             if(editMode)
-                                DrawingContext.Draw(_editModeOverlayTexture.Data, new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), _editModeOverlayColor, 0f, Vector2.Zero, SpriteEffects.None, this.Depth);
+                                DrawingContext.Draw(_editModeOverlayTexture.Data, new Vector2(posX, posY), new Rectangle(column[y].Col * tileset.TileSize, column[y].Row * tileset.TileSize, tileset.TileSize, tileset.TileSize), _editModeOverlayColor, 0f, Vector2.Zero, _scale, SpriteEffects.None, this.Depth);
 
                         }
 
