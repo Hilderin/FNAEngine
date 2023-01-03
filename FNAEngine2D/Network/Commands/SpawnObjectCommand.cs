@@ -1,12 +1,28 @@
 ﻿namespace FNAEngine2D.Network.Commands
 {
-    [Command(101)]
+    [Command(65501)]
     public class SpawnObjectCommand: IClientCommand
     {
         /// <summary>
         /// Content data for the game object to spawn
         /// </summary>
         public GameContentObject Content { get; set; }
+
+        /// <summary>
+        /// Serialize
+        /// </summary>
+        public void Serialize(BinWriter writer)
+        {
+            writer.WriteObject(Content);
+        }
+
+        /// <summary>
+        /// Deserialize
+        /// </summary>
+        public void Deserialize(BinReader reader)
+        {
+            this.Content = reader.ReadObject<GameContentObject>();
+        }
 
         /// <summary>
         /// Execute the command

@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace FNAEngine2D.Network.Commands
 {
-    [Command(102)]
+    [Command(65502)]
     public class MovementCommand: IClientCommand, IServerCommand
     {
         /// <summary>
@@ -24,6 +24,28 @@ namespace FNAEngine2D.Network.Commands
         /// Start position
         /// </summary>
         public Vector2 StartPosition { get; set; }
+
+
+        /// <summary>
+        /// Serialize
+        /// </summary>
+        public void Serialize(BinWriter writer)
+        {
+            writer.Write(this.ID);
+            writer.Write(this.Movement);
+            writer.Write(this.StartPosition);
+        }
+
+        /// <summary>
+        /// Deserialize
+        /// </summary>
+        public void Deserialize(BinReader reader)
+        {
+            this.ID = reader.ReadNullableGuid();
+            this.Movement = reader.ReadVector2();
+            this.StartPosition = reader.ReadVector2();
+        }
+
 
 
         /// <summary>

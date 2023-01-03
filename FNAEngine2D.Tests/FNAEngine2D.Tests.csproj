@@ -45,6 +45,7 @@
     <Compile Include="AsepriteTest.cs" />
     <Compile Include="CollisionHelperTest.cs" />
     <Compile Include="Communication\SocketChannelTest.cs" />
+    <Compile Include="DataStreaming\BinReaderWriterTest.cs" />
     <Compile Include="ForceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">

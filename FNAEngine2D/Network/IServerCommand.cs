@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface for a command executable on the server
     /// </summary>
-    public interface IServerCommand
+    public interface IServerCommand: ICommand
     {
         /// <summary>
         /// Execute the command

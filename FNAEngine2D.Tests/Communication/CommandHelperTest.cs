@@ -23,7 +23,7 @@ namespace FNAEngine2D.Tests.Communication
             };
 
             int len = CommandHelper.Serialize(cmd, buffer, 0);
-            Assert.AreEqual(17, len);
+            Assert.AreEqual(10, len);
 
             object cmdOut = CommandHelper.Deserialize(buffer, 0, len);
 
@@ -43,7 +43,7 @@ namespace FNAEngine2D.Tests.Communication
             };
 
             int len = CommandHelper.Serialize(cmd, buffer, 10);
-            Assert.AreEqual(27, len);
+            Assert.AreEqual(30, len);
 
             object cmdOut = CommandHelper.Deserialize(buffer, 10, len);
 
@@ -56,8 +56,24 @@ namespace FNAEngine2D.Tests.Communication
     }
 
     [Command(1)]
-    public class TestCommand
+    public class TestCommand: ICommand
     {
         public string Data { get; set; }
+
+        /// <summary>
+        /// Serialize
+        /// </summary>
+        public void Serialize(BinWriter writer)
+        {
+            writer.Write(Data);
+        }
+
+        /// <summary>
+        /// Deserialize
+        /// </summary>
+        public void Deserialize(BinReader reader)
+        {
+            this.Data = reader.ReadString();
+        }
     }
 }

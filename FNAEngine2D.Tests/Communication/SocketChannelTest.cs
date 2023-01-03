@@ -138,8 +138,24 @@ namespace FNAEngine2D.Tests.Communication
     }
 
     [Command(456)]
-    public class TestCommandSocket
+    public class TestCommandSocket: ICommand
     {
         public string Data { get; set; }
+
+        /// <summary>
+        /// Serialize
+        /// </summary>
+        public void Serialize(BinWriter writer)
+        {
+            writer.Write(Data);
+        }
+
+        /// <summary>
+        /// Deserialize
+        /// </summary>
+        public void Deserialize(BinReader reader)
+        {
+            this.Data = reader.ReadString();
+        }
     }
 }

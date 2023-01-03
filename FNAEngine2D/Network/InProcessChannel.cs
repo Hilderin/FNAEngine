@@ -15,12 +15,12 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Queue of objects to send
         /// </summary>
-        private Queue<object> _sendQueue = new Queue<object>();
+        private Queue<ICommand> _sendQueue = new Queue<ICommand>();
 
         /// <summary>
         /// Queue of objects to read
         /// </summary>
-        private Queue<object> _readQueue = new Queue<object>();
+        private Queue<ICommand> _readQueue = new Queue<ICommand>();
 
         /// <summary>
         /// Server connected to
@@ -63,7 +63,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Constructor for the channel for the server
         /// </summary>
-        private InProcessChannel(Queue<object> clientSendQueue, Queue<object> clientReadQueue)
+        private InProcessChannel(Queue<ICommand> clientSendQueue, Queue<ICommand> clientReadQueue)
         {
             _readQueue = clientSendQueue;
             _sendQueue = clientReadQueue;
@@ -106,7 +106,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Read the next object
         /// </summary>
-        public T Read<T>()
+        public T Read<T>() where T : ICommand
         {
             object obj = ReadObject();
 
@@ -122,7 +122,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Read the next object
         /// </summary>
-        public object ReadObject()
+        public ICommand ReadObject()
         {
             lock (_readQueue)
             {
@@ -136,7 +136,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Send the object
         /// </summary>
-        public void Send(object data)
+        public void Send(ICommand data)
         {
             lock (_sendQueue)
             {
@@ -147,7 +147,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Wait and read the next object
         /// </summary>
-        public T WaitNext<T>()
+        public T WaitNext<T>() where T : ICommand
         {
             //We will wait the next command...
             if (_readQueue.Count == 0)
@@ -169,7 +169,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Wait and read the next object
         /// </summary>
-        public object WaitNextObject()
+        public ICommand WaitNextObject()
         {
             //We will wait the next command...
             if (_readQueue.Count == 0)

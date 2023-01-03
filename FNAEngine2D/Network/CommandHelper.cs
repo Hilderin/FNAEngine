@@ -45,7 +45,7 @@ namespace FNAEngine2D.Network
         /// Serialize a command
         /// Returns the length written
         /// </summary>
-        public static int Serialize(object command, byte[] buffer, int offset)
+        public static int Serialize(ICommand command, byte[] buffer, int offset)
         {
             //Structure of the data...
             //2 bytes: Command number
@@ -62,33 +62,38 @@ namespace FNAEngine2D.Network
             buffer[offset] = (byte)commandAttribute.Number;
             buffer[offset + 1] = (byte)(commandAttribute.Number >> 8);
 
+            BinWriter binWriter = new BinWriter(buffer, offset + HEADER_SIZE);
 
-            using (MemoryStream ms = new MemoryStream(buffer, offset + HEADER_SIZE, buffer.Length - offset - HEADER_SIZE))
-            {
-                using (StreamWriter writer = new StreamWriter(ms))
-                {
-                   
-                    using (var jsonWriter = new JsonTextWriter(writer))
-                    {
-                        _serializer.Serialize(jsonWriter, command);
+            command.Serialize(binWriter);
 
-                        jsonWriter.Flush();
+            return binWriter.Position;
 
-                        //Return the total length...
-                        return ((int)ms.Position) + HEADER_SIZE;
-                    }
+            //using (MemoryStream ms = new MemoryStream(buffer, offset + HEADER_SIZE, buffer.Length - offset - HEADER_SIZE))
+            //{
+            //    using (StreamWriter writer = new StreamWriter(ms))
+            //    {
 
-                }
+            //        using (var jsonWriter = new JsonTextWriter(writer))
+            //        {
+            //            _serializer.Serialize(jsonWriter, command);
 
-                
-            }
+            //            jsonWriter.Flush();
+
+            //            //Return the total length...
+            //            return ((int)ms.Position) + HEADER_SIZE;
+            //        }
+
+            //    }
+
+
+            //}
         }
 
 
         /// <summary>
         /// Deserialize a command
         /// </summary>
-        public static object Deserialize(byte[] buffer, int offset, int length)
+        public static ICommand Deserialize(byte[] buffer, int offset, int length)
         {
             //Structure of the data...
             //2 bytes: Command number
@@ -98,16 +103,22 @@ namespace FNAEngine2D.Network
             if (_commandsPerNumber[commandNumber] == null)
                 throw new InvalidOperationException("Unknown command number: " + commandNumber);
 
-            using (MemoryStream ms = new MemoryStream(buffer, offset + HEADER_SIZE, length - HEADER_SIZE))
-            {
-                using (StreamReader reader = new StreamReader(ms))
-                {
-                    using (var jsonReader = new JsonTextReader(reader))
-                    {
-                        return _serializer.Deserialize(jsonReader, _commandsPerNumber[commandNumber]);
-                    }
-                }
-            }
+            ICommand command = (ICommand)Activator.CreateInstance(_commandsPerNumber[commandNumber]);
+
+            command.Deserialize(new BinReader(buffer, offset + HEADER_SIZE));
+
+            return command;
+
+            //using (MemoryStream ms = new MemoryStream(buffer, offset + HEADER_SIZE, length - HEADER_SIZE))
+            //{
+            //    using (StreamReader reader = new StreamReader(ms))
+            //    {
+            //        using (var jsonReader = new JsonTextReader(reader))
+            //        {
+            //            return _serializer.Deserialize(jsonReader, _commandsPerNumber[commandNumber]);
+            //        }
+            //    }
+            //}
         }
 
 

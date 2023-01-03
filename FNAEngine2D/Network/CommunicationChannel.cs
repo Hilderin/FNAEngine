@@ -52,27 +52,27 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Send data
         /// </summary>
-        void Send(object data);
+        void Send(ICommand command);
 
         /// <summary>
         /// Read the next data
         /// </summary>
-        object ReadObject();
+        ICommand ReadObject();
 
         /// <summary>
         /// Read the next data
         /// </summary>
-        T Read<T>();
+        T Read<T>() where T : ICommand;
 
         /// <summary>
         /// Wait and read the next data
         /// </summary>
-        object WaitNextObject();
+        ICommand WaitNextObject();
 
         /// <summary>
         /// Wait and read the next data
         /// </summary>
-        T WaitNext<T>();
+        T WaitNext<T>() where T : ICommand;
 
         /// <summary>
         /// Action on error

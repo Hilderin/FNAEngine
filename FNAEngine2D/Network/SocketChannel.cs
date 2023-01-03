@@ -71,12 +71,12 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Queue of objects to send
         /// </summary>
-        private Queue<object> _sendQueue = new Queue<object>();
+        private Queue<ICommand> _sendQueue = new Queue<ICommand>();
 
         /// <summary>
         /// Queue of objects to read
         /// </summary>
-        private Queue<object> _readQueue = new Queue<object>();
+        private Queue<ICommand> _readQueue = new Queue<ICommand>();
 
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Wait and read the next object
         /// </summary>
-        public object WaitNextObject()
+        public ICommand WaitNextObject()
         {
             //We will wait the next command...
             if (_readQueue.Count == 0)
@@ -222,7 +222,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Wait and read the next object
         /// </summary>
-        public T WaitNext<T>()
+        public T WaitNext<T>() where T: ICommand
         {
             //We will wait the next command...
             if (_readQueue.Count == 0)
@@ -246,7 +246,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Read the next object
         /// </summary>
-        public object ReadObject()
+        public ICommand ReadObject()
         {
             if (_readQueue.Count > 0)
             {
@@ -264,7 +264,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Read the next object
         /// </summary>
-        public T Read<T>()
+        public T Read<T>() where T: ICommand
         {
             object obj = ReadObject();
 
@@ -283,7 +283,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Send the object
         /// </summary>
-        public void Send(object command)
+        public void Send(ICommand command)
         {
             bool mustSend = true;
 
@@ -307,7 +307,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Send a command
         /// </summary>
-        private void SendCommand(object command)
+        private void SendCommand(ICommand command)
         {
             int len = CommandHelper.Serialize(command, _bufferSend, HEADER_SIZE);
 
@@ -345,7 +345,7 @@ namespace FNAEngine2D.Network
             {
                 _socket.EndSend(ar);
 
-                object nextCommandToSend = null;
+                ICommand nextCommandToSend = null;
                 lock (_sendQueue)
                 {
                     if (_sendQueue.Count > 0)
@@ -476,7 +476,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Deserialize the next packet
         /// </summary>
-        private object DeserializeNextPacket(int offset, int len)
+        private ICommand DeserializeNextPacket(int offset, int len)
         {
             //We have the hole packet...
             return CommandHelper.Deserialize(_bufferReceive, offset + HEADER_SIZE, offset + len - HEADER_SIZE);

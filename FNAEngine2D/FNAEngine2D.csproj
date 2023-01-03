@@ -66,12 +66,15 @@
     <Compile Include="Asperite\PixelFormats\IndexedPixel.cs" />
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
     <Compile Include="Components\MovementComponent.cs" />
+    <Compile Include="DataStreaming\BinReader.cs" />
+    <Compile Include="DataStreaming\BinWriter.cs" />
     <Compile Include="Logguer.cs" />
     <Compile Include="Network\ClientWorker.cs" />
     <Compile Include="Network\Commands\MovementCommand.cs" />
     <Compile Include="Network\Commands\SpawnPlayerObjectCommand.cs" />
     <Compile Include="Network\Commands\SpawnObjectCommand.cs" />
     <Compile Include="Network\IClientCommand.cs" />
+    <Compile Include="Network\ICommand.cs" />
     <Compile Include="Network\InProcessChannel.cs" />
     <Compile Include="Network\IServerCommand.cs" />
     <Compile Include="Network\NetworkClient.cs" />
