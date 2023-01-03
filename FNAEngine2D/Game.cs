@@ -652,8 +652,8 @@ namespace FNAEngine2D
             {
                 this.GameWindowHandle = WindowHelper.GetMainWindowHandle();
 
-                if (_rootGameObject != null && !_rootGameObject.IsClient)
-                    WindowHelper.HideWindow(this.GameWindowHandle);
+                //if (_rootGameObject != null && _rootGameObject is NetworkGameObject && !((NetworkGameObject)_rootGameObject).IsClient)
+                //    WindowHelper.HideWindow(this.GameWindowHandle);
             }
 
 

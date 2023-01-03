@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace FNAEngine2D.Communication
+namespace FNAEngine2D.Network
 {
     /// <summary>
     /// Socket communication channel

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D.Communication
+namespace FNAEngine2D.Network
 {
     
     /// <summary>

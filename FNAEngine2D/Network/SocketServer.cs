@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace FNAEngine2D.Communication
+namespace FNAEngine2D.Network
 {
     /// <summary>
     /// Socket server

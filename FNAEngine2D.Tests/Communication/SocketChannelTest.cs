@@ -1,4 +1,4 @@
-﻿using FNAEngine2D.Communication;
+﻿using FNAEngine2D.Network;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xna.Framework;
 using System;
