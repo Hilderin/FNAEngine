@@ -73,6 +73,12 @@ namespace FNAEngine2D
         private string _text = "Text";
 
         /// <summary>
+        /// Real text location
+        /// </summary>
+        private Vector2 _textLocation = Vector2.Zero;
+
+
+        /// <summary>
         /// Rotation
         /// </summary>
         [Category("Text")]
@@ -164,6 +170,15 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Indicate if the location of the text should be rounded so the text is clearer at low resolution
+        /// But if set to true and the text is moving, text will not move smoothly
+        /// </summary>
+        [Category("Layout")]
+        [BrowsableAttribute(true)]
+        [DefaultValue(false)]
+        public bool PixelPerfect { get; set; } = false;
+
+        /// <summary>
         /// Empty constructor
         /// </summary>
         public TextRender()
@@ -202,6 +217,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Renderer de texture
+        /// </summary>
+        public TextRender(string text, string fontName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment, bool pixelPerfect): this(text, fontName, fontSize, bounds, color, horizontalAlignment, verticalAlignment)
+        {
+            PixelPerfect = true;
+        }
+
+        /// <summary>
         /// Chargement du contenu
         /// </summary>
         public override void Load()
@@ -213,6 +236,22 @@ namespace FNAEngine2D
 
             //Update the font live so the ContentDesigner will display updated values without the need for updates
             Update();
+        }
+
+        /// <summary>
+        /// Text moved
+        /// </summary>
+        public override void OnMoved()
+        {
+            RecalculteTextLocation();
+        }
+
+        /// <summary>
+        /// Text resized
+        /// </summary>
+        public override void OnResized()
+        {
+            RecalculteTextLocation();
         }
 
         /// <summary>
@@ -240,6 +279,8 @@ namespace FNAEngine2D
                         this.Height = _textCache.Height;
                 }
 
+                RecalculteTextLocation();
+
                 _textUpdated = false;
             }
         }
@@ -252,22 +293,31 @@ namespace FNAEngine2D
             if (_font == null || _textCache == null)
                 return;
 
-            int x;
-            int y;
+            DrawingContext.DrawString(_textCache, _textLocation, this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.Depth);
+        }
+
+        /// <summary>
+        /// Recalculate the text location
+        /// </summary>
+        private void RecalculteTextLocation()
+        {
+            if (_font == null || _textCache == null)
+                return;
+
+            float x;
+            float y;
 
             //Calculate horizontal position...
             switch (HorizontalAlignment)
             {
                 case TextHorizontalAlignment.Right:
-                    //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
-                    x = (int)(this.X + this.Width - _textCache.Width);
+                    x = this.X + this.Width - _textCache.Width;
                     break;
                 case TextHorizontalAlignment.Center:
-                    //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
-                    x = (int)(this.X + (this.Width / 2) - (_textCache.Width / 2));
+                    x = this.X + (this.Width / 2) - (_textCache.Width / 2);
                     break;
                 default:
-                    x = (int)this.X;
+                    x = this.X;
                     break;
             }
 
@@ -275,21 +325,26 @@ namespace FNAEngine2D
             switch (VerticalAlignment)
             {
                 case TextVerticalAlignment.Bottom:
-                    //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
-                    y = (int)(this.Y + this.Height - _textCache.Height);
+                    y = this.Y + this.Height - _textCache.Height;
                     break;
                 case TextVerticalAlignment.Middle:
                     //I convert to int because if it's not rounded, the letters will be truncated and missing pixels
                     //The _textCache.Height is just wrong...
                     //I padded with a +8 we will see later if it's good for every fonts
-                    y = (int)(this.Y + (this.Height / 2) - ((FontSize + 8) / 2));
+                    y = this.Y + (this.Height / 2) - ((FontSize + 8) / 2);
                     break;
                 default:
-                    y = (int)this.Y;
+                    y = this.Y;
                     break;
             }
 
-             DrawingContext.DrawString(_textCache, new Vector2(x, y), this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.Depth);
+            if (PixelPerfect)
+            {
+                x = (int)x;
+                y = (int)y;
+            }
+
+            _textLocation = new Vector2(x, y);
         }
 
     }

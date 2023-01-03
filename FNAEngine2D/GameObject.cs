@@ -968,6 +968,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Called when the game object has moved
+        /// </summary>
+        public virtual void OnMoved()
+        {
+
+        }
+
+        /// <summary>
         /// Destruction du game object
         /// </summary>
         public void Destroy()
@@ -989,7 +997,12 @@ namespace FNAEngine2D
         /// </summary>
         public void TranslateX(float offsetX)
         {
+            if (offsetX == 0)
+                return;
+
             _location.X += offsetX;
+
+            OnMoved();
 
             if (this._childrens.Count == 0)
                 return;
@@ -1004,7 +1017,12 @@ namespace FNAEngine2D
         /// </summary>
         public void TranslateY(float offsetY)
         {
+            if (offsetY == 0)
+                return;
+
             _location.Y += offsetY;
+
+            OnMoved();
 
             if (this._childrens.Count == 0)
                 return;
@@ -1020,9 +1038,13 @@ namespace FNAEngine2D
         /// </summary>
         public void Translate(float offsetX, float offsetY)
         {
+            if (offsetX == 0 && offsetY == 0)
+                return;
+
             _location.X += offsetX;
             _location.Y += offsetY;
 
+            OnMoved();
 
             if (this._childrens.Count == 0)
                 return;
