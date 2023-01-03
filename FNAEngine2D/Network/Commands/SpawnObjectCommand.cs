@@ -3,7 +3,6 @@ using System.Reflection;
 
 namespace FNAEngine2D.Network.Commands
 {
-    [Command(65501)]
     public class SpawnObjectCommand: IClientCommand
     {
         ///// <summary>
@@ -21,13 +20,7 @@ namespace FNAEngine2D.Network.Commands
         /// </summary>
         public void Serialize(BinWriter writer)
         {
-            NetworkObjectAttribute attribute = this.GameObject.GetType().GetCustomAttribute<NetworkObjectAttribute>();
-
-            if (attribute == null)
-                throw new InvalidOperationException("Invalid NetworkGameObject to spawn, no NetworkObject attribute found on " + this.GameObject.GetType().FullName);
-
-
-            writer.Write(attribute.Number);
+            writer.Write(NetworkObjectHelper.GetObjectNumber(this.GameObject.GetType()));
             writer.Write(this.GameObject.ID);
             writer.Write(this.GameObject.Location);
 

@@ -103,6 +103,17 @@ namespace FNAEngine2D
             base.DoDraw();
         }
 
+        /// <summary>
+        /// Destruction of an object
+        /// </summary>
+        public override void Destroy()
+        {
+            //If we are on the server, we destroy everywhere...
+            if (_server != null)
+                _server.UnspawnObject(this);
+
+            base.Destroy();
+        }
 
         /// <summary>
         /// Find a GameObjet by ID

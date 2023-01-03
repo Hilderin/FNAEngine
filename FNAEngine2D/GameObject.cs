@@ -442,12 +442,12 @@ namespace FNAEngine2D
             }
         }
 
-        /// <summary>
-        /// Update version
-        /// </summary>
-        [Browsable(false)]
-        [JsonIgnore]
-        public int Version { get; set; }
+        ///// <summary>
+        ///// Update version
+        ///// </summary>
+        //[Browsable(false)]
+        //[JsonIgnore]
+        //public int Version { get; set; }
 
         /// <summary>
         /// DrawingContext to draw on screen
@@ -978,7 +978,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Destruction du game object
         /// </summary>
-        public void Destroy()
+        public virtual void Destroy()
         {
             if (this.Parent == null)
                 throw new InvalidOperationException("Impossible du destroy de root game object.");

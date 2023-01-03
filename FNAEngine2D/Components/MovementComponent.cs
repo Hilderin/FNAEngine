@@ -109,7 +109,7 @@ namespace FNAEngine2D.Components
                         _movement = nextMovement.Movement;
 
                         //To be saved!
-                        _gameObject.Version++;
+                        //_gameObject.Version++;
                     }
                 }
             }

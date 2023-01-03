@@ -137,7 +137,6 @@ namespace FNAEngine2D.Tests.Communication
 
     }
 
-    [Command(456)]
     public class TestCommandSocket: ICommand
     {
         public string Data { get; set; }

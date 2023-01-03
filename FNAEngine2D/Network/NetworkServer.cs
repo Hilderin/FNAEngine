@@ -62,7 +62,12 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Objects to add
         /// </summary>
-        private Queue<GameObject> _objectsToAdd = new Queue<GameObject>();
+        private Queue<NetworkGameObject> _objectsToAdd = new Queue<NetworkGameObject>();
+
+        /// <summary>
+        /// Objects to remove
+        /// </summary>
+        private Queue<NetworkGameObject> _objectsToRemove = new Queue<NetworkGameObject>();
 
         /// <summary>
         /// New connections
@@ -184,6 +189,15 @@ namespace FNAEngine2D.Network
                     Add(objToAdd);
                 }
 
+                //remove object in the scene...
+                while (_objectsToRemove.Count > 0)
+                {
+                    GameObject objToRemove;
+                    lock (_objectsToRemove)
+                        objToRemove = _objectsToRemove.Dequeue();
+                    Remove(objToRemove);
+                }
+
 
                 //bool gameObjectAddedRemoved;
 
@@ -283,17 +297,11 @@ namespace FNAEngine2D.Network
         /// </summary>
         public void SpawnObject(NetworkGameObject gameObject, ClientWorker localWorker = null)
         {
-            NetworkObjectAttribute attribute = gameObject.GetType().GetCustomAttribute<NetworkObjectAttribute>();
-
-            if (attribute == null)
-                throw new InvalidOperationException("Invalid NetworkGameObject to spawn, no NetworkObject attribute found on " + gameObject.GetType().FullName);
-
-
+            
             lock (_gameObjects)
             {
                 _gameObjects[gameObject.ID] = gameObject;
                 _listGameObjects.Add(gameObject);
-                //_gameObjectAddedRemoved = true;
             }
 
             //Only in dedicated server mode we need to add the objet on the scene, otherwise, le object will be added twice!
@@ -308,6 +316,34 @@ namespace FNAEngine2D.Network
             foreach (ClientWorker clientWorker in _clients)
             {
                 clientWorker.AssureGameObjectPresent(gameObject, localWorker == clientWorker);
+
+            }
+        }
+
+        /// <summary>
+        /// Unspawn a game object on the server and on all clients
+        /// </summary>
+        public void UnspawnObject(NetworkGameObject gameObject, ClientWorker localWorker = null)
+        {
+
+            lock (_gameObjects)
+            {
+                _gameObjects.TryRemove(gameObject.ID, out var bidon);
+                _listGameObjects.Remove(gameObject);
+            }
+
+            //Only in dedicated server mode we need to add the objet on the scene, otherwise, le object will be added twice!
+            if (this.ServerMode == ServerMode.Dedicated)
+            {
+                lock (_objectsToRemove)
+                    _objectsToRemove.Enqueue(gameObject);
+            }
+
+
+            //Add in clients...
+            foreach (ClientWorker clientWorker in _clients)
+            {
+                clientWorker.UnspawnGameObject(gameObject);
 
             }
         }

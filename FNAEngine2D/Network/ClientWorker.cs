@@ -3,6 +3,7 @@ using FNAEngine2D.Network.Commands;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -34,6 +35,16 @@ namespace FNAEngine2D.Network
         /// Dictionary of the game objects sent to the client
         /// </summary>
         private ConcurrentDictionary<Guid, ClientWorkerGameObject> _dictGameObjects = new ConcurrentDictionary<Guid, ClientWorkerGameObject>();
+
+        /// <summary>
+        /// Objects to add
+        /// </summary>
+        private Queue<ClientWorkerGameObject> _objectsToAdd = new Queue<ClientWorkerGameObject>();
+
+        /// <summary>
+        /// Objects to remove
+        /// </summary>
+        private Queue<NetworkGameObject> _objectsToRemove = new Queue<NetworkGameObject>();
 
         /// <summary>
         /// GameLoop
@@ -111,7 +122,23 @@ namespace FNAEngine2D.Network
         {
             if (!_dictGameObjects.ContainsKey(gameObject.ID))
             {
-                _dictGameObjects[gameObject.ID] = new ClientWorkerGameObject() { GameObject = gameObject, IsLocalPlayer = isLocalPlayer };
+                ClientWorkerGameObject cwgo = new ClientWorkerGameObject() { GameObject = gameObject, IsLocalPlayer = isLocalPlayer };
+                _dictGameObjects[gameObject.ID] = cwgo;
+
+                lock (_objectsToAdd)
+                    _objectsToAdd.Enqueue(cwgo);
+            }
+        }
+
+        /// <summary>
+        /// Assure that a game object is followed by the client worker
+        /// </summary>
+        public void UnspawnGameObject(NetworkGameObject gameObject)
+        {
+            if (_dictGameObjects.TryRemove(gameObject.ID, out ClientWorkerGameObject cwgo))
+            {
+                lock (_objectsToRemove)
+                    _objectsToRemove.Enqueue(gameObject);
             }
         }
 
@@ -189,6 +216,9 @@ namespace FNAEngine2D.Network
 
             //Send new objects...
             SendNewObjects();
+
+            //Send destroyed objects...
+            SendDestroyedObjects();
         }
 
         /// <summary>
@@ -196,32 +226,30 @@ namespace FNAEngine2D.Network
         /// </summary>
         private void SendNewObjects()
         {
-            foreach (ClientWorkerGameObject cwgo in _dictGameObjects.Values)
+            //Add object in the scene...
+            while (_objectsToAdd.Count > 0)
             {
-                int newVersion = cwgo.GameObject.Version;
-                if (cwgo.Version == -1)
-                {
-                    //Spawning...
-                    if (cwgo.GameObject != this.Player)
-                    {
-                        if (cwgo.IsLocalPlayer)
-                        {
-                            //Oh, this is the local player object...
-                            this.Player = cwgo.GameObject;
-                            SendCommand(GetSpawnCommand(cwgo.GameObject, true));
-                        }
-                        else
-                        {
-                            //Normal object...
-                            SendCommand(GetSpawnCommand(cwgo.GameObject, false));
-                        }
+                ClientWorkerGameObject cwgo;
+                lock (_objectsToAdd)
+                    cwgo = _objectsToAdd.Dequeue();
 
-                        MovementComponent serverMovement = cwgo.GameObject.GetComponent<MovementComponent>();
-                        if(serverMovement != null)
-                            SendCommand(new MovementCommand() { ID = cwgo.GameObject.ID, Movement = serverMovement.Movement, StartPosition = cwgo.GameObject.Location });
-                    }
+                //Spawning...
+                if (cwgo.IsLocalPlayer)
+                {
+                    //Oh, this is the local player object...
+                    this.Player = cwgo.GameObject;
+                    SendCommand(GetSpawnCommand(cwgo.GameObject, true));
                 }
-                cwgo.Version = newVersion;
+                else
+                {
+                    //Normal object...
+                    SendCommand(GetSpawnCommand(cwgo.GameObject, false));
+                }
+
+                MovementComponent serverMovement = cwgo.GameObject.GetComponent<MovementComponent>();
+                if (serverMovement != null)
+                    SendCommand(new MovementCommand() { ID = cwgo.GameObject.ID, Movement = serverMovement.Movement, StartPosition = cwgo.GameObject.Location });
+                
             }
         }
 
@@ -235,6 +263,26 @@ namespace FNAEngine2D.Network
             else
                 return new SpawnObjectCommand() { GameObject = gameObject };
 
+        }
+
+        /// <summary>
+        /// Send destroyed objects to the client
+        /// </summary>
+        private void SendDestroyedObjects()
+        {
+            //Remove object from the scene...
+            while (_objectsToRemove.Count > 0)
+            {
+                NetworkGameObject gameObject;
+                lock (_objectsToRemove)
+                    gameObject = _objectsToRemove.Dequeue();
+
+                if (this.Player == gameObject)
+                    this.Player = null;
+
+                SendCommand(new UnspawnObjectCommand() { ID = gameObject.ID });
+
+            }
         }
 
 
@@ -344,7 +392,7 @@ namespace FNAEngine2D.Network
         /// </summary>
         private class ClientWorkerGameObject
         {
-            public int Version = -1;
+            //public int Version = -1;
             public NetworkGameObject GameObject;
             public bool IsLocalPlayer;
         }

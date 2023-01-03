@@ -55,7 +55,6 @@ namespace FNAEngine2D.Tests.Communication
 
     }
 
-    [Command(1)]
     public class TestCommand: ICommand
     {
         public string Data { get; set; }

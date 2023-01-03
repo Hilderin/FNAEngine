@@ -122,5 +122,14 @@ namespace FNAEngine2D
             return VectorHelper.Normalize(deltaX, deltaY);
         }
 
+
+        /// <summary>
+        /// Return the mouse position in the world
+        /// </summary>
+        public Vector2 GetMousePosition()
+        { 
+            return _gameObject.Input.MousePosition(); 
+        }
+
     }
 }

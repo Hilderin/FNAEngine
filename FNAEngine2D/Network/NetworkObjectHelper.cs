@@ -17,11 +17,17 @@ namespace FNAEngine2D.Network
     /// </summary>
     public static class NetworkObjectHelper
     {
-        
+
         /// <summary>
         /// Objects per number
         /// </summary>
         private static Type[] _objectsPerNumber = new Type[ushort.MaxValue];
+        
+        /// <summary>
+        /// Number for each types
+        /// </summary>
+        private static Dictionary<Type, ushort> _numbersPerType = new Dictionary<Type, ushort>();
+
 
         /// <summary>
         /// Static constructur
@@ -56,36 +62,53 @@ namespace FNAEngine2D.Network
         }
 
         /// <summary>
+        /// Get an object number from it's type
+        /// </summary>
+        public static ushort GetObjectNumber(Type type)
+        {
+            ushort objectNumber;
+
+            if (!_numbersPerType.TryGetValue(type, out objectNumber))
+                throw new InvalidOperationException("Unknown object type: " + type.FullName);
+
+            return objectNumber;
+
+        }
+
+        /// <summary>
         /// Load all the object types
         /// </summary>
         private static void LoadObjectTypes()
         {
-            
+            List<Type> objects = new List<Type>();
+
             //FNAEngine2D types...
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 string name = assembly.GetName().Name;
                 if (name != "mscorlib" && name != "FNA" && name != "netstandard" && name != "Newtonsoft.Json" && !name.StartsWith("System") && !name.StartsWith("Velentr") && !name.StartsWith("SharpFont"))
-                    LoadObjectTypes(assembly);
+                    LoadObjectTypes(assembly, objects);
             }
 
+            //We sort so the client and the server will use de same numbers
+            objects.Sort((a, b) => a.FullName.CompareTo(b.FullName));
+
+            for (int index = 0; index < objects.Count; index++)
+            {
+                _objectsPerNumber[index] = objects[index];
+                _numbersPerType[objects[index]] = (ushort)index;
+            }
         }
 
         /// <summary>
         /// Load objects types for an assembly
         /// </summary>
-        private static void LoadObjectTypes(Assembly assembly)
+        private static void LoadObjectTypes(Assembly assembly, List<Type> objects)
         {
             foreach (Type type in assembly.GetTypes())
             {
-                NetworkObjectAttribute networkObjectAttribute = type.GetCustomAttribute<NetworkObjectAttribute>();
-                if (networkObjectAttribute != null)
-                {
-                    if (_objectsPerNumber[networkObjectAttribute.Number] != null)
-                        throw new InvalidOperationException("Multiple objects with the same number: " + type.FullName + " and " + _objectsPerNumber[networkObjectAttribute.Number].FullName);
-
-                    _objectsPerNumber[networkObjectAttribute.Number] = type;
-                }
+                if (typeof(NetworkGameObject).IsAssignableFrom(type))
+                    objects.Add(type);
             }
 
         }

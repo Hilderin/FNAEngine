@@ -1,6 +1,5 @@
 ﻿namespace FNAEngine2D.Network.Commands
 {
-    [Command(65500)]
     public class SpawnPlayerObjectCommand : SpawnObjectCommand
     {
         /// <summary>

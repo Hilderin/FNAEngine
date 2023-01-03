@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 namespace FNAEngine2D.Network.Commands
 {
-    [Command(65502)]
     public class MovementCommand: IClientCommand, IServerCommand
     {
         /// <summary>

@@ -70,9 +70,9 @@
     <Compile Include="DataStreaming\BinWriter.cs" />
     <Compile Include="Logguer.cs" />
     <Compile Include="Network\ClientWorker.cs" />
+    <Compile Include="Network\Commands\UnspawnObjectCommand.cs" />
     <Compile Include="Network\INetworkSerializable.cs" />
     <Compile Include="Network\NetworkObjectHelper.cs" />
-    <Compile Include="Network\NetworkObjectAttribute.cs" />
     <Compile Include="Network\Commands\MovementCommand.cs" />
     <Compile Include="Network\Commands\SpawnPlayerObjectCommand.cs" />
     <Compile Include="Network\Commands\SpawnObjectCommand.cs" />
@@ -81,7 +81,6 @@
     <Compile Include="Network\InProcessChannel.cs" />
     <Compile Include="Network\IServerCommand.cs" />
     <Compile Include="Network\NetworkClient.cs" />
-    <Compile Include="Network\CommandAttribute.cs" />
     <Compile Include="Network\CommandHelper.cs" />
     <Compile Include="Network\CommunicationChannel.cs" />
     <Compile Include="NetworkGameObject.cs" />

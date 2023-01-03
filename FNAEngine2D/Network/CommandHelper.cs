@@ -27,6 +27,11 @@ namespace FNAEngine2D.Network
         /// </summary>
         private static Type[] _commandsPerNumber = new Type[ushort.MaxValue];
 
+        /// <summary>
+        /// Number for each types
+        /// </summary>
+        private static Dictionary<Type, ushort> _numbersPerType = new Dictionary<Type, ushort>();
+
         ///// <summary>
         ///// Serializer
         ///// </summary>
@@ -52,15 +57,15 @@ namespace FNAEngine2D.Network
             //Command serialized
 
             Type type = command.GetType();
-            CommandAttribute commandAttribute = type.GetCustomAttribute<CommandAttribute>();
 
-            if (commandAttribute == null)
-                throw new InvalidOperationException("Command must have a command attribute, type: " + type.FullName);
+            ushort commandNumber;
+            if(!_numbersPerType.TryGetValue(type, out commandNumber))
+                throw new InvalidOperationException("Unknown command type: " + type.FullName);
 
 
             //Writing command number...
-            buffer[offset] = (byte)commandAttribute.Number;
-            buffer[offset + 1] = (byte)(commandAttribute.Number >> 8);
+            buffer[offset] = (byte)commandNumber;
+            buffer[offset + 1] = (byte)(commandNumber >> 8);
 
             BinWriter binWriter = new BinWriter(buffer, offset + HEADER_SIZE);
 
@@ -127,32 +132,35 @@ namespace FNAEngine2D.Network
         /// </summary>
         private static void LoadCommandTypes()
         {
+            List<Type> commands = new List<Type>();
             
             //FNAEngine2D types...
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 string name = assembly.GetName().Name;
                 if (name != "mscorlib" && name != "FNA" && name != "netstandard" && name != "Newtonsoft.Json" && !name.StartsWith("System") && !name.StartsWith("Velentr") && !name.StartsWith("SharpFont"))
-                    LoadCommandTypes(assembly);
+                    LoadCommandTypes(assembly, commands);
             }
 
+            //We sort so the client and the server will use de same numbers
+            commands.Sort((a, b) => a.FullName.CompareTo(b.FullName));
+
+            for (int index = 0; index < commands.Count; index++)
+            {
+                _commandsPerNumber[index] = commands[index];
+                _numbersPerType[commands[index]] = (ushort)index;
+            }
         }
 
         /// <summary>
         /// Load command types for an assembly
         /// </summary>
-        private static void LoadCommandTypes(Assembly assembly)
+        private static void LoadCommandTypes(Assembly assembly, List<Type> commands)
         {
             foreach (Type type in assembly.GetTypes())
             {
-                CommandAttribute commandAttribute = type.GetCustomAttribute<CommandAttribute>();
-                if (commandAttribute != null)
-                {
-                    if (_commandsPerNumber[commandAttribute.Number] != null)
-                        throw new InvalidOperationException("Multiple commands with the same number: " + type.FullName + " and " + _commandsPerNumber[commandAttribute.Number].FullName);
-
-                    _commandsPerNumber[commandAttribute.Number] = type;
-                }
+                if (typeof(ICommand).IsAssignableFrom(type))
+                    commands.Add(type);
             }
 
         }
