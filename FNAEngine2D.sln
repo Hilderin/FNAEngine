@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.Tests", "FNAEng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.ColliderSample", "FNAEngine.ColliderSample\FNAEngine2D.ColliderSample.csproj", "{8FAD52FF-8AEB-4DD6-A0C2-E305E3177C96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.Space2DTreeTest", "FNAEngine2D.Space2DTreeTest\FNAEngine2D.Space2DTreeTest.csproj", "{C5E04170-6760-457F-B5FA-F91BBB6F9537}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8FAD52FF-8AEB-4DD6-A0C2-E305E3177C96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FAD52FF-8AEB-4DD6-A0C2-E305E3177C96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FAD52FF-8AEB-4DD6-A0C2-E305E3177C96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5E04170-6760-457F-B5FA-F91BBB6F9537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5E04170-6760-457F-B5FA-F91BBB6F9537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5E04170-6760-457F-B5FA-F91BBB6F9537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5E04170-6760-457F-B5FA-F91BBB6F9537}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

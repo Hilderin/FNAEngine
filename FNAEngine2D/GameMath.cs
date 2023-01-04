@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 
 namespace FNAEngine2D
 {
@@ -116,6 +117,17 @@ namespace FNAEngine2D
         {
             return value / 255f;
         }
+
+        /// <summary>
+        /// Swap 2 values
+        /// </summary>
+        public static void SwapValues<T>(ref T valueA, ref T valueB)
+        {
+            T temp = valueA;
+            valueA = valueB;
+            valueA = temp;
+        }
+
 
     }
 }

@@ -101,6 +101,11 @@
     <Compile Include="OldGameObject.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="MultiTextureRender.cs" />
+    <Compile Include="SpaceTrees\Space2DTree.cs" />
+    <Compile Include="SpaceTrees\Space2DTreeResult.cs" />
+    <Compile Include="SpaceTrees\Space2DTreeNode.cs" />
+    <Compile Include="SpaceTrees\Space2DTreeNodeData.cs" />
+    <Compile Include="SpaceTrees\SpaceTreeConstants.cs" />
     <Compile Include="Texture2DBlender.cs" />
     <Compile Include="AverageCalculator.cs" />
     <Compile Include="Camera.cs" />

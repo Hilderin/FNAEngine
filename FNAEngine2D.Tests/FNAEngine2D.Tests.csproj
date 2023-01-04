@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="GameMathTest.cs" />
     <Compile Include="Communication\CommandHelperTest.cs" />
+    <Compile Include="SpaceTrees\Space2DTreeTest.cs" />
     <Compile Include="VectorHelperTest.cs" />
   </ItemGroup>
   <ItemGroup>
