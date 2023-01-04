@@ -40,6 +40,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Update each frame
+        /// </summary>
+        public virtual void Update()
+        {
+
+        }
+
+        /// <summary>
         /// Called when the game object is added in another game object as a child
         /// </summary>
         public virtual void OnAdded()

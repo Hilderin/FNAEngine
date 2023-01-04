@@ -33,21 +33,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet d'obtenir le résultat de la collision entre 2 rectangle
         /// </summary>
-        public static bool GetCollisionTravel(Vector2 movingColliderOriginLocation, Vector2 movingColliderLocation, Collider movingCollider, Collider collidesWith, ref Collision collision)
+        public static bool GetCollisionTravel(Collider movingCollider, Collider collidesWith, ref Collision collision)
         {
+            Vector2 movingColliderOriginLocation = movingCollider.Location;
             Vector2 movingColliderDestinationLocation;
             //We start from the other collider...
             if (collision != null)
                 movingColliderDestinationLocation = collision.StopLocation;
             else
-                movingColliderDestinationLocation = movingColliderLocation;
+                movingColliderDestinationLocation = movingCollider.MovingLocation;
 
 
             float distance = (movingColliderDestinationLocation - movingColliderOriginLocation).Length();
 
             //If we are good with the distance, we will not split it...
             if (distance <= MinimumDistanceCalculation)
-                return GetCollision(movingColliderLocation, movingCollider, collidesWith, ref collision);
+                return GetCollision(movingCollider, collidesWith, ref collision);
 
             int nbLerp = (int)Math.Ceiling(distance / MinimumDistanceCalculation);
             float incrementAmount = 1f / nbLerp;
@@ -59,9 +60,9 @@ namespace FNAEngine2D
             {
                 amount += incrementAmount;
                 Vector2 movingColliderLocationLerped = Vector2.Lerp(movingColliderOriginLocation, movingColliderDestinationLocation, amount);
-
+                movingCollider.MovingLocation = movingColliderLocationLerped;
                 Collision stepCollision = null;
-                if (GetCollision(movingColliderLocationLerped, movingCollider, collidesWith, ref stepCollision))
+                if (GetCollision(movingCollider, collidesWith, ref stepCollision))
                 {
                     if (stepCollision.StopLocation == movingColliderLocationLerped)
                     {
@@ -73,14 +74,12 @@ namespace FNAEngine2D
                     if (stepCollision.StopLocation.X != movingColliderLocationLerped.X)
                     {
                         //Cannot move on X...
-                        movingColliderLocation.X = stepCollision.StopLocation.X;
                         movingColliderDestinationLocation.X = stepCollision.StopLocation.X;
                     }
 
                     if (stepCollision.StopLocation.Y != movingColliderLocationLerped.Y)
                     {
                         //Cannot move on Y...
-                        movingColliderLocation.Y = stepCollision.StopLocation.Y;
                         movingColliderDestinationLocation.Y = stepCollision.StopLocation.Y;
                     }
 
@@ -93,7 +92,8 @@ namespace FNAEngine2D
 
 
             //Check the last one at destination...
-            if (GetCollision(movingColliderDestinationLocation, movingCollider, collidesWith, ref collision))
+            movingCollider.MovingLocation = movingColliderDestinationLocation;
+            if (GetCollision(movingCollider, collidesWith, ref collision))
                 return true;
 
             collision = lastCollision;
@@ -104,27 +104,27 @@ namespace FNAEngine2D
         /// <summary>
         /// Get collision between a rectangle and a collider
         /// </summary>
-        public static Collision GetCollision(Vector2 movingColliderLocation, Collider movingCollider, Collider collidesWith)
+        public static Collision GetCollision(Collider movingCollider, Collider collidesWith)
         {
             Collision collision = null;
-            GetCollision(movingColliderLocation, movingCollider, collidesWith, ref collision);
+            GetCollision(movingCollider, collidesWith, ref collision);
             return collision;
         }
 
         /// <summary>
         /// Get collision between a rectangle and a collider
         /// </summary>
-        public static bool GetCollision(Vector2 movingColliderLocation, Collider movingCollider, Collider collidesWith, ref Collision collision)
+        public static bool GetCollision(Collider movingCollider, Collider collidesWith, ref Collision collision)
         {
 
             //We start from the other collider...
             if (collision != null)
-                movingColliderLocation = collision.StopLocation;
+                movingCollider.MovingLocation = collision.StopLocation;
 
-            CollisionDirection direction;
-            Vector2 stopLocation;
+            CollisionDirection direction = CollisionDirection.Indetermined;
+            Vector2 stopLocation = Vector2.Zero;
 
-            if (!collidesWith.Intersects(movingColliderLocation, movingCollider, out direction, out stopLocation))
+            if (!collidesWith.Intersects(movingCollider, ref direction, ref stopLocation))
                 return false;
 
             //if (movingCollider is ColliderRectangle)
@@ -199,11 +199,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a rectangle
         /// </summary>
-        public static bool Intersects(Vector2 movingColliderLocation, Vector2 movingColliderSize, Vector2 colliderLocation, Vector2 colliderSize, out CollisionDirection direction, out Vector2 hitLocation)
+        public static bool Intersects(Vector2 movingColliderLocation, Vector2 movingColliderSize, Vector2 colliderLocation, Vector2 colliderSize, ref CollisionDirection direction, ref Vector2 hitLocation)
         {
-            direction = CollisionDirection.Indetermined;
-            hitLocation = Vector2.Zero;
-
             if (!VectorHelper.Intersects(colliderLocation, colliderSize, movingColliderLocation, movingColliderSize))
                 return false;
 
@@ -337,11 +334,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a circle
         /// </summary>
-        public static bool Intersects(Vector2 movingColliderLocation, float movingColliderRadius, Vector2 colliderLocation, Vector2 colliderSize, out CollisionDirection direction, out Vector2 hitLocation)
+        public static bool Intersects(Vector2 movingColliderLocation, float movingColliderRadius, Vector2 colliderLocation, Vector2 colliderSize, ref CollisionDirection direction, ref Vector2 hitLocation)
         {
-            direction = CollisionDirection.Indetermined;
-            hitLocation = Vector2.Zero;
-
             //Maybe a collision?
             Vector2 colliderCenter = new Vector2(colliderLocation.X + (colliderSize.X / 2), colliderLocation.Y + (colliderSize.Y / 2));
             float distanceX = Math.Abs(colliderCenter.X - movingColliderLocation.X);
@@ -485,11 +479,8 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a circle
         /// </summary>
-        public static bool Intersects(Vector2 movingColliderLocation, float movingColliderRadius, Vector2 colliderLocation, float colliderRadius, out CollisionDirection direction, out Vector2 hitLocation)
+        public static bool Intersects(Vector2 movingColliderLocation, float movingColliderRadius, Vector2 colliderLocation, float colliderRadius, ref CollisionDirection direction, ref Vector2 hitLocation)
         {
-            direction = CollisionDirection.Indetermined;
-            hitLocation = Vector2.Zero;
-
             float distance = movingColliderLocation.Distance(colliderLocation);
 
             //No collision if distance is bigger then the radius of the 2 circles

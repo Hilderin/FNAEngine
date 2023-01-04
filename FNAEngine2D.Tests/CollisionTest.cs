@@ -12,10 +12,10 @@ namespace FNAEngine2D.Tests
         {
             Collider rectCollider = new ColliderRectangle(5, -5, 20, 20);
 
-            CollisionDirection direction;
-            Vector2 stopLocation;
+            CollisionDirection direction = CollisionDirection.Indetermined;
+            Vector2 stopLocation = Vector2.Zero;
 
-            bool result = rectCollider.Intersects(new Vector2(0, 0), new ColliderRectangle(0, 0, 10, 10), out direction, out stopLocation);
+            bool result = rectCollider.Intersects(new ColliderRectangle(0, 0, 10, 10), ref direction, ref stopLocation);
 
             Assert.IsTrue(result);
             Assert.AreEqual(CollisionDirection.MovingColliderOnLeft, direction);
@@ -27,10 +27,10 @@ namespace FNAEngine2D.Tests
         {
             Collider rectCollider = new ColliderRectangle(5, -5, 20, 20);
 
-            CollisionDirection direction;
-            Vector2 stopLocation;
+            CollisionDirection direction = CollisionDirection.Indetermined;
+            Vector2 stopLocation = Vector2.Zero;
 
-            bool result = rectCollider.Intersects(new Vector2(0, 0), new ColliderCircle(new Vector2(5, 5), 10f), out direction, out stopLocation);
+            bool result = rectCollider.Intersects(new ColliderCircle(new Vector2(5, 5), 10f), ref direction, ref stopLocation);
 
             Assert.IsTrue(result);
             Assert.AreEqual(CollisionDirection.MovingColliderOnLeft, direction);

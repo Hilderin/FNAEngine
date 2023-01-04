@@ -18,17 +18,17 @@ namespace FNAEngine2D
         /// <summary>
         /// Location
         /// </summary>
-        public virtual Vector2 Location { get { return this.GameObject.Location; } }
+        public virtual Vector2 Location { get; protected set; }
 
         /// <summary>
         /// Next moving location
         /// </summary>
         public virtual Vector2 MovingLocation { get; set; }
 
-        ///// <summary>
-        ///// Size
-        ///// </summary>
-        //public virtual Vector2 Size { get { return this.GameObject.Size; } }
+        /// <summary>
+        /// Size
+        /// </summary>
+        public virtual Vector2 Size { get; protected set; }
 
 
         /// <summary>
@@ -38,6 +38,17 @@ namespace FNAEngine2D
         {
         }
 
+        public override void Load()
+        {
+            this.Location = this.GameObject.Location;
+            this.Size = this.GameObject.Size;
+        }
+
+        public override void Update()
+        {
+            this.Location = this.GameObject.Location;
+            this.Size = this.GameObject.Size;
+        }
         ///// <summary>
         ///// Collider rectangle form
         ///// </summary>
@@ -66,7 +77,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a collider
         /// </summary>
-        public abstract bool Intersects(Collider movingCollider, out CollisionDirection direction, out Vector2 hitLocation);
+        public abstract bool Intersects(Collider movingCollider, ref CollisionDirection direction, ref Vector2 hitLocation);
 
 
         /// <summary>

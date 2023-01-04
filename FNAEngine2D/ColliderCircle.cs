@@ -24,14 +24,32 @@ namespace FNAEngine2D
         private Vector2 _centerMovingLocation;
 
         /// <summary>
-        /// Location
+        /// Offset du center
         /// </summary>
-        public override Vector2 Location { get { return this.GameObject.Location + this.CenterOffset; } }
+        private Vector2 _centerOffset;
+
+        /// <summary>
+        /// Size
+        /// </summary>
+        private Vector2 _size;
+
+        /// <summary>
+        /// Radius
+        /// </summary>
+        private float _radius;
 
         /// <summary>
         /// Offset location from the game object for the center
         /// </summary>
-        public virtual Vector2 CenterOffset { get; set; }
+        public virtual Vector2 CenterOffset
+        {
+            get { return _centerOffset; }
+            set
+            {
+                _centerOffset = value;
+                _centerMovingLocation = _movingLocation + value;
+            }
+        }
 
         /// <summary>
         /// Next moving location
@@ -42,19 +60,46 @@ namespace FNAEngine2D
             set
             {
                 _movingLocation = value;
-                _centerMovingLocation = value + this.CenterOffset;
+                _centerMovingLocation = value + _centerOffset;
             }
         }
 
         /// <summary>
         /// Offset location from the game object for the center
         /// </summary>
-        public virtual Vector2 CenterMovingLocation { get { return _centerMovingLocation; } }
+        public Vector2 CenterMovingLocation { get { return _centerMovingLocation; } }
+
+        /// <summary>
+        /// Size
+        /// </summary>
+        public override Vector2 Size { get { return _size; } }
 
         /// <summary>
         /// Radius
         /// </summary>
-        public float Radius { get; set; }
+        public float Radius
+        {
+            get { return _radius; }
+            set
+            {
+                _radius = value;
+                _size = new Vector2(value * 2, value * 2);
+            }
+        }
+
+        /// <summary>
+        /// Collider rectangle form
+        /// </summary>
+        public ColliderCircle(Vector2 location, Vector2 centerOffset, float radius)
+        {
+            this.GameObject = new GameObject();
+            this.GameObject.Location = location;
+            this.Location = location;
+            this.MovingLocation = location;
+
+            this.CenterOffset = centerOffset;
+            this.Radius = radius;
+        }
 
         /// <summary>
         /// Collider rectangle form
@@ -77,17 +122,17 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a rectangle
         /// </summary>
-        public override bool Intersects(Collider movingCollider, out CollisionDirection direction, out Vector2 hitLocation)
+        public override bool Intersects(Collider movingCollider, ref CollisionDirection direction, ref Vector2 hitLocation)
         {
             if (movingCollider is ColliderRectangle)
             {
                 //With another rectangle...
-                return CollisionHelper.Intersects(this.Location, this.Radius, movingCollider.MovingLocation, ((ColliderRectangle)movingCollider).Size, out direction, out hitLocation);
+                return CollisionHelper.Intersects(_centerMovingLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size, ref direction, ref hitLocation);
             }
             else if (movingCollider is ColliderCircle)
             {
                 //With a circle..
-                if (CollisionHelper.Intersects(((ColliderCircle)movingCollider).CenterMovingLocation, ((ColliderCircle)movingCollider).Radius, this.Location, this.Radius, out direction, out hitLocation))
+                if (CollisionHelper.Intersects(((ColliderCircle)movingCollider).CenterMovingLocation, ((ColliderCircle)movingCollider).Radius, _centerMovingLocation, this.Radius, ref direction, ref hitLocation))
                 {
                     hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
                     return true;

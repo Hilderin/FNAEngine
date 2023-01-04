@@ -16,10 +16,10 @@ namespace FNAEngine2D
     public class ColliderRectangle : Collider
     {
 
-        /// <summary>
-        /// Size
-        /// </summary>
-        public virtual Vector2 Size { get { return this.GameObject.Size; } }
+        ///// <summary>
+        ///// Size
+        ///// </summary>
+        //public virtual Vector2 Size { get { return this.GameObject.Size; } }
 
 
         /// <summary>
@@ -35,6 +35,8 @@ namespace FNAEngine2D
         public ColliderRectangle(GameObject gameObject)
         {
             this.GameObject = gameObject;
+            this.Location = gameObject.Location;
+            this.Size = gameObject.Size;
         }
 
         /// <summary>
@@ -44,6 +46,9 @@ namespace FNAEngine2D
         {
             this.GameObject = new GameObject();
             this.GameObject.Bounds = bounds;
+            this.Location = new Vector2(bounds.X, bounds.Y);
+            this.Size = new Vector2(bounds.Width, bounds.Height);
+            this.MovingLocation = this.Location;
         }
 
         /// <summary>
@@ -58,17 +63,24 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a rectangle
         /// </summary>
-        public override bool Intersects(Collider movingCollider, out CollisionDirection direction, out Vector2 hitLocation)
+        public override bool Intersects(Collider movingCollider, ref CollisionDirection direction, ref Vector2 hitLocation)
         {
+            //if (!VectorHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, this.Location, this.Size))
+            //{
+            //    //Nothing to to here...
+            //    return false;
+            //}
+
+
             if (movingCollider is ColliderRectangle)
             {
                 //With another rectangle...
-                return CollisionHelper.Intersects(movingCollider.Location, ((ColliderRectangle)movingCollider).Size, this.Location, this.Size, out direction, out hitLocation);
+                return CollisionHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, this.Location, this.Size, ref direction, ref hitLocation);
             }
             else if (movingCollider is ColliderCircle)
             {
                 //With a circle..
-                if (CollisionHelper.Intersects(((ColliderCircle)movingCollider).CenterMovingLocation, ((ColliderCircle)movingCollider).Radius, this.Location, this.Size, out direction, out hitLocation))
+                if (CollisionHelper.Intersects(((ColliderCircle)movingCollider).CenterMovingLocation, ((ColliderCircle)movingCollider).Radius, this.Location, this.Size, ref direction, ref hitLocation))
                 {
                     hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
                     return true;

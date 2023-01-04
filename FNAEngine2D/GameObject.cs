@@ -988,13 +988,21 @@ namespace FNAEngine2D
             if (GameManager.DevelopmentMode)
                 GameContentManager.ReloadModifiedContent(this);
 
+
+            if (_componentsList.Count > 0)
+            {
+                for (int index = 0; index < _componentsList.Count; index++)
+                    _componentsList[index].Update();
+            }
+
             this.Update();
 
-            if (this._childrens.Count == 0)
-                return;
+            if (this._childrens.Count > 0)
+            {
+                for (int index = 0; index < this._childrens.Count; index++)
+                    this._childrens[index].DoUpdate();
+            }
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].DoUpdate();
         }
 
         /// <summary>
@@ -1368,7 +1376,7 @@ namespace FNAEngine2D
             if (collider == null)
                 collider = new ColliderRectangle(this);
 
-            collider.MovingLocation = this._location;
+            collider.MovingLocation = position;
 
             return container.GetCollision(collider, types);
         }
