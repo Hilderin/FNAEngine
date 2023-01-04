@@ -177,7 +177,7 @@ namespace FNAEngine2D
                     //Removing the old one, in case we are changing the root game object...
                     if (_rootGameObject != null)
                     {
-                        _rootGameObject.ForEach(o => o.OnRemoved());
+                        _rootGameObject.ForEachChild(o => o.OnRemoved());
                         _rootGameObject.OnRemoved();                        
                     }
 
@@ -627,7 +627,7 @@ namespace FNAEngine2D
         {
             if (_rootGameObject != null)
             {
-                _rootGameObject.ForEach(o => o.OnRemoved(), true);
+                _rootGameObject.ForEachChild(o => o.OnRemoved(), true);
                 _rootGameObject.OnRemoved();
             }
 

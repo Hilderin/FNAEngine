@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.SpaceTrees;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Collider empty?
         /// </summary>
-        public bool IsEmpty { get { return _colliders.Count == 0; } }
+        public bool IsEmpty { get { return _spaceTree.Count == 0; } }
+
+        ///// <summary>
+        ///// Colliders
+        ///// </summary>
+        //private List<Collider> _colliders = new List<Collider>();
 
         /// <summary>
-        /// Colliders
+        /// Space tree for the colliders
         /// </summary>
-        private List<Collider> _colliders = new List<Collider>();
+        private Space2DTree<Collider> _spaceTree = new Space2DTree<Collider>();
 
-        /// <summary>
-        /// Colliders
-        /// </summary>
-        private Dictionary<Type, List<Collider>> _collidersPerType = new Dictionary<Type, List<Collider>>();
+        ///// <summary>
+        ///// Colliders
+        ///// </summary>
+        //private Dictionary<Type, List<Collider>> _collidersPerType = new Dictionary<Type, List<Collider>>();
 
         /// <summary>
         /// Cache of types
@@ -35,41 +41,51 @@ namespace FNAEngine2D
 
 
         /// <summary>
-        /// Ajoute un collider
+        /// Add a collider
         /// </summary>
         public void Add(Collider collider)
         {
-            _colliders.Add(collider);
+            //_colliders.Add(collider);
+            _spaceTree.Add(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
 
-            //Add in dictionary per type...
-            List<Collider> colliders;
-            foreach (Type type in GetAllTypesForGameObject(collider.GameObject))
-            {
-                if (!_collidersPerType.TryGetValue(type, out colliders))
-                {
-                    colliders = new List<Collider>();
-                    _collidersPerType[type] = colliders;
-                }
-                colliders.Add(collider);
-            }
+            ////Add in dictionary per type...
+            //List<Collider> colliders;
+            //foreach (Type type in GetAllTypesForGameObject(collider.GameObject))
+            //{
+            //    if (!_collidersPerType.TryGetValue(type, out colliders))
+            //    {
+            //        colliders = new List<Collider>();
+            //        _collidersPerType[type] = colliders;
+            //    }
+            //    colliders.Add(collider);
+            //}
         }
 
         /// <summary>
-        /// Retire un collider
+        /// Update the location and size of a collider
+        /// </summary>
+        public void Update(Collider collider)
+        {
+            _spaceTree.Move(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
+        }
+
+        /// <summary>
+        /// Remove a
         /// </summary>
         public void Remove(Collider collider)
         {
-            _colliders.Remove(collider);
+            //_colliders.Remove(collider);
+            _spaceTree.Remove(collider);
 
-            //Remove in dictionary per type...
-            List<Collider> colliders;
-            foreach (Type type in GetAllTypesForGameObject(collider.GameObject))
-            {
-                if (_collidersPerType.TryGetValue(type, out colliders))
-                {
-                    colliders.Remove(collider);
-                }
-            }
+            ////Remove in dictionary per type...
+            //List<Collider> colliders;
+            //foreach (Type type in GetAllTypesForGameObject(collider.GameObject))
+            //{
+            //    if (_collidersPerType.TryGetValue(type, out colliders))
+            //    {
+            //        colliders.Remove(collider);
+            //    }
+            //}
         }
 
 
@@ -78,31 +94,42 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(Collider movingCollider, Type[] types)
         {
-            if (_colliders.Count == 0)
+            if (_spaceTree.Count == 0)
                 return null;
 
 
             Collision collision = null;
-            if (types == null)
+
+            foreach (Collider collider in _spaceTree.Search(movingCollider.MovingLocation.X, movingCollider.MovingLocation.Y, movingCollider.Size.X, movingCollider.Size.Y))
             {
-                //All types...
-                GetCollision(movingCollider, _colliders, ref collision);
-            }
-            else
-            {
-                //For some types...
-                List<Collider> colliders;
-                for (int index = 0; index < types.Length; index++)
+                //Not ourself.
+                if (collider != movingCollider)
                 {
-                    if (_collidersPerType.TryGetValue(types[index], out colliders))
-                    {
-                        GetCollision(movingCollider, colliders, ref collision);
-                    }
+                    if (types == null || IsGameObjectInTypes(collider.GameObject, types))
+                        CollisionHelper.GetCollision(movingCollider, collider, ref collision);
                 }
             }
 
 
             return collision;
+        }
+
+        /// <summary>
+        /// Check if a game object is the right type
+        /// </summary>
+        private bool IsGameObjectInTypes(GameObject gameObject, Type[] types)
+        {
+            List<Type> gameObjectTypes = GetAllTypesForGameObject(gameObject);
+            for (int index = 0; index < types.Length; index++)
+            {
+                if(gameObjectTypes.Contains(types[index]))
+                {
+                    return true;
+                }
+
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -150,73 +177,108 @@ namespace FNAEngine2D
         }
 
 
-        /// <summary>
-        /// Get collision from a list of colliders
-        /// </summary>
-        private void GetCollision(Collider movingCollider, List<Collider> colliders, ref Collision collision)
-        {
+        ///// <summary>
+        ///// Get collision from a list of collisions
+        ///// </summary>
+        //private void GetCollision(Collider movingCollider, List<Collider> colliders, ref Collision collision)
+        //{
+        //    //foreach (Collider collider in _spaceTree.Search(movingCollider.MovingLocation.X, movingCollider.MovingLocation.Y, movingCollider.Size.X, movingCollider.Size.Y))
+        //    //{
+        //    //    //Not ourself.
+        //    //    if (collider != movingCollider)
+        //    //    {
+        //    //        CollisionHelper.GetCollision(movingCollider, collider, ref collision);
+        //    //    }
+        //    //}
+        //    for (int index = 0; index < colliders.Count; index++)
+        //    {
+        //        //Not ourself.
+        //        if (colliders[index] != movingCollider)
+        //        {
+        //            //Little check to skip the call to the collider may be colliding... if not, we will skip immediately
+        //            if (VectorHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, colliders[index].Location, colliders[index].Size))
+        //            {
+        //                CollisionHelper.GetCollision(movingCollider, colliders[index], ref collision);
+        //            }
+        //        }
+        //    }
 
-            for (int index = 0; index < colliders.Count; index++)
-            {
-                //Not ourself.
-                if (colliders[index] != movingCollider)
-                {
-                    //Little check to skip the call to the collider may be colliding... if not, we will skip immediately
-                    if (VectorHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, colliders[index].Location, colliders[index].Size))
-                    {
-                        CollisionHelper.GetCollision(movingCollider, colliders[index], ref collision);
-                    }
-                }
-            }
+        //}
 
-        }
+        ///// <summary>
+        ///// Get collision from a list of collisions
+        ///// </summary>
+        //private void GetCollision(Collider movingCollider, ref Collision collision)
+        //{
+        //    foreach (Collider collider in _spaceTree.Search(movingCollider.MovingLocation.X, movingCollider.MovingLocation.Y, movingCollider.Size.X, movingCollider.Size.Y))
+        //    {
+        //        //Not ourself.
+        //        if (collider != movingCollider)
+        //        {
+        //            CollisionHelper.GetCollision(movingCollider, collider, ref collision);
+        //        }
+        //    }
+
+
+        //}
 
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
         public Collision GetCollisionTravel(Collider movingCollider, Type[] types)
         {
-            if (_colliders.Count == 0)
+            if (_spaceTree.Count == 0)
                 return null;
 
             Collision collision = null;
-            if (types == null)
+
+            foreach (Collider collider in _spaceTree.Search(movingCollider.MovingLocation.X, movingCollider.MovingLocation.Y, movingCollider.Size.X, movingCollider.Size.Y))
             {
-                //All types...
-                GetCollisionTravel(movingCollider, _colliders, ref collision);
-            }
-            else
-            {
-                //For some types...
-                List<Collider> colliders;
-                for (int index = 0; index < types.Length; index++)
+                //Not ourself.
+                if (collider != movingCollider)
                 {
-                    if (_collidersPerType.TryGetValue(types[index], out colliders))
-                    {
-                        GetCollisionTravel(movingCollider, colliders, ref collision);
-                    }
+                    if (types == null || IsGameObjectInTypes(collider.GameObject, types))
+                        CollisionHelper.GetCollisionTravel(movingCollider, collider, ref collision);
                 }
             }
+
+            //if (types == null)
+            //{
+            //    //All types...
+            //    GetCollisionTravel(movingCollider, _colliders, ref collision);
+            //}
+            //else
+            //{
+            //    //For some types...
+            //    List<Collider> colliders;
+            //    for (int index = 0; index < types.Length; index++)
+            //    {
+            //        if (_collidersPerType.TryGetValue(types[index], out colliders))
+            //        {
+            //            GetCollisionTravel(movingCollider, colliders, ref collision);
+            //        }
+            //    }
+            //}
 
 
             return collision;
         }
 
-        /// <summary>
-        /// Get collision from a list of colliders
-        /// </summary>
-        private void GetCollisionTravel(Collider movingCollider, List<Collider> colliders, ref Collision collision)
-        {
+        ///// <summary>
+        ///// Get collision from a list of colliders
+        ///// </summary>
+        //private void GetCollisionTravel(Collider movingCollider, List<Collider> colliders, ref Collision collision)
+        //{
 
-            for (int index = 0; index < colliders.Count; index++)
-            {
-                if (colliders[index] != movingCollider)
-                {
-                    CollisionHelper.GetCollisionTravel(movingCollider, colliders[index], ref collision);
-                }
-            }
+        //    for (int index = 0; index < colliders.Count; index++)
+        //    {
+        //        if (colliders[index] != movingCollider)
+        //        {
+        //            CollisionHelper.GetCollisionTravel(movingCollider, colliders[index], ref collision);
+        //        }
+        //    }
 
-        }
+        //}
 
         ///// <summary>
         ///// Permet d'obtenir la liste des collisions

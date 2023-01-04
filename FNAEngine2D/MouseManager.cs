@@ -86,7 +86,7 @@ namespace FNAEngine2D
             }
 
             //Also remove for childrens...
-            gameObject.ForEach(o => RemoveGameObject(o));
+            gameObject.ForEachChild(o => RemoveGameObject(o));
 
         }
 
@@ -218,7 +218,7 @@ namespace FNAEngine2D
                 }
             }
 
-            gameObject.ForEach(o => ProcessGameObject(o, mousePosition, newOverGameObjects));
+            gameObject.ForEachChild(o => ProcessGameObject(o, mousePosition, newOverGameObjects));
         }
 
 

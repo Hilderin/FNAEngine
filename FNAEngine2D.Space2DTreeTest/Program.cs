@@ -19,7 +19,7 @@ namespace FNAEngine2D.Space2DTreeTest
 
                 List<Data> datas = new List<Data>();
 
-                for (int cpt = 0; cpt < 1000; cpt++)
+                for (int cpt = 0; cpt < 100000; cpt++)
                     datas.Add(new Data(GameMath.RandomFloat(0, 10000), GameMath.RandomFloat(0, 10000), GameMath.RandomFloat(0, 100), GameMath.RandomFloat(0, 100), "Data " + cpt));
 
                 Space2DTree<Data> spaceTree = new Space2DTree<Data>();
@@ -52,29 +52,29 @@ namespace FNAEngine2D.Space2DTreeTest
 
                 //Serach with list...
                 timer.Restart();
-
-                //Search with tree...
-                timer.Restart();
                 resultCountTree = 0;
-                foreach (Data search in searchs)
+                for (int cpt = 0; cpt < 1; cpt++)
                 {
-                    resultCountTree += spaceTree.Search(search.X, search.Y, search.Width, search.Heigth).Count();
+                    foreach (Data search in searchs)
+                    {
+                        resultCountTree += spaceTree.Search(search.X, search.Y, search.Width, search.Heigth).Count();
+                    }
                 }
                 timer.Stop();
                 Console.WriteLine("Search time tree enumerator: " + timer.ElapsedMilliseconds + ", total count: " + resultCountTree);
 
 
-                //Serach with list...
-                timer.Restart();
+                ////Serach with list...
+                //timer.Restart();
 
 
-                int resultCountList = 0;
-                foreach (Data search in searchs)
-                {
-                    resultCountList += datas.Where(d => search.Intersects(ref d)).Count();
-                }
-                timer.Stop();
-                Console.WriteLine("Search time list: " + timer.ElapsedMilliseconds + ", total count: " + resultCountTree);
+                //int resultCountList = 0;
+                //foreach (Data search in searchs)
+                //{
+                //    resultCountList += datas.Where(d => search.Intersects(ref d)).Count();
+                //}
+                //timer.Stop();
+                //Console.WriteLine("Search time list: " + timer.ElapsedMilliseconds + ", total count: " + resultCountTree);
 
             }
             catch (Exception ex)

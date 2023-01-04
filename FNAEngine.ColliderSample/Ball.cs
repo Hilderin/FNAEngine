@@ -15,8 +15,8 @@ namespace FNAEngine2D.ColliderSample
 
         public Ball()
         {
-            this.Width = 8;
-            this.Height = 8;
+            this.Width = 4;
+            this.Height = 4;
         }
 
         public override void Load()

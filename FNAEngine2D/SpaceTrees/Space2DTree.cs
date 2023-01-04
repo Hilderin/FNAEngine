@@ -19,15 +19,125 @@ namespace FNAEngine2D.SpaceTrees
         internal Space2DTreeNode<T> _root = new SpaceTrees.Space2DTreeNode<T>(null);
 
         /// <summary>
+        /// All data in the tree
+        /// </summary>
+        private Dictionary<T, Space2DTreeNodeData<T>> _data = new Dictionary<T, Space2DTreeNodeData<T>>();
+
+
+        /// <summary>
+        /// Count
+        /// </summary>
+        public int Count { get; private set; }
+
+        /// <summary>
         /// Add a data
         /// </summary>
         public void Add(float x, float y, float width, float height, T data)
         {
             //Little validation to avoid screwing up the tree...
-            if (x == float.NaN || x == float.PositiveInfinity || x == float.NegativeInfinity || x == float.MinValue || x == float.MaxValue)
-                throw new InvalidOperationException("X value invalid: " + x);
-            if (y == float.NaN || y == float.PositiveInfinity || y == float.NegativeInfinity || y == float.MinValue || y == float.MaxValue)
-                throw new InvalidOperationException("Y value invalid: " + y);
+            if (!IsFloatValid(x))
+                throw new InvalidOperationException("x value invalid: " + x);
+            if (!IsFloatValid(y))
+                throw new InvalidOperationException("y value invalid: " + y);
+            if (!IsFloatValid(width))
+                throw new InvalidOperationException("width value invalid: " + width);
+            if (!IsFloatValid(height))
+                throw new InvalidOperationException("height value invalid: " + width);
+
+
+            //I always when a positif width and height
+            if (width < 0)
+            {
+                x = x + width;
+                //width = -width;
+            }
+            if (height < 0)
+            {
+                y = y + height;
+                //height = -height;
+            }
+
+            //Console.WriteLine("Add " + x + " " + y + " " + width + " " + height + " " + data.ToString());
+
+
+            var dataNode = new Space2DTreeNodeData<T>(x, y, width, height, data);
+            _root.Add(dataNode);
+            _data.Add(data, dataNode);
+
+            this.Count++;
+        }
+
+
+        /// <summary>
+        /// Remove a data
+        /// </summary>
+        public void Remove(T data)
+        {
+            if (_data.TryGetValue(data, out var dataNode))
+            {
+                dataNode.ContainerNode._bucket.Remove(dataNode);
+                _data.Remove(data);
+
+                this.Count--;
+            }
+        }
+
+        ///// <summary>
+        ///// Move a data
+        ///// </summary>
+        //public void Move(float x, float y, T data)
+        //{
+        //    if (!_data.TryGetValue(data, out var dataNode))
+        //        throw new InvalidOperationException("Data not found in the tree.");
+
+        //    //Little validation to avoid screwing up the tree...
+        //    if (!IsFloatValid(x))
+        //        throw new InvalidOperationException("x value invalid: " + x);
+        //    if (!IsFloatValid(y))
+        //        throw new InvalidOperationException("y value invalid: " + y);
+
+        //    if (dataNode.Width < 0)
+        //    {
+        //        x = x + dataNode.Width;
+        //        dataNode.Right = x - dataNode.Width;
+        //    }
+        //    else
+        //    {
+        //        dataNode.X = x;
+        //        dataNode.Right = x + dataNode.Width;
+        //    }
+        //    if (dataNode.Height < 0)
+        //    {
+        //        y = y + dataNode.Height;
+        //        dataNode.Right = y - dataNode.Height;
+        //    }
+        //    else
+        //    {
+        //        dataNode.Y = y;
+        //        dataNode.Right = y + dataNode.Height;
+        //    }
+            
+        //    dataNode.ContainerNode._bucket.Remove(dataNode);
+        //    _root.Add(dataNode);
+        //}
+
+        /// <summary>
+        /// Move a data
+        /// </summary>
+        public void Move(float x, float y, float width, float height, T data)
+        {
+            if (!_data.TryGetValue(data, out var dataNode))
+                throw new InvalidOperationException("Data not found in the tree.");
+
+            //Little validation to avoid screwing up the tree...
+            if (!IsFloatValid(x))
+                throw new InvalidOperationException("x value invalid: " + x);
+            if (!IsFloatValid(y))
+                throw new InvalidOperationException("y value invalid: " + y);
+            if (!IsFloatValid(width))
+                throw new InvalidOperationException("width value invalid: " + width);
+            if (!IsFloatValid(height))
+                throw new InvalidOperationException("height value invalid: " + width);
 
 
             //I always when a positif width and height
@@ -42,13 +152,27 @@ namespace FNAEngine2D.SpaceTrees
                 height = -height;
             }
 
-            //Console.WriteLine("Add " + x + " " + y + " " + width + " " + height + " " + data.ToString());
+            dataNode.X = x;
+            dataNode.Y = y;
+            dataNode.Right = x + width;
+            dataNode.Bottom = y + height;
+
+            //dataNode.ContainerNode._bucket.Remove(dataNode);
+            //_root.Add(dataNode);
+
+            var destinationNode = _root.GetDestinationNode(dataNode);
+
+            if (destinationNode == dataNode.ContainerNode)
+                //Already at the right place...
+                return;
+
+            dataNode.ContainerNode._bucket.Remove(dataNode);
+
+            //And we and directly on the right node!
+            destinationNode.Add(dataNode);
 
 
-            var dataNode = new Space2DTreeNodeData<T>(x, y, width, height, data);
-            _root.Add(ref dataNode);
         }
-
 
         /// <summary>
         /// Get values in a rectangle
@@ -73,6 +197,19 @@ namespace FNAEngine2D.SpaceTrees
             return new Space2DTreeResult<T>(x, y, width, height, this);
         }
 
+
+        /// <summary>
+        /// Check if a float is valid for the tree
+        /// </summary>
+        private bool IsFloatValid(float value)
+        {
+            if (value == float.NaN || value == float.PositiveInfinity || value == float.NegativeInfinity || value == float.MinValue || value == float.MaxValue)
+                return false;
+            else
+                return true;
+
+
+        }
 
     }
 }

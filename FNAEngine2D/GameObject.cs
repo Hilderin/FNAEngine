@@ -213,8 +213,7 @@ namespace FNAEngine2D
                 Vector2 newSize = value.GetSize();
                 if (_size != newSize)
                 {
-                    _size = newSize;
-                    OnResized();
+                    Resize(newSize.X, newSize.Y);
                 }
             }
         }
@@ -314,8 +313,7 @@ namespace FNAEngine2D
             {
                 if (_size != value)
                 {
-                    _size = value;
-                    OnResized();
+                    Resize(value.X, value.Y);
                 }
             }
 
@@ -669,7 +667,11 @@ namespace FNAEngine2D
             AddComponentTypes(typeof(T), component);
             _componentsList.Add(component);
 
-            component.OnAdded();
+            if (_loaded)
+            {
+                component.Load();
+                component.OnAdded();
+            }
 
             if (component is Collider)
                 _collider = component as Collider;
@@ -762,6 +764,20 @@ namespace FNAEngine2D
                     return (T)list[0];
             }
             return default(T);
+        }
+
+        /// <summary>
+        /// Execute an action for each GameComponent of the game object
+        /// </summary>
+        public void ForEachComponent(Action<GameComponent> action)
+        {
+            if (_componentsList.Count == 0)
+                return;
+
+            for (int index = 0; index < _componentsList.Count; index++)
+            {
+                action(_componentsList[index]);
+            }
         }
 
         /// <summary>
@@ -901,7 +917,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Execute an action for each GameObjet in childrens
         /// </summary>
-        public void ForEach(Action<GameObject> action, bool recursive = false)
+        public void ForEachChild(Action<GameObject> action, bool recursive = false)
         {
             if (_childrens.Count == 0)
                 return;
@@ -911,7 +927,7 @@ namespace FNAEngine2D
                 action(_childrens[index]);
 
                 if (recursive)
-                    _childrens[index].ForEach(action, true);
+                    _childrens[index].ForEachChild(action, true);
             }
         }
 
@@ -986,20 +1002,11 @@ namespace FNAEngine2D
             if (GameManager.DevelopmentMode)
                 GameContentManager.ReloadModifiedContent(this);
 
-
-            if (_componentsList.Count > 0)
-            {
-                for (int index = 0; index < _componentsList.Count; index++)
-                    _componentsList[index].Update();
-            }
+            ForEachComponent(o => o.Update());
 
             this.Update();
 
-            if (this._childrens.Count > 0)
-            {
-                for (int index = 0; index < this._childrens.Count; index++)
-                    this._childrens[index].DoUpdate();
-            }
+            ForEachChild(o => o.DoUpdate());
 
         }
 
@@ -1029,13 +1036,7 @@ namespace FNAEngine2D
             if ((DrawingContext.Camera.LayerMask & this.LayerMask) != 0)
                 this.Draw();
 
-            if (this._childrens.Count == 0)
-                return;
-
-            for (int index = 0; index < this._childrens.Count; index++)
-            {
-                this._childrens[index].DoDraw();
-            }
+            ForEachChild(o => o.DoDraw());
         }
 
 
@@ -1055,20 +1056,11 @@ namespace FNAEngine2D
             if (processChildren)
             {
                 //And the children because they are not really removed but we will want to known if the parent is removed.
-                for (int index = 0; index < _childrens.Count; index++)
-                {
-                    _childrens[index].ProcessAddition(true);
-                }
-
-                //Call OnRemove for components...
-                if (_componentsList.Count > 0)
-                {
-                    foreach (GameComponent component in _componentsList)
-                        component.OnAdded();
-                }
+                ForEachChild(o => o.ProcessAddition(true));
             }
 
-            
+            //Call OnAdded for components...
+            ForEachComponent(o => o.OnAdded());
 
             //Little event OnAdded...
             this.OnAdded();
@@ -1090,19 +1082,12 @@ namespace FNAEngine2D
         private void ProcessRemoval()
         {
             //And the children because they are not really removed but we will want to known if the parent is removed.
-            for (int index = 0; index < _childrens.Count; index++)
-            {
-                _childrens[index].ProcessRemoval();
-            }
+            ForEachChild(o => o.ProcessRemoval());
 
             Mouse.RemoveGameObject(this);
 
-            //Call OnRemove for components...
-            if (_componentsList.Count > 0)
-            {
-                foreach (GameComponent component in _componentsList)
-                    component.OnRemoved();
-            }
+            //Call OnRemoved for components...
+            ForEachComponent(o => o.OnRemoved());
 
             //Little event OnRemoved...
             this.OnRemoved();
@@ -1152,11 +1137,9 @@ namespace FNAEngine2D
 
             OnMoved();
 
-            if (this._childrens.Count == 0)
-                return;
+            ForEachChild(o => o.TranslateX(offsetX));
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].TranslateX(offsetX);
+            ForEachComponent(c => c.OnMoved());
 
         }
 
@@ -1172,11 +1155,9 @@ namespace FNAEngine2D
 
             OnMoved();
 
-            if (this._childrens.Count == 0)
-                return;
+            ForEachChild(o => o.TranslateY(offsetY));
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].TranslateY(offsetY);
+            ForEachComponent(c => c.OnMoved());
 
         }
 
@@ -1194,12 +1175,9 @@ namespace FNAEngine2D
 
             OnMoved();
 
-            if (this._childrens.Count == 0)
-                return;
+            ForEachChild(o => o.Translate(offsetX, offsetY));
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].Translate(offsetX, offsetY);
-
+            ForEachComponent(c => c.OnMoved());
         }
 
         /// <summary>
@@ -1240,15 +1218,16 @@ namespace FNAEngine2D
         /// </summary>
         public void ResizeWidth(float offsetX)
         {
+            if (offsetX == 0)
+                return;
+
             _size.X += offsetX;
 
             OnResized();
 
-            if (this._childrens.Count == 0)
-                return;
+            ForEachChild(o => o.ResizeWidth(offsetX));
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].ResizeWidth(offsetX);
+            ForEachComponent(c => c.OnResized());
 
         }
 
@@ -1257,15 +1236,17 @@ namespace FNAEngine2D
         /// </summary>
         public void ResizeHeight(float offsetY)
         {
+            if (offsetY == 0)
+                return;
+
             _size.Y += offsetY;
 
             OnResized();
 
-            if (this._childrens.Count == 0)
-                return;
+            ForEachChild(o => o.ResizeHeight(offsetY));
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].ResizeHeight(offsetY);
+            ForEachComponent(c => c.OnResized());
+
 
         }
 
@@ -1275,16 +1256,17 @@ namespace FNAEngine2D
         /// </summary>
         public void Resize(float offsetX, float offsetY)
         {
+            if (offsetX == 0 && offsetY == 0)
+                return;
+
             _size.X += offsetX;
             _size.Y += offsetY;
 
             OnResized();
 
-            if (this._childrens.Count == 0)
-                return;
+            ForEachChild(o => o.Resize(offsetX, offsetY));
 
-            for (int index = 0; index < this._childrens.Count; index++)
-                this._childrens[index].Resize(offsetX, offsetY);
+            ForEachComponent(c => c.OnResized());
 
         }
 
@@ -1442,46 +1424,6 @@ namespace FNAEngine2D
             return count;
         }
 
-
-        ///// <summary>
-        ///// Process the removal of a game object for colliders (including children)
-        ///// </summary>
-        //private void AddColliders(GameObject gameObject)
-        //{
-        //    if (gameObject._collider != null)
-        //    {
-        //        GetColliderContainer().Add(gameObject._collider);
-        //    }
-
-        //    if (gameObject._childrens.Count > 0)
-        //    {
-        //        for (int index = 0; index < gameObject._childrens.Count; index++)
-        //        {
-        //            AddColliders(gameObject._childrens[index]);
-        //        }
-        //    }
-
-        //}
-
-        ///// <summary>
-        ///// Process the removal of a game object for colliders (including children)
-        ///// </summary>
-        //private void RemoveColliders(GameObject gameObject)
-        //{
-        //    if (gameObject._collider != null)
-        //    {
-        //        GetColliderContainer().Remove(gameObject._collider);
-        //    }
-
-        //    if (gameObject._childrens.Count > 0)
-        //    {
-        //        for (int index = 0; index < gameObject._childrens.Count; index++)
-        //        {
-        //            RemoveColliders(gameObject._childrens[index]);
-        //        }
-        //    }
-
-        //}
 
         /// <summary>
         /// Get a service

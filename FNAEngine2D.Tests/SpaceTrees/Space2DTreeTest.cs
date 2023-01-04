@@ -81,14 +81,15 @@ namespace FNAEngine2D.Tests.SpaceTrees
             Space2DTree<DataTest> tree = new Space2DTree<DataTest>();
 
             for(int index = 0; index < 20; index++)
-                tree.Add(index * 10, 0, 100, 100, new DataTest("test" + index));
+                tree.Add(index * 10, 0, 100, 100, new DataTest("test" + index.ToString("00")));
 
             List<DataTest> data = tree.GetValues(100, 0, 100, 100);
 
             Assert.AreEqual(20, data.Count);
 
-            for (int index = 0; index < 10; index++)
-                Assert.AreEqual("test" + (10 + index), data[index].Data);
+            data.Sort((a, b) => a.Data.CompareTo(b.Data));
+            for (int index = 0; index < 20; index++)
+                Assert.AreEqual("test" + index.ToString("00"), data[index].Data);
 
         }
 
@@ -98,14 +99,15 @@ namespace FNAEngine2D.Tests.SpaceTrees
             Space2DTree<DataTest> tree = new Space2DTree<DataTest>();
 
             for (int index = 0; index < 20; index++)
-                tree.Add(index * 10, 0, 100, 100, new DataTest("test" + index));
+                tree.Add(index * 10, 0, 100, 100, new DataTest("test" + index.ToString("00")));
 
             List<DataTest> data = new List<DataTest>(tree.Search(100, 0, 100, 100));
 
             Assert.AreEqual(20, data.Count);
 
-            for (int index = 0; index < 10; index++)
-                Assert.AreEqual("test" + (10 + index), data[index].Data);
+            data.Sort((a, b) => a.Data.CompareTo(b.Data));
+            for (int index = 0; index < 20; index++)
+                Assert.AreEqual("test" + index.ToString("00"), data[index].Data);
 
         }
 

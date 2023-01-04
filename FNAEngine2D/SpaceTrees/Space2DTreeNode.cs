@@ -57,26 +57,28 @@ namespace FNAEngine2D.SpaceTrees
         /// <summary>
         /// Add a data
         /// </summary>
-        public void Add(ref Space2DTreeNodeData<T> dataNode)
+        public void Add(Space2DTreeNodeData<T> dataNode)
         {
             //Time to split if _lowerNode == null...
             if (_lowerNode == null
                 && (_bucket.Count < SpaceTreeConstants.BUCKET_CAPACITY
-                   || (_splitTestDone && IsIntersectsSplit(ref dataNode))
+                   || (_splitTestDone && IsIntersectsSplit(dataNode))
                    || !Split()
                    ))
             {
                 //Data cannot be splitted..
                 _bucket.Add(dataNode);
+                dataNode.ContainerNode = this;
             }
             else
             {
                 //Right, we add in the lower ou upper values node
-                AddToChildrenNode(ref dataNode);
+                AddToChildrenNode(dataNode);
             }
 
 
         }
+
 
         /// <summary>
         /// Get values in a rectangle
@@ -128,24 +130,75 @@ namespace FNAEngine2D.SpaceTrees
         }
 
         /// <summary>
+        /// Get values in a rectangle
+        /// </summary>
+        internal Space2DTreeNode<T> GetDestinationNode(Space2DTreeNodeData<T> dataNode)
+        {
+            Space2DTreeNode<T> result = this;
+            while (true)
+            {
+                if (result._lowerNode == null)
+                {
+                    return result;
+                }
+                else
+                {
+                    if (result._splitOnX)
+                    {
+                        //Split on X
+                        if (dataNode.Right < result._splitValue)
+                        {
+                            result = result._lowerNode;
+                        }
+                        else if (dataNode.X > result._splitValue)
+                        {
+                            result = result._upperNode;
+                        }
+                        else
+                        {
+                            result = result._intersectNode;
+                        }
+                    }
+                    else
+                    {
+                        //Split on Y
+                        if (dataNode.Bottom < result._splitValue)
+                        {
+                            result = result._lowerNode;
+                        }
+                        else if (dataNode.Y > result._splitValue)
+                        {
+                            result = result._upperNode;
+                        }
+                        else
+                        {
+                            result = result._intersectNode;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
         /// Add the data node in the correct children
         /// </summary>
-        private void AddToChildrenNode(ref Space2DTreeNodeData<T> dataNode)
+        private void AddToChildrenNode(Space2DTreeNodeData<T> dataNode)
         {
             if (_splitOnX)
             {
                 //Split on X
                 if (dataNode.Right < _splitValue)
                 {
-                    _lowerNode.Add(ref dataNode);
+                    _lowerNode.Add(dataNode);
                 }
                 else if (dataNode.X > _splitValue)
                 {
-                    _upperNode.Add(ref dataNode);
+                    _upperNode.Add(dataNode);
                 }
                 else
                 {
-                    _intersectNode.Add(ref dataNode);
+                    _intersectNode.Add(dataNode);
                 }
             }
             else
@@ -153,20 +206,23 @@ namespace FNAEngine2D.SpaceTrees
                 //Split on Y
                 if (dataNode.Bottom < _splitValue)
                 {
-                    _lowerNode.Add(ref dataNode);
+                    _lowerNode.Add(dataNode);
                 }
                 else if (dataNode.Y > _splitValue)
                 {
-                    _upperNode.Add(ref dataNode);
+                    _upperNode.Add(dataNode);
                 }
                 else
                 {
-                    _intersectNode.Add(ref dataNode);
+                    _intersectNode.Add(dataNode);
                 }
             }
         }
 
-        private bool IsIntersectsSplit(ref Space2DTreeNodeData<T> dataNode)
+        /// <summary>
+        /// Check if the data node is intersect with the split
+        /// </summary>
+        private bool IsIntersectsSplit(Space2DTreeNodeData<T> dataNode)
         {
             if (_splitOnX)
             {
@@ -261,6 +317,12 @@ namespace FNAEngine2D.SpaceTrees
                     _lowerNode = null;
                     _upperNode = null;
                     _intersectNode = null;
+
+                    //Reset the container...
+                    for (int index = 0; index < _bucket.Count; index++)
+                    {
+                        _bucket[index].ContainerNode = this;
+                    }
                     return false;
                 }
             }
@@ -316,8 +378,7 @@ namespace FNAEngine2D.SpaceTrees
             //And we split all that in out children...
             for (int index = 0; index < _bucket.Count; index++)
             {
-                Space2DTreeNodeData<T> data = _bucket[index];
-                AddToChildrenNode(ref data);
+                AddToChildrenNode(_bucket[index]);
             }
         }
     }

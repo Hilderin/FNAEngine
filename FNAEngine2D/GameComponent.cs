@@ -63,5 +63,21 @@ namespace FNAEngine2D
 
         }
 
+        /// <summary>
+        /// Called when the game object is resized
+        /// </summary>
+        public virtual void OnResized()
+        {
+
+        }
+
+        /// <summary>
+        /// Called when the game object has moved
+        /// </summary>
+        public virtual void OnMoved()
+        {
+
+        }
+
     }
 }

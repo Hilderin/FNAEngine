@@ -14,11 +14,15 @@ namespace FNAEngine2D
     /// </summary>
     public abstract class Collider: GameComponent
     {
+        /// <summary>
+        /// Added on the scene?
+        /// </summary>
+        private bool _added = false;
 
         /// <summary>
         /// Location
         /// </summary>
-        public virtual Vector2 Location { get; set; }
+        public Vector2 Location { get; set; }
 
         /// <summary>
         /// Next moving location
@@ -38,40 +42,44 @@ namespace FNAEngine2D
         {
         }
 
+        /// <summary>
+        /// On load
+        /// </summary>
         public override void Load()
         {
-            this.Location = this.GameObject.Location;
-            this.Size = this.GameObject.Size;
         }
 
-        public override void Update()
+        /// <summary>
+        /// Called when the game object has moved
+        /// </summary>
+        public override void OnMoved()
         {
-            this.Location = this.GameObject.Location;
-            this.Size = this.GameObject.Size;
+            UpdateLocationAndSize();
         }
-        ///// <summary>
-        ///// Collider rectangle form
-        ///// </summary>
-        //public Collider(GameObject gameObject): base(gameObject)
-        //{
-        //}
 
-        ///// <summary>
-        ///// Collider rectangle form
-        ///// </summary>
-        //public Collider(Rectangle bounds)
-        //{
-        //    this.GameObject = new GameObject();
-        //    this.GameObject.Bounds = bounds;
-        //}
+        /// <summary>
+        /// Called when the game object is resized
+        /// </summary>
+        public override void OnResized()
+        {
+            UpdateLocationAndSize();
+        }
 
-        ///// <summary>
-        ///// Collider rectangle form
-        ///// </summary>
-        //public Collider(int x, int y, int width, int height) : this(new Rectangle(x, y, width, height))
-        //{
+        /// <summary>
+        /// Update the location and size of the collider from the game object
+        /// </summary>
+        private void UpdateLocationAndSize()
+        {
+            if (!_added)
+                return;
 
-        //}
+            if (this.Location != this.GameObject.Location || this.Size != this.GameObject.Size)
+            {
+                this.Location = this.GameObject.Location;
+                this.Size = this.GameObject.Size;
+                this.GameObject.Game.ColliderContainer.Update(this);
+            }
+        }
 
 
         /// <summary>
@@ -85,7 +93,14 @@ namespace FNAEngine2D
         /// </summary>
         public override void OnAdded()
         {
+            
+            this.Location = this.GameObject.Location;
+            this.Size = this.GameObject.Size;
+
             this.GameObject.Game.ColliderContainer.Add(this);
+
+            _added = true;
+
         }
 
         /// <summary>
@@ -94,6 +109,7 @@ namespace FNAEngine2D
         public override void OnRemoved()
         {
             this.GameObject.Game.ColliderContainer.Remove(this);
+            _added = false;
         }
 
     }
