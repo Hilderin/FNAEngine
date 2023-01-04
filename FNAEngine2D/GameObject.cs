@@ -669,8 +669,7 @@ namespace FNAEngine2D
             AddComponentTypes(typeof(T), component);
             _componentsList.Add(component);
 
-            if (this.Parent != null)
-                component.OnAdded();
+            component.OnAdded();
 
             if (component is Collider)
                 _collider = component as Collider;
@@ -725,8 +724,7 @@ namespace FNAEngine2D
             _componentsList.Remove(component);
             RemoveComponentTypes(component.GetType(), component);
 
-            if (this.Parent != null)
-                component.OnRemoved();
+            component.OnRemoved();
 
             if (component is Collider)
                 _collider = null;
@@ -1381,6 +1379,7 @@ namespace FNAEngine2D
             return container.GetCollision(collider, types);
         }
 
+        
         /// <summary>
         /// Permet d'obtenir la première collision
         /// </summary>
@@ -1389,21 +1388,24 @@ namespace FNAEngine2D
             return GetCollision(new Vector2(nextX, nextY), types);
         }
 
-        ///// <summary>
-        ///// Permet d'obtenir la première collision
-        ///// </summary>
-        //public Collision GetCollision(Vector2 position, Vector2 size, Type[] types)
-        //{
-        //    ColliderContainer container = _game.ColliderContainer;
 
-        //    if (container.IsEmpty)
-        //        return null;
 
-        //    ColliderRectangle collider = new ColliderRectangle(this);
-        //    collider.Size = size;
+        /// <summary>
+        /// Permet d'obtenir la première collision
+        /// </summary>
+        public Collision GetCollision(Vector2 position, Vector2 size, Type[] types)
+        {
+            ColliderContainer container = _game.ColliderContainer;
 
-        //    return container.GetCollision(position, size, collider, types);
-        //}
+            if (container.IsEmpty)
+                return null;
+
+            ColliderRectangle collider = new ColliderRectangle(this);
+            collider.MovingLocation = position;
+            collider.Size = size;
+
+            return container.GetCollision(collider, types);
+        }
 
 
         /// <summary>

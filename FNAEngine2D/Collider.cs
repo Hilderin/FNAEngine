@@ -18,7 +18,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Location
         /// </summary>
-        public virtual Vector2 Location { get; protected set; }
+        public virtual Vector2 Location { get; set; }
 
         /// <summary>
         /// Next moving location
@@ -28,7 +28,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Size
         /// </summary>
-        public virtual Vector2 Size { get; protected set; }
+        public virtual Vector2 Size { get; set; }
 
 
         /// <summary>
