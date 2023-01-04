@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,56 +12,77 @@ namespace FNAEngine2D
     /// <summary>
     /// Collider
     /// </summary>
-    public class Collider
+    public abstract class Collider: GameComponent
     {
 
         /// <summary>
         /// Location
         /// </summary>
-        public Vector2 Location { get { return this.GameObject.Location; } }
+        public virtual Vector2 Location { get { return this.GameObject.Location; } }
 
         /// <summary>
-        /// Location
+        /// Next moving location
         /// </summary>
-        public Vector2 Size { get { return this.GameObject.Size; } }
+        public virtual Vector2 MovingLocation { get; set; }
+
+        ///// <summary>
+        ///// Size
+        ///// </summary>
+        //public virtual Vector2 Size { get { return this.GameObject.Size; } }
+
 
         /// <summary>
-        /// GameObject associé au collider
+        /// Collider rectangle form
         /// </summary>
-        public GameObject GameObject;
-
-        /// <summary>
-        /// Collider sous forme de rectangle
-        /// </summary>
-        public Collider(GameObject gameObject)
+        public Collider()
         {
-            this.GameObject = gameObject;
+        }
+
+        ///// <summary>
+        ///// Collider rectangle form
+        ///// </summary>
+        //public Collider(GameObject gameObject): base(gameObject)
+        //{
+        //}
+
+        ///// <summary>
+        ///// Collider rectangle form
+        ///// </summary>
+        //public Collider(Rectangle bounds)
+        //{
+        //    this.GameObject = new GameObject();
+        //    this.GameObject.Bounds = bounds;
+        //}
+
+        ///// <summary>
+        ///// Collider rectangle form
+        ///// </summary>
+        //public Collider(int x, int y, int width, int height) : this(new Rectangle(x, y, width, height))
+        //{
+
+        //}
+
+
+        /// <summary>
+        /// Check if the collider intersects with a collider
+        /// </summary>
+        public abstract bool Intersects(Collider movingCollider, out CollisionDirection direction, out Vector2 hitLocation);
+
+
+        /// <summary>
+        /// Adding of a collider
+        /// </summary>
+        public override void OnAdded()
+        {
+            this.GameObject.Game.ColliderContainer.Add(this);
         }
 
         /// <summary>
-        /// Collider sous forme de rectangle
+        /// Removing of a collider
         /// </summary>
-        public Collider(Rectangle bounds)
+        public override void OnRemoved()
         {
-            this.GameObject = new GameObject();
-            this.GameObject.Bounds = bounds;
-        }
-
-        /// <summary>
-        /// Collider sous forme de rectangle
-        /// </summary>
-        public Collider(int x, int y, int width, int height): this(new Rectangle(x, y, width, height))
-        {
-            
-        }
-
-        
-        /// <summary>
-        /// Permet de savoir si le rectangle collider avec ce collider
-        /// </summary>
-        public bool Intersects(Vector2 location, Vector2 size)
-        {
-            return VectorHelper.Intersects(this.Location, this.Size, location, size);
+            this.GameObject.Game.ColliderContainer.Remove(this);
         }
 
     }

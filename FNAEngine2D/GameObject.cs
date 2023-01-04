@@ -1,6 +1,7 @@
 ﻿using FNAEngine2D.Desginer;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -80,7 +81,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Components
         /// </summary>
-        private Dictionary<Type, object> _components = new Dictionary<Type, object>();
+        private Dictionary<Type, List<GameComponent>> _componentsDict = new Dictionary<Type, List<GameComponent>>();
+
+        /// <summary>
+        /// Components
+        /// </summary>
+        private List<GameComponent> _componentsList = new List<GameComponent>();
 
         /// <summary>
         /// RootGameObject
@@ -552,7 +558,7 @@ namespace FNAEngine2D
 
             gameObject.Parent = this;
             gameObject.RootGameObject = this.RootGameObject;
-            
+
             if (_game == null)
                 _game = Game.Current;
 
@@ -568,21 +574,19 @@ namespace FNAEngine2D
             this._childrens.Insert(index, gameObject);
 
             //Already a collider? can happen if remove and readded...
-            AddColliders(gameObject);
+            //AddColliders(gameObject);
 
             //If not loaded already... can happen if remove and readded...
             if (!gameObject._loaded)
             {
                 gameObject._addAuthorized = true;
                 gameObject.DoLoad();
-                gameObject.OnAdded();
+                gameObject.ProcessAddition(false);
             }
             else
             {
-                gameObject.OnAdded();
-
-                //And the children because if the parent was removed, we want to trap the add also on the children
-                ForEach(o => o.OnAdded(), true);
+                //Already loaded so we will reexecute all the OnAdded
+                gameObject.ProcessAddition(true);
             }
 
             return gameObject;
@@ -596,20 +600,13 @@ namespace FNAEngine2D
             gameObject.Parent = null;
             gameObject.RootGameObject = null;
 
-            //Remove de colliders for the gameobject and all children...
-            RemoveColliders(gameObject);
+            ////Remove de colliders for the gameobject and all children...
+            //RemoveColliders(gameObject);
+
+
+            gameObject.ProcessRemoval();
 
             this._childrens.Remove(gameObject);
-
-            Mouse.RemoveGameObject(gameObject);
-
-            //And the children because they are not really removed but we will want to known if the parent is removed.
-            gameObject.ForEach(o => o.OnRemoved(), true);
-
-            //Little event OnRemoved...
-            gameObject.OnRemoved();
-
-
 
         }
 
@@ -621,13 +618,13 @@ namespace FNAEngine2D
             GameObject gameObject = _childrens[index];
 
             gameObject.Parent = null;
+            gameObject.RootGameObject = null;
 
-            //Remove de colliders for the gameobject and all children...
-            RemoveColliders(gameObject);
+            gameObject.ProcessRemoval();
 
             this._childrens.RemoveAt(index);
 
-            Mouse.RemoveGameObject(gameObject);
+
         }
 
         /// <summary>
@@ -655,31 +652,117 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Add a component
+        /// </summary>
+        public T AddComponent<T>() where T : GameComponent
+        {
+            return AddComponent<T>((T)Activator.CreateInstance(typeof(T)));
+        }
 
         /// <summary>
         /// Add a component
         /// </summary>
-        public T AddComponent<T>(T component)
+        public T AddComponent<T>(T component) where T : GameComponent
         {
-            _components.Add(typeof(T), component);
+            component.GameObject = this;
+            AddComponentTypes(typeof(T), component);
+            _componentsList.Add(component);
+
+            if (this.Parent != null)
+                component.OnAdded();
+
+            if (component is Collider)
+                _collider = component as Collider;
+
             return component;
+        }
+
+        /// <summary>
+        /// Add all component types
+        /// </summary>
+        private void AddComponentTypes(Type componentType, GameComponent gameComponent)
+        {
+            if (componentType == typeof(GameComponent))
+                return;
+
+            List<GameComponent> list;
+            if (!_componentsDict.TryGetValue(componentType, out list))
+            {
+                list = new List<GameComponent>();
+                _componentsDict[componentType] = list;
+            }
+            list.Add(gameComponent);
+
+            if (componentType.BaseType != null)
+                AddComponentTypes(componentType.BaseType, gameComponent);
+
+            foreach (Type interfaceType in componentType.GetInterfaces())
+                AddComponentTypes(interfaceType, gameComponent);
         }
 
         /// <summary>
         /// Remove a component
         /// </summary>
-        public void RemoveComponent<T>()
+        public void RemoveComponent<T>() where T : GameComponent
         {
-            _components.Remove(typeof(T));
+            List<GameComponent> list;
+            if (_componentsDict.TryGetValue(typeof(T), out list))
+            {
+                for (int index = list.Count - 1; index >= 0; index--)
+                {
+                    RemoveComponent(list[index]);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Remove a component
+        /// </summary>
+        public void RemoveComponent(GameComponent component)
+        {
+            _componentsList.Remove(component);
+            RemoveComponentTypes(component.GetType(), component);
+
+            if (this.Parent != null)
+                component.OnRemoved();
+
+            if (component is Collider)
+                _collider = null;
+        }
+
+        /// <summary>
+        /// Remove all component types
+        /// </summary>
+        private void RemoveComponentTypes(Type componentType, GameComponent gameComponent)
+        {
+            if (componentType == typeof(GameComponent))
+                return;
+
+            List<GameComponent> list;
+            if (_componentsDict.TryGetValue(componentType, out list))
+            {
+                list.Remove(gameComponent);
+            }
+
+            if (componentType.BaseType != null)
+                RemoveComponentTypes(componentType.BaseType, gameComponent);
+
+            foreach (Type interfaceType in componentType.GetInterfaces())
+                RemoveComponentTypes(interfaceType, gameComponent);
         }
 
         /// <summary>
         /// Get a component
         /// </summary>
-        public T GetComponent<T>()
+        public T GetComponent<T>() where T : GameComponent
         {
-            if (_components.TryGetValue(typeof(T), out object component))
-                return (T)component;
+            if (_componentsDict.TryGetValue(typeof(T), out List<GameComponent> list))
+            {
+                if (list.Count > 0)
+                    return (T)list[0];
+            }
             return default(T);
         }
 
@@ -874,6 +957,13 @@ namespace FNAEngine2D
         {
             this.Load();
 
+            //Call OnRemove for components...
+            if (_componentsList.Count > 0)
+            {
+                foreach (GameComponent component in _componentsList)
+                    component.Load();
+            }
+
             _loaded = true;
         }
 
@@ -952,10 +1042,65 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Process the addition
+        /// </summary>
+        private void ProcessAddition(bool processChildren)
+        {
+            if (processChildren)
+            {
+                //And the children because they are not really removed but we will want to known if the parent is removed.
+                for (int index = 0; index < _childrens.Count; index++)
+                {
+                    _childrens[index].ProcessAddition(true);
+                }
+
+                //Call OnRemove for components...
+                if (_componentsList.Count > 0)
+                {
+                    foreach (GameComponent component in _componentsList)
+                        component.OnAdded();
+                }
+            }
+
+            
+
+            //Little event OnAdded...
+            this.OnAdded();
+
+
+        }
+
+        /// <summary>
         /// Called when the game object is removed in another game object as a child
         /// </summary>
         public virtual void OnRemoved()
         {
+
+        }
+
+        /// <summary>
+        /// Process the removal
+        /// </summary>
+        private void ProcessRemoval()
+        {
+            //And the children because they are not really removed but we will want to known if the parent is removed.
+            for (int index = 0; index < _childrens.Count; index++)
+            {
+                _childrens[index].ProcessRemoval();
+            }
+
+            Mouse.RemoveGameObject(this);
+
+            //Call OnRemove for components...
+            if (_componentsList.Count > 0)
+            {
+                foreach (GameComponent component in _componentsList)
+                    component.OnRemoved();
+            }
+
+            //Little event OnRemoved...
+            this.OnRemoved();
+
 
         }
 
@@ -981,14 +1126,11 @@ namespace FNAEngine2D
         public virtual void Destroy()
         {
             if (this.Parent == null)
-                throw new InvalidOperationException("Impossible du destroy de root game object.");
+                throw new InvalidOperationException("Impossible to destroy the root game object or already been destroyed.");
 
             //Simply removing this...
-            this.Parent._childrens.Remove(this);
+            this.Parent.Remove(this);
 
-            //Retrait du collider...
-            if (_collider != null)
-                GetColliderContainer().Remove(_collider);
         }
 
 
@@ -1160,7 +1302,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Active le collider
+        /// Enable the default collider rectangle
         /// </summary>
         public GameObject EnableCollider()
         {
@@ -1170,21 +1312,14 @@ namespace FNAEngine2D
             if (_collider != null)
                 return this;
 
-            _collider = new Collider(this);
-
-            //If not already added, we will add it in the ColliderContainer on Add
-            if (this.Parent == null)
-                return this;
-
-            //Add to container...
-            GetColliderContainer().Add(_collider);
+            AddComponent<ColliderRectangle>();
 
             return this;
+
         }
 
-
         /// <summary>
-        /// Disable the collider
+        /// Disable the default collider rectangle
         /// </summary>
         public GameObject DisableCollider()
         {
@@ -1194,9 +1329,7 @@ namespace FNAEngine2D
             if (_collider == null)
                 return this;
 
-            GetColliderContainer().Remove(_collider);
-
-            _collider = null;
+            RemoveComponent<ColliderRectangle>();
 
             return this;
         }
@@ -1207,12 +1340,18 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(Type[] types)
         {
-            ColliderContainer container = GetColliderContainer();
+            ColliderContainer container = _game.ColliderContainer;
 
             if (container.IsEmpty)
                 return null;
 
-            return container.GetCollision(this._location, this._size, _collider, types);
+            Collider collider = _collider;
+            if (collider == null)
+                collider = new ColliderRectangle(this);
+
+            collider.MovingLocation = this._location;
+
+            return container.GetCollision(collider, types);
         }
 
         /// <summary>
@@ -1220,12 +1359,18 @@ namespace FNAEngine2D
         /// </summary>
         public Collision GetCollision(Vector2 position, Type[] types)
         {
-            ColliderContainer container = GetColliderContainer();
+            ColliderContainer container = _game.ColliderContainer;
 
             if (container.IsEmpty)
                 return null;
 
-            return container.GetCollision(position, _size, _collider, types);
+            Collider collider = _collider;
+            if (collider == null)
+                collider = new ColliderRectangle(this);
+
+            collider.MovingLocation = this._location;
+
+            return container.GetCollision(collider, types);
         }
 
         /// <summary>
@@ -1236,18 +1381,21 @@ namespace FNAEngine2D
             return GetCollision(new Vector2(nextX, nextY), types);
         }
 
-        /// <summary>
-        /// Permet d'obtenir la première collision
-        /// </summary>
-        public Collision GetCollision(Vector2 position, Vector2 size, Type[] types)
-        {
-            ColliderContainer container = GetColliderContainer();
+        ///// <summary>
+        ///// Permet d'obtenir la première collision
+        ///// </summary>
+        //public Collision GetCollision(Vector2 position, Vector2 size, Type[] types)
+        //{
+        //    ColliderContainer container = _game.ColliderContainer;
 
-            if (container.IsEmpty)
-                return null;
+        //    if (container.IsEmpty)
+        //        return null;
 
-            return container.GetCollision(position, size, _collider, types);
-        }
+        //    ColliderRectangle collider = new ColliderRectangle(this);
+        //    collider.Size = size;
+
+        //    return container.GetCollision(position, size, collider, types);
+        //}
 
 
         /// <summary>
@@ -1284,61 +1432,46 @@ namespace FNAEngine2D
             return count;
         }
 
-        /// <summary>
-        /// Permet de trouver le collider container où tout mettre les collider
-        /// </summary>
-        private ColliderContainer GetColliderContainer()
-        {
-            return _game.ColliderContainer;
 
-            //if (this.RootGameObject == null)
-            //    return new ColliderContainer();
+        ///// <summary>
+        ///// Process the removal of a game object for colliders (including children)
+        ///// </summary>
+        //private void AddColliders(GameObject gameObject)
+        //{
+        //    if (gameObject._collider != null)
+        //    {
+        //        GetColliderContainer().Add(gameObject._collider);
+        //    }
 
-            //if (this.RootGameObject._colliderContainer == null)
-            //    this.RootGameObject._colliderContainer = new ColliderContainer();
+        //    if (gameObject._childrens.Count > 0)
+        //    {
+        //        for (int index = 0; index < gameObject._childrens.Count; index++)
+        //        {
+        //            AddColliders(gameObject._childrens[index]);
+        //        }
+        //    }
 
-            //return this.RootGameObject._colliderContainer;
-        }
+        //}
 
-        /// <summary>
-        /// Process the removal of a game object for colliders (including children)
-        /// </summary>
-        private void AddColliders(GameObject gameObject)
-        {
-            if (gameObject._collider != null)
-            {
-                GetColliderContainer().Add(gameObject._collider);
-            }
+        ///// <summary>
+        ///// Process the removal of a game object for colliders (including children)
+        ///// </summary>
+        //private void RemoveColliders(GameObject gameObject)
+        //{
+        //    if (gameObject._collider != null)
+        //    {
+        //        GetColliderContainer().Remove(gameObject._collider);
+        //    }
 
-            if (gameObject._childrens.Count > 0)
-            {
-                for (int index = 0; index < gameObject._childrens.Count; index++)
-                {
-                    AddColliders(gameObject._childrens[index]);
-                }
-            }
+        //    if (gameObject._childrens.Count > 0)
+        //    {
+        //        for (int index = 0; index < gameObject._childrens.Count; index++)
+        //        {
+        //            RemoveColliders(gameObject._childrens[index]);
+        //        }
+        //    }
 
-        }
-
-        /// <summary>
-        /// Process the removal of a game object for colliders (including children)
-        /// </summary>
-        private void RemoveColliders(GameObject gameObject)
-        {
-            if (gameObject._collider != null)
-            {
-                GetColliderContainer().Remove(gameObject._collider);
-            }
-
-            if (gameObject._childrens.Count > 0)
-            {
-                for (int index = 0; index < gameObject._childrens.Count; index++)
-                {
-                    RemoveColliders(gameObject._childrens[index]);
-                }
-            }
-
-        }
+        //}
 
         /// <summary>
         /// Get a service

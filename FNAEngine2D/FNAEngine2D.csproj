@@ -65,6 +65,9 @@
     <Compile Include="Asperite\PixelFormats\GrayscalePixel.cs" />
     <Compile Include="Asperite\PixelFormats\IndexedPixel.cs" />
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
+    <Compile Include="ColliderRectangle.cs" />
+    <Compile Include="ColliderCircle.cs" />
+    <Compile Include="GameComponent.cs" />
     <Compile Include="Components\MovementComponent.cs" />
     <Compile Include="DataStreaming\BinReader.cs" />
     <Compile Include="DataStreaming\BinWriter.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="GameObjectEnums.cs" />
     <Compile Include="GameTimeService.cs" />
     <Compile Include="GraphicSettings.cs" />
+    <Compile Include="OldGameObject.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="MultiTextureRender.cs" />
     <Compile Include="Texture2DBlender.cs" />
@@ -204,6 +208,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\circle.bin" />
     <None Include="Resources\empty_sfx.bin" />
     <None Include="Resources\pixel.bin" />
     <None Include="Resources\pixel_magenta.bin" />

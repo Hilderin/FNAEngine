@@ -4,13 +4,8 @@ using Microsoft.Xna.Framework;
 
 namespace FNAEngine2D.Components
 {
-    public class MovementComponent
+    public class MovementComponent: GameComponent
     {
-        /// <summary>
-        /// GameObject
-        /// </summary>
-        private GameObject _gameObject;
-
         /// <summary>
         /// If the GameObject is a NetworkGameObject
         /// </summary>
@@ -31,17 +26,12 @@ namespace FNAEngine2D.Components
         /// </summary>
         public Vector2 Movement { get { return _movement; } }
 
-
-
         /// <summary>
-        /// Constructor
+        /// Loading
         /// </summary>
-        public MovementComponent(GameObject gameObject)
+        public override void Load()
         {
-            _gameObject = gameObject;
-
-            _networkGameObject = gameObject as NetworkGameObject;
-
+            _networkGameObject = this.GameObject as NetworkGameObject;
         }
 
         /// <summary>
@@ -60,12 +50,12 @@ namespace FNAEngine2D.Components
                     if (_networkGameObject.IsServer)
                     {
                         //Sending movement to all clients...
-                        _networkGameObject.Server.SendCommandToAllClients(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = _gameObject.Location });
+                        _networkGameObject.Server.SendCommandToAllClients(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
                     }
                     else if (_networkGameObject.IsLocalPlayer)
                     {
                         //Sending movement to server...
-                        _networkGameObject.Client.SendCommand(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = _gameObject.Location });
+                        _networkGameObject.Client.SendCommand(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
                     }
                 }
 
@@ -101,7 +91,7 @@ namespace FNAEngine2D.Components
 
                 if (nextMovement != null)
                 {
-                    _gameObject.Location = nextMovement.StartPosition;
+                    this.GameObject.Location = nextMovement.StartPosition;
 
                     if (_movement != nextMovement.Movement)
                     {

@@ -72,10 +72,11 @@ namespace FNAEngine2D
             }
         }
 
+
         /// <summary>
         /// Permet d'obtenir la liste des collisions
         /// </summary>
-        public Collision GetCollision(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, Type[] types)
+        public Collision GetCollision(Vector2 movingColliderLocation, Collider movingCollider, Type[] types)
         {
             if (_colliders.Count == 0)
                 return null;
@@ -85,7 +86,7 @@ namespace FNAEngine2D
             if (types == null)
             {
                 //All types...
-                GetCollision(movingColliderLocation, movingColliderSize, movingCollider, _colliders, ref collision);
+                GetCollision(movingColliderLocation, movingCollider, _colliders, ref collision);
             }
             else
             {
@@ -95,7 +96,7 @@ namespace FNAEngine2D
                 {
                     if (_collidersPerType.TryGetValue(types[index], out colliders))
                     {
-                        GetCollision(movingColliderLocation, movingColliderSize, movingCollider, colliders, ref collision);
+                        GetCollision(movingColliderLocation, movingCollider, colliders, ref collision);
                     }
                 }
             }
@@ -148,17 +149,18 @@ namespace FNAEngine2D
                 LoadAllTypesForType(interfaceType, types);
         }
 
+
         /// <summary>
         /// Get collision from a list of colliders
         /// </summary>
-        private void GetCollision(Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, List<Collider> colliders, ref Collision collision)
+        private void GetCollision(Vector2 movingColliderLocation, Collider movingCollider, List<Collider> colliders, ref Collision collision)
         {
 
             for (int index = 0; index < colliders.Count; index++)
             {
                 if (colliders[index] != movingCollider)
                 {
-                    CollisionHelper.GetCollision(movingColliderLocation, movingColliderSize, colliders[index], ref collision);
+                    CollisionHelper.GetCollision(movingColliderLocation, movingCollider, colliders[index], ref collision);
                 }
             }
 
@@ -176,7 +178,7 @@ namespace FNAEngine2D
             if (types == null)
             {
                 //All types...
-                GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingColliderSize, movingCollider, _colliders, ref collision);
+                GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingCollider, _colliders, ref collision);
             }
             else
             {
@@ -186,7 +188,7 @@ namespace FNAEngine2D
                 {
                     if (_collidersPerType.TryGetValue(types[index], out colliders))
                     {
-                        GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingColliderSize, movingCollider, colliders, ref collision);
+                        GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingCollider, colliders, ref collision);
                     }
                 }
             }
@@ -198,14 +200,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Get collision from a list of colliders
         /// </summary>
-        private void GetCollisionTravel(Vector2 movingColliderOriginLocation, Vector2 movingColliderLocation, Vector2 movingColliderSize, Collider movingCollider, List<Collider> colliders, ref Collision collision)
+        private void GetCollisionTravel(Vector2 movingColliderOriginLocation, Vector2 movingColliderLocation, Collider movingCollider, List<Collider> colliders, ref Collision collision)
         {
 
             for (int index = 0; index < colliders.Count; index++)
             {
                 if (colliders[index] != movingCollider)
                 {
-                    CollisionHelper.GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingColliderSize, colliders[index], ref collision);
+                    CollisionHelper.GetCollisionTravel(movingColliderOriginLocation, movingColliderLocation, movingCollider, colliders[index], ref collision);
                 }
             }
 
