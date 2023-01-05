@@ -39,6 +39,11 @@ namespace FNAEngine2D
         public Keys DownKey = Keys.S;
 
         /// <summary>
+        /// Crouch key
+        /// </summary>
+        public Keys CrouchKey = Keys.C;
+
+        /// <summary>
         /// Jump key
         /// </summary>
         public Keys JumpKey = Keys.Space;
@@ -70,6 +75,12 @@ namespace FNAEngine2D
         public bool IsDown { get { return _gameObject.Input.IsKeyDown(DownKey) && !_gameObject.Input.IsKeyDown(UpKey); } }
 
         /// <summary>
+        /// Is crouching
+        /// </summary>
+        public bool IsCrouch { get { return _gameObject.Input.IsKeyDown(CrouchKey); } }
+
+
+        /// <summary>
         /// Is jumping
         /// </summary>
         public bool IsJump { get { return _gameObject.Input.IsKeyDown(JumpKey); } }
@@ -78,6 +89,16 @@ namespace FNAEngine2D
         /// Is newly jumping
         /// </summary>
         public bool IsNewJump { get { return _gameObject.Input.IsKeyNewDown(JumpKey); } }
+
+        /// <summary>
+        /// Is newly crouching
+        /// </summary>
+        public bool IsNewCrouch { get { return _gameObject.Input.IsKeyNewDown(CrouchKey); } }
+
+        /// <summary>
+        /// Is newly not crouching
+        /// </summary>
+        public bool IsNewNotCrouch { get { return _gameObject.Input.IsKeyNewUp(CrouchKey); } }
 
         /// <summary>
         /// Is Firing

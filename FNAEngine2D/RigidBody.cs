@@ -49,14 +49,9 @@ namespace FNAEngine2D
         public float SpeedMps { get; set; } = 1;
 
         /// <summary>
-        /// Indicate if object is moving left
+        /// Normalized vector for the movement
         /// </summary>
-        public bool IsMovingLeft { get; set; }
-
-        /// <summary>
-        /// Indicate if object is moving right
-        /// </summary>
-        public bool IsMovingRight { get; set; }
+        public Vector2 Movement { get; set; }
 
 
         /// <summary>
@@ -87,12 +82,8 @@ namespace FNAEngine2D
         {
             //-------------
             //Moving left/right
-            Vector2 delta = Vector2.Zero;
-            
-            if(IsMovingLeft)
-                delta.X -= SpeedMps * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter;
-            if (IsMovingRight)
-                delta.X += SpeedMps * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter;
+            Vector2 delta = Movement * (SpeedMps * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter);
+
 
 
             //-------------
