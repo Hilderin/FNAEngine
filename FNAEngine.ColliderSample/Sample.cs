@@ -26,7 +26,7 @@ namespace FNAEngine2D.ColliderSample
             for(int cpt = 0; cpt < 1000; cpt++)
                 Add(new Ball()).TranslateTo(GameMath.RandomFloat(25, this.Game.Width - 25 - 50), GameMath.RandomFloat(25, this.Game.Height - 25 - 50));
 
-            Add(new FPSRender(ContentManager.FONT_ROBOTO_REGULAR, 12, Color.DarkRed));
+            Add(new FPSRender(FontManager.ROBOTO_REGULAR, 12, Color.DarkRed));
         }
 
     }

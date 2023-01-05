@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D", "FNAEngine2D\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.Tests", "FNAEngine2D.Tests\FNAEngine2D.Tests.csproj", "{1131C2A9-6461-4518-B12A-BFB8CDBA38D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.ColliderSample", "FNAEngine2D.ColliderSample\FNAEngine2D.ColliderSample.csproj", "{8FAD52FF-8AEB-4DD6-A0C2-E305E3177C96}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.ColliderSample", "FNAEngine.ColliderSample\FNAEngine2D.ColliderSample.csproj", "{8FAD52FF-8AEB-4DD6-A0C2-E305E3177C96}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FNAEngine2D.Space2DTreeTest", "FNAEngine2D.Space2DTreeTest\FNAEngine2D.Space2DTreeTest.csproj", "{C5E04170-6760-457F-B5FA-F91BBB6F9537}"
 EndProject
