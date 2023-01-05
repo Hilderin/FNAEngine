@@ -14,7 +14,7 @@ namespace FNAEngine2D
     public class TextureRender: GameObject
     {
         /// <summary>
-        /// Texture à renderer
+        /// Texture to renderer
         /// </summary>
         private Content<Texture2D> _texture;
 
@@ -46,7 +46,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Renderer de texture
+        /// Constructor
         /// </summary>
         public TextureRender(string textureName): this()
         {
@@ -54,7 +54,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Renderer de texture
+        /// Constructor
         /// </summary>
         public TextureRender(string textureName, Rectangle bounds) : this(textureName)
         {
@@ -70,7 +70,17 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Chargement du contenu
+        /// Constructor
+        /// </summary>
+        public TextureRender(string TextureName, Vector2 location, Vector2 size, Color color) : this(TextureName)
+        {
+            this.Color = color;
+            this.Location = location;
+            this.Size = size;
+        }
+
+        /// <summary>
+        /// Loading
         /// </summary>
         protected override void Load()
         {
@@ -92,7 +102,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// On resized...
+        /// On resize...
         /// </summary>
         protected override void OnResized()
         {

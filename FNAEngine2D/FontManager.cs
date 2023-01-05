@@ -15,11 +15,7 @@ namespace FNAEngine2D
     /// </summary>
     public static class FontManager
     {
-        /// <summary>
-        /// Embed font: Roboto-Regular
-        /// </summary>
-        public const string ROBOTO_REGULAR = "Roboto-Regular";
-
+        
         /// <summary>
         /// Graphics device
         /// </summary>
@@ -70,9 +66,9 @@ namespace FNAEngine2D
                 throw new InvalidOperationException("GetFont called before initialize.");
 
             //Embbed font?
-            if (filename == ROBOTO_REGULAR)
+            if (filename == ContentManager.FONT_ROBOTO_REGULAR)
             {
-                return _fontManager.GetTypeface(ROBOTO_REGULAR, Resource.Roboto_Regular).GetFont(fontSize);
+                return _fontManager.GetTypeface(ContentManager.FONT_ROBOTO_REGULAR, Resource.Roboto_Regular).GetFont(fontSize);
             }
             else
             {

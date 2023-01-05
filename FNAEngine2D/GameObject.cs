@@ -446,6 +446,16 @@ namespace FNAEngine2D
             }
         }
 
+        /// <summary>
+        /// Collider for this Game object. Null if no collider has been added
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public Collider Collider
+        {
+            get { return _collider; }
+        }
+
         ///// <summary>
         ///// Update version
         ///// </summary>
@@ -1330,7 +1340,7 @@ namespace FNAEngine2D
 
             //Already enabled?
             if (_collider != null)
-                return this;
+                throw new Exception("Already a collider attached to this game object.");
 
             AddComponent<ColliderRectangle>();
 
@@ -1339,7 +1349,25 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Disable the default collider rectangle
+        /// Enable the default collider rectangle
+        /// </summary>
+        public GameObject EnableColliderCircle()
+        {
+            _collidable = true;
+
+            //Already enabled?
+            if (_collider != null)
+                throw new Exception("Already a collider attached to this game object.");
+
+            //Add a collider at the center of the game object
+            AddComponent(new ColliderCircle(new Vector2(this.Width * 0.5f, this.Height * 0.5f), this.Width * 0.5f));
+
+            return this;
+
+        }
+
+        /// <summary>
+        /// Disable the collider
         /// </summary>
         public GameObject DisableCollider()
         {
@@ -1349,7 +1377,7 @@ namespace FNAEngine2D
             if (_collider == null)
                 return this;
 
-            RemoveComponent<ColliderRectangle>();
+            RemoveComponent<Collider>();
 
             return this;
         }

@@ -84,7 +84,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Current collision
         /// </summary>
-        public Collision Collistion { get; private set; }
+        public Collision Collision { get; private set; }
 
 
         /// <summary>
@@ -118,11 +118,14 @@ namespace FNAEngine2D
             Vector2 nextPosition = GetNextLocation();
 
 
-            //Check for collision...
-            this.Collistion = this.GameObject.GetCollision(nextPosition, this.ColliderTypes);
-            if (this.Collistion != null)
+            //Check for collision... only if the gameobject has a collider.
+            if (this.GameObject.Collider != null)
             {
-                nextPosition = this.Collistion.StopLocation;
+                this.Collision = this.GameObject.GetCollision(nextPosition, this.ColliderTypes);
+                if (this.Collision != null)
+                {
+                    nextPosition = this.Collision.StopLocation;
+                }
             }
 
 
@@ -130,8 +133,8 @@ namespace FNAEngine2D
 
             if (nextPosition != this.GameObject.Location)
             {
-                if(_networkGameObject != null && _networkGameObject.IsClient && _networkGameObject.IsLocalPlayer)
-                    Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
+                //if(_networkGameObject != null && _networkGameObject.IsClient && _networkGameObject.IsLocalPlayer)
+                //    Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
                 this.GameObject.TranslateTo(nextPosition);
             }
 

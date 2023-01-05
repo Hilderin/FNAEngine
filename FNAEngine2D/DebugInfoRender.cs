@@ -17,7 +17,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Font name
         /// </summary>
-        public string FontName { get; set; } = FontManager.ROBOTO_REGULAR;
+        public string FontName { get; set; } = ContentManager.FONT_ROBOTO_REGULAR;
 
         /// <summary>
         /// Font size

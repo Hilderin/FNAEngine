@@ -390,7 +390,7 @@ namespace FNAEngine2D
             if (_spriteBatch == null)
                 _spriteBatch = new SpriteBatch(_game.GraphicsDevice);
             if(_font == null)
-                _font = new Font(FontManager.ROBOTO_REGULAR, 12);
+                _font = new Font(ContentManager.FONT_ROBOTO_REGULAR, 12);
 
 
             string text = "EditMode";

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,6 +47,9 @@ namespace FNAEngine2D
         public void Add(Collider collider)
         {
             //_colliders.Add(collider);
+            if (collider.Size.X == 0 || collider.Size.Y == 0)
+                throw new InvalidOperationException("Cannot add a collider of size zero, size received: " + collider.Size);
+
             _spaceTree.Add(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
 
             ////Add in dictionary per type...
@@ -66,6 +70,10 @@ namespace FNAEngine2D
         /// </summary>
         public void Update(Collider collider)
         {
+            if (collider.Size.X == 0 || collider.Size.Y == 0)
+                throw new InvalidOperationException("Cannot update a collider to a size of zero, size received: " + collider.Size);
+
+
             _spaceTree.Move(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
         }
 

@@ -60,7 +60,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Nom de la font
         /// </summary>
-        private string _fontName = FontManager.ROBOTO_REGULAR;
+        private string _fontName = ContentManager.FONT_ROBOTO_REGULAR;
 
         /// <summary>
         /// Size de la font
@@ -103,7 +103,7 @@ namespace FNAEngine2D
         /// Nom de la font
         /// </summary>
         [Category("Text")]
-        [DefaultValue(FontManager.ROBOTO_REGULAR)]
+        [DefaultValue(ContentManager.FONT_ROBOTO_REGULAR)]
         public string FontName
         {
             get { return _fontName; }

@@ -24,11 +24,32 @@ namespace FNAEngine2D
     /// </summary>
     public class ContentManager : Microsoft.Xna.Framework.Content.ContentManager
     {
+        /// <summary>
+        /// Built in texture for a pixel
+        /// </summary>
+        public const string TEXTURE_PIXEL = "pixel";
+
+        /// <summary>
+        /// Built in texture for a magenta pixel
+        /// </summary>
+        public const string TEXTURE_PIXEL_MAGENTA = "pixel_magenta";
+
+        /// <summary>
+        /// Built in texture for a circle
+        /// </summary>
+        public const string TEXTURE_CIRCLE = "circle";
+
+        /// <summary>
+        /// Embed font: Roboto-Regular
+        /// </summary>
+        public const string FONT_ROBOTO_REGULAR = "Roboto-Regular";
+
+
 
         /// <summary>
         /// Extensions for textures
         /// </summary>
-        public static string[] TEXTURES_EXTENSIONS = new string[]
+        internal static string[] TEXTURES_EXTENSIONS = new string[]
         {
             ".aseprite", ".bmp", ".gif", ".jpg", ".jpeg", ".png", ".tga", ".tif", ".tiff"        //, ".dds"
         };

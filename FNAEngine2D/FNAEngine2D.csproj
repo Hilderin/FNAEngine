@@ -172,6 +172,7 @@
     <Compile Include="SpriteRender.cs" />
     <Compile Include="Texture2DExtensions.cs" />
     <Compile Include="Texture2DHelper.cs" />
+    <Compile Include="PrimitiveRender.cs" />
     <Compile Include="TextureRender.cs" />
     <Compile Include="RectangleHelper.cs" />
     <Compile Include="RectangleExtensions.cs" />
