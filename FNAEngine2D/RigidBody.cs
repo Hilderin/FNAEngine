@@ -10,18 +10,8 @@ namespace FNAEngine2D
     /// <summary>
     /// Object simulating physic
     /// </summary>
-    public class RigidBody
+    public class RigidBody: GameComponent
     {
-        /// <summary>
-        /// Attached game object
-        /// </summary>
-        private GameObject _gameObject;
-
-        /// <summary>
-        /// Last location
-        /// </summary>
-        private Vector2 _lastLocation;
-
         /// <summary>
         /// Time at which the object begun to fall
         /// </summary>
@@ -32,10 +22,6 @@ namespace FNAEngine2D
         /// </summary>
         private List<Force> _forces = new List<Force>();
 
-        /// <summary>
-        /// Object attached to
-        /// </summary>
-        public GameObject GameObject { get { return _gameObject; } }
 
         /// <summary>
         /// The gravity (meter per second) (default Earth gravirty is 9.81 m/s)
@@ -53,14 +39,59 @@ namespace FNAEngine2D
         /// </summary>
         public Vector2 Movement { get; set; }
 
+        /// <summary>
+        /// Type with which the rigid body collide. If null, then all collider will be used.
+        /// </summary>
+        public Type[] ColliderTypes { get; set; } = null;
+
+        /// <summary>
+        /// Previous location
+        /// </summary>
+        public Vector2 LastLocation { get; private set; }
+
+        /// <summary>
+        /// Current collision
+        /// </summary>
+        public Collision Collistion { get; private set; }
+
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public RigidBody(GameObject gameObject)
+        public RigidBody()
         {
-            _gameObject = gameObject;
-            _lastLocation = gameObject.Location;
+        }
+
+        /// <summary>
+        /// Loading
+        /// </summary>
+        protected override void Load()
+        {
+            LastLocation = this.GameObject.Location;
+        }
+
+        /// <summary>
+        /// Update each frame
+        /// </summary>
+        protected override void Update()
+        {
+            
+
+            //Applying physics...
+            Vector2 nextPosition = GetNextLocation();
+
+
+            //Check for collision...
+            this.Collistion = this.GameObject.GetCollision(nextPosition, this.ColliderTypes);
+            if (this.Collistion != null)
+            {
+                nextPosition = this.Collistion.StopLocation;
+            }
+
+            LastLocation = this.GameObject.Location;
+            this.GameObject.TranslateTo(nextPosition);
+
+            
         }
 
         /// <summary>
@@ -68,7 +99,7 @@ namespace FNAEngine2D
         /// </summary>
         public Force AddForce(Vector2 target, float speedMps)
         {
-            Force force = new Force(target, speedMps, _gameObject);
+            Force force = new Force(target, speedMps, this.GameObject);
 
             _forces.Add(force);
 
@@ -78,25 +109,28 @@ namespace FNAEngine2D
         /// <summary>
         /// Apply the physics
         /// </summary>
-        public Vector2 ApplyPhysics()
+        public Vector2 GetNextLocation()
         {
             //-------------
             //Moving left/right
-            Vector2 delta = Movement * (SpeedMps * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter);
+            Vector2 delta = Movement * (SpeedMps * this.GameObject.ElapsedGameTimeSeconds * this.GameObject.NbPixelPerMeter);
 
 
 
             //-------------
             //Gavity...
+            if (GravityMps != 0)
+            {
+                if (LastLocation.Y >= this.GameObject.Location.Y)
+                    //Did not fall...
+                    _timeBeginFall = 0f;
 
-            if (_lastLocation.Y >= _gameObject.Location.Y)
-                //Did not fall...
-                _timeBeginFall = 0f;
+                _timeBeginFall += this.GameObject.ElapsedGameTimeSeconds;
+                float acceleration = GravityMps * _timeBeginFall;
 
-            _timeBeginFall += _gameObject.ElapsedGameTimeSeconds;
-            float acceleration = GravityMps * _timeBeginFall;
+                delta.Y = acceleration * this.GameObject.ElapsedGameTimeSeconds * this.GameObject.NbPixelPerMeter;
+            }
 
-            delta.Y = acceleration * _gameObject.ElapsedGameTimeSeconds * _gameObject.NbPixelPerMeter;
 
             //------------
             //Other forces...
@@ -111,11 +145,9 @@ namespace FNAEngine2D
                     if (_forces[index].IsCompleted)
                         _forces.RemoveAt(index);
                 }
-            }
+            }            
 
-            _lastLocation = _gameObject.Location;
-
-            return _gameObject.Location + delta;
+            return this.GameObject.Location + delta;
 
         }
 
