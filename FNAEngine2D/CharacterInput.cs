@@ -19,96 +19,95 @@ namespace FNAEngine2D
         private GameObject _gameObject;
 
         /// <summary>
-        /// Left key
+        /// Left
         /// </summary>
-        public Keys LeftKey = Keys.A;
+        public InputMap Left = InputMap.A;
 
         /// <summary>
         /// Right key
         /// </summary>
-        public Keys RightKey = Keys.D;
+        public InputMap Right = InputMap.D;
 
         /// <summary>
         /// Up key
         /// </summary>
-        public Keys UpKey = Keys.W;
+        public InputMap Up = InputMap.W;
 
         /// <summary>
         /// Down key
         /// </summary>
-        public Keys DownKey = Keys.S;
+        public InputMap Down = InputMap.S;
 
         /// <summary>
         /// Crouch key
         /// </summary>
-        public Keys CrouchKey = Keys.C;
+        public InputMap Crouch = InputMap.C;
 
         /// <summary>
         /// Jump key
         /// </summary>
-        public Keys JumpKey = Keys.Space;
+        public InputMap Jump = InputMap.Space;
 
         /// <summary>
         /// Fire key
         /// </summary>
-        public Keys FireKey = Keys.E;
+        public InputMap Fire = InputMap.E;
 
 
         /// <summary>
         /// Is moving left?
         /// </summary>
-        public bool IsLeft { get { return _gameObject.Input.IsKeyDown(LeftKey) && !_gameObject.Input.IsKeyDown(RightKey); } }
+        public bool IsLeftActive() { return _gameObject.Input.IsMapDown(Left) && !_gameObject.Input.IsMapDown(Right); }
 
         /// <summary>
         /// Is moving right?
         /// </summary>
-        public bool IsRight { get { return _gameObject.Input.IsKeyDown(RightKey) && !_gameObject.Input.IsKeyDown(LeftKey); } }
+        public bool IsRightActive() { return _gameObject.Input.IsMapDown(Right) && !_gameObject.Input.IsMapDown(Left); }
 
         /// <summary>
         /// Is moving up?
         /// </summary>
-        public bool IsUp { get { return _gameObject.Input.IsKeyDown(UpKey) && !_gameObject.Input.IsKeyDown(DownKey); } }
+        public bool IsUpActive() { return _gameObject.Input.IsMapDown(Up) && !_gameObject.Input.IsMapDown(Down); }
 
         /// <summary>
         /// Is moving down?
         /// </summary>
-        public bool IsDown { get { return _gameObject.Input.IsKeyDown(DownKey) && !_gameObject.Input.IsKeyDown(UpKey); } }
+        public bool IsDownActive() { return _gameObject.Input.IsMapDown(Down) && !_gameObject.Input.IsMapDown(Up); }
 
         /// <summary>
         /// Is crouching
         /// </summary>
-        public bool IsCrouch { get { return _gameObject.Input.IsKeyDown(CrouchKey); } }
-
+        public bool IsCrouchActive() { return _gameObject.Input.IsMapDown(Crouch); }
 
         /// <summary>
         /// Is jumping
         /// </summary>
-        public bool IsJump { get { return _gameObject.Input.IsKeyDown(JumpKey); } }
+        public bool IsJumpActive() { return _gameObject.Input.IsMapDown(Jump); }
 
         /// <summary>
         /// Is newly jumping
         /// </summary>
-        public bool IsNewJump { get { return _gameObject.Input.IsKeyNewDown(JumpKey); } }
+        public bool IsJumpNewlyActive() { return _gameObject.Input.IsMapNewDown(Jump); }
 
         /// <summary>
         /// Is newly crouching
         /// </summary>
-        public bool IsNewCrouch { get { return _gameObject.Input.IsKeyNewDown(CrouchKey); } }
+        public bool IsCrouchNewlyActive() { return _gameObject.Input.IsMapNewDown(Crouch); }
 
         /// <summary>
         /// Is newly not crouching
         /// </summary>
-        public bool IsNewNotCrouch { get { return _gameObject.Input.IsKeyNewUp(CrouchKey); } }
+        public bool IsCrouchNewlyInactive() { return _gameObject.Input.IsMapNewUp(Crouch); }
 
         /// <summary>
         /// Is Firing
         /// </summary>
-        public bool IsFire { get { return _gameObject.Input.IsKeyDown(FireKey); } }
+        public bool IsFireActive() { return _gameObject.Input.IsMapDown(Fire); }
 
         /// <summary>
         /// Is newly Fireing
         /// </summary>
-        public bool IsNewFire { get { return _gameObject.Input.IsKeyNewDown(FireKey); } }
+        public bool IsFireNewlyActive() { return _gameObject.Input.IsMapNewDown(Fire); }
 
         /// <summary>
         /// Constructor
@@ -127,14 +126,14 @@ namespace FNAEngine2D
             float deltaX = 0f;
             float deltaY = 0f;
 
-            if (this.IsLeft)
+            if (this.IsLeftActive())
                 deltaX -= 1f;
-            if (this.IsRight)
+            if (this.IsRightActive())
                 deltaX += 1f;
 
-            if (this.IsUp)
+            if (this.IsUpActive())
                 deltaY -= 1f;
-            if (this.IsDown)
+            if (this.IsDownActive())
                 deltaY += 1f;
 
             if (deltaX == 0 && deltaY == 0)

@@ -28,7 +28,11 @@ namespace FNAEngine2D
         /// </summary>
         private List<Keys> _consumedKeyPressed = new List<Keys>();
 
-        
+        /// <summary>
+        /// Consumed mouse clicked
+        /// </summary>
+        private List<MouseButton> _consumedMouseButton = new List<MouseButton>();
+
 
         /// <summary>
         /// Constructor
@@ -43,15 +47,28 @@ namespace FNAEngine2D
         /// </summary>
         public void Update()
         {
-            _lastKeyboardState = _keyboardState;
-            _keyboardState = Keyboard.GetState();
-
-            _lastMouseState = _mouseState;
-            _mouseState = Mouse.GetState();
-
-            _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / _game.ScreenScale) + _game.MainCamera.Location.Substract(_game.MainCamera.ViewLocation);
-
             _consumedKeyPressed.Clear();
+            _consumedMouseButton.Clear();
+
+            _lastKeyboardState = _keyboardState;
+            _lastMouseState = _mouseState;
+
+            if (_game.IsActive)
+            {                
+                _keyboardState = Keyboard.GetState();
+
+                _mouseState = Mouse.GetState();
+
+                _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / _game.ScreenScale) + _game.MainCamera.Location.Substract(_game.MainCamera.ViewLocation);
+            }
+            else
+            {
+                //Game not active... we don't grab states... We set empty states
+                _keyboardState = new KeyboardState();
+                _mouseState = new MouseState();
+            }
+
+            
         }
 
         /// <summary>
@@ -186,27 +203,104 @@ namespace FNAEngine2D
             return _mousePosition;
         }
 
-        ///// <summary>
-        ///// Gets the last mouse coordinates adjusted for virtual resolution and camera position.
-        ///// </summary>
-        //public Vector2 LastMousePositionCamera()
-        //{
-        //    Vector2 mousePosition = Vector2.Zero;
-        //    mousePosition.X = _lastMouseState.X;
-        //    mousePosition.Y = _lastMouseState.Y;
+        /// <summary>
+        /// Check if an input map is down
+        /// </summary>
+        public bool IsMapDown(InputMap inputMap)
+        {
+            return IsMapDown(inputMap, _keyboardState, _mouseState);
+        }
 
-        //    return ScreenToWorld(mousePosition);
-        //}
+        /// <summary>
+        /// Check if an input map is up
+        /// </summary>
+        public bool IsMapUp(InputMap inputMap)
+        {
+            return !IsMapDown(inputMap, _keyboardState, _mouseState);
+        }
 
-        ///// <summary>
-        ///// Takes screen coordinates (2D position like where the mouse is on screen) then converts it to world position (where we clicked at in the world). 
-        ///// </summary>
-        //private Vector2 ScreenToWorld(Vector2 input)
-        //{
-        //    input.X -= Resolution.VirtualViewportX;
-        //    input.Y -= Resolution.VirtualViewportY;
+        /// <summary>
+        /// Check if an input map is newly down
+        /// </summary>
+        public bool IsMapNewDown(InputMap inputMap)
+        {
+            return IsMapDown(inputMap, _keyboardState, _mouseState) && !IsMapDown(inputMap, _lastKeyboardState, _lastMouseState);
+        }
 
-        //    return Vector2.Transform(input, Matrix.Invert(Camera.GetTransformMatrix()));
-        //}
+        /// <summary>
+        /// Check if an input map is newly up
+        /// </summary>
+        public bool IsMapNewUp(InputMap inputMap)
+        {
+            return !IsMapDown(inputMap, _keyboardState, _mouseState) && IsMapDown(inputMap, _lastKeyboardState, _lastMouseState);
+        }
+
+        /// <summary>
+        /// Checks if input map was just pressed.
+        /// </summary>
+        public bool IsMapPressed(InputMap inputMap, bool consume = true)
+        {
+            if (IsMapDown(inputMap, _keyboardState, _mouseState) && !IsMapDown(inputMap, _lastKeyboardState, _lastMouseState)
+                && !IsMapConsumed(inputMap))
+            {
+                if (consume)
+                    ConsumeMapPressed(inputMap);
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Remove the map pressed from the state, we processed it
+        /// The goal is to prevent multiple gamepobject to process the MapPressed
+        /// </summary>
+        public void ConsumeMapPressed(InputMap inputMap)
+        {
+            if (inputMap.Key != Keys.None)
+                _consumedKeyPressed.Add(inputMap.Key);
+            if (inputMap.MouseButton != MouseButton.None)
+                _consumedMouseButton.Add(inputMap.MouseButton);
+        }
+
+        /// <summary>
+        /// Check if an input map is down
+        /// </summary>
+        private bool IsMapDown(InputMap inputMap, KeyboardState keyboardState, MouseState mouseState)
+        {
+            if (inputMap.Key != Keys.None)
+                return keyboardState.IsKeyDown(inputMap.Key);
+
+            switch (inputMap.MouseButton)
+            {
+                case MouseButton.Left:
+                    return mouseState.LeftButton == ButtonState.Pressed;
+                case MouseButton.Right:
+                    return mouseState.RightButton == ButtonState.Pressed;
+                case MouseButton.Middle:
+                    return mouseState.MiddleButton == ButtonState.Pressed;
+                case MouseButton.XButton1:
+                    return mouseState.XButton1 == ButtonState.Pressed;
+                case MouseButton.XButton2:
+                    return mouseState.XButton2 == ButtonState.Pressed;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if an input map consumed?
+        /// </summary>
+        private bool IsMapConsumed(InputMap inputMap)
+        {
+            if (inputMap.Key != Keys.None)
+                return _consumedKeyPressed.Contains(inputMap.Key);
+
+            if (inputMap.MouseButton != MouseButton.None)
+                return _consumedMouseButton.Contains(inputMap.MouseButton);
+
+            return false;
+        }
     }
 }
