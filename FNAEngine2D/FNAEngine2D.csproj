@@ -67,6 +67,7 @@
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
     <Compile Include="ColliderRectangle.cs" />
     <Compile Include="ColliderCircle.cs" />
+    <Compile Include="Directions.cs" />
     <Compile Include="GameComponent.cs" />
     <Compile Include="DataStreaming\BinReader.cs" />
     <Compile Include="DataStreaming\BinWriter.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="GameObjectEnums.cs" />
     <Compile Include="GameTimeService.cs" />
     <Compile Include="GraphicSettings.cs" />
-    <Compile Include="OldGameObject.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="MultiTextureRender.cs" />
     <Compile Include="SpaceTrees\Space2DTree.cs" />
@@ -226,6 +226,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Asperite\Utils\" />
+    <Folder Include="Particules\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -152,5 +152,50 @@ namespace FNAEngine2D
             return new Vector2(x * val, y * val);
         }
 
+
+
+        /// <summary>
+        /// Calculate the direction from a radians
+        /// </summary>
+        public static Direction4 GetDirection4(Vector2 vector)
+        {
+            float radians = vector.ToAngle();
+
+            if (radians >= GameMath.PiThreeQuarter || radians <= GameMath.MinusPiThreeQuarter)
+                return Direction4.Left;
+
+            if (radians >= GameMath.MinusPiThreeQuarter && radians <= GameMath.MinusPiQuarter)
+                return Direction4.Up;
+
+            if (radians >= GameMath.MinusPiQuarter && radians <= GameMath.PiQuarter)
+                return Direction4.Right;
+
+            return Direction4.Down;
+
+
+        }
+
+        /// <summary>
+        /// Calculate the direction from a radians an origin and a destination
+        /// </summary>
+        public static Direction4 GetDirection4To(Vector2 origin, Vector2 destination)
+        {
+            float radians = (destination - origin).ToAngle();
+
+            if (radians >= GameMath.PiThreeQuarter || radians <= GameMath.MinusPiThreeQuarter)
+                return Direction4.Left;
+
+            if (radians >= GameMath.MinusPiThreeQuarter && radians <= GameMath.MinusPiQuarter)
+                return Direction4.Up;
+
+            if (radians >= GameMath.MinusPiQuarter && radians <= GameMath.PiQuarter)
+                return Direction4.Right;
+
+            return Direction4.Down;
+
+
+        }
+
+
     }
 }

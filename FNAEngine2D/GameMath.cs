@@ -10,6 +10,13 @@ namespace FNAEngine2D
 {
     public static class GameMath
     {
+
+        public const float PiThreeQuarter = (float)Math.PI * 0.75f;
+        public const float MinusPiThreeQuarter = (float)Math.PI * -0.75f;
+        public const float PiQuarter = (float)Math.PI * 0.25f;
+        public const float MinusPiQuarter = (float)Math.PI * -0.25f;
+
+
         /// <summary>
         /// Random object
         /// </summary>

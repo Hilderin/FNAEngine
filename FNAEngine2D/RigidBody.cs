@@ -11,7 +11,7 @@ namespace FNAEngine2D
     /// <summary>
     /// Object simulating physic
     /// </summary>
-    public class RigidBody: GameComponent
+    public class RigidBody : GameComponent
     {
         /// <summary>
         /// If the GameObject is a NetworkGameObject
@@ -108,6 +108,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Update each frame
         /// </summary>
+        public void Recalculate()
+        {
+            Update();
+        }
+
+        /// <summary>
+        /// Update each frame
+        /// </summary>
         protected override void Update()
         {
             //Applying next movement and location...
@@ -138,7 +146,7 @@ namespace FNAEngine2D
                 this.GameObject.TranslateTo(nextPosition);
             }
 
-            
+
         }
 
         /// <summary>
@@ -151,6 +159,14 @@ namespace FNAEngine2D
             _forces.Add(force);
 
             return force;
+        }
+
+        /// <summary>
+        /// Move the object for one more frame
+        /// </summary>
+        public void MoveOneFrame()
+        {
+            Update();
         }
 
         /// <summary>
@@ -235,7 +251,7 @@ namespace FNAEngine2D
                     if (_forces[index].IsCompleted)
                         _forces.RemoveAt(index);
                 }
-            }            
+            }
 
             return this.GameObject.Location + delta;
 

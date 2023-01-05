@@ -68,5 +68,22 @@ namespace FNAEngine2D
             return Vector2.Distance(vector, target);
         }
 
+
+        /// <summary>
+        /// Calculate the direction of the vector on 4 directions
+        /// </summary>
+        public static Direction4 Direction4(this Vector2 vector)
+        {
+            return VectorHelper.GetDirection4(vector);
+        }
+
+        /// <summary>
+        /// Calculate the direction from a radians an origin and a destination
+        /// </summary>
+        public static Direction4 Direction4To(this Vector2 vector, Vector2 destination)
+        {
+            return VectorHelper.GetDirection4To(vector, destination);
+        }
+
     }
 }

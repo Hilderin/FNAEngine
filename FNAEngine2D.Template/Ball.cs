@@ -1,13 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FNAEngine2D.ColliderSample
+namespace FNAEngine2D.Template
 {
-    public class Ball : GameObject
+    public class Ball: GameObject
     {
         /// <summary>
         /// Rigid body that will handle movement
@@ -19,8 +14,8 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         public Ball()
         {
-            this.Width = 40;
-            this.Height = 40;
+            this.Width = 4;
+            this.Height = 4;
         }
 
         /// <summary>
@@ -37,7 +32,7 @@ namespace FNAEngine2D.ColliderSample
             //Rigid body with gravity
             _rigidBody = AddComponent<RigidBody>();
             _rigidBody.UseGravity = false;
-            _rigidBody.SpeedMps = 5;
+            _rigidBody.SpeedMps = GameMath.RandomFloat(0.1f, 2f);
 
             //Random movement
             _rigidBody.Movement = new Vector2(GameMath.RandomFloat(-1, 1), GameMath.RandomFloat(-1, 1));
@@ -48,9 +43,8 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         protected override void Update()
         {
-            if (_rigidBody.Collision != null)
+            if(_rigidBody.Collision != null)
             {
-
                 AdjustMovement(_rigidBody.Collision);
 
                 foreach (GameObject obj in _rigidBody.Collision.CollidesWith)
@@ -62,7 +56,6 @@ namespace FNAEngine2D.ColliderSample
                     }
                 }
 
-                
             }
         }
 
@@ -71,11 +64,12 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         private void AdjustMovement(Collision collision)
         {
+            //Direction4 direction = _rigidBody.Movement.Direction4();
             Direction4 direction = collision.Direction;
             if (direction == Direction4.Down || direction == Direction4.Up)
-                _rigidBody.Movement *= new Vector2(1, -1);
+                _rigidBody.Movement *= new Vector2(0, -1);
             else
-                _rigidBody.Movement *= new Vector2(-1, 1);
+                _rigidBody.Movement *= new Vector2(-1, 0);
         }
     }
 }

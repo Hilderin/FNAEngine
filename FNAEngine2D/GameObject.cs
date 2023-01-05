@@ -431,7 +431,7 @@ namespace FNAEngine2D
         [Category("Behavior")]
         [DefaultValue(false)]
         [Description("Indicate of a collider should be activated for this GameObject.")]
-        public bool Collidable
+        public virtual bool Collidable
         {
             get { return _collidable; }
             set
@@ -442,6 +442,9 @@ namespace FNAEngine2D
                         EnableCollider();
                     else
                         DisableCollider();
+
+                    //To be sure because EnableCollider and DisableCollider can be overrided
+                    _collidable = value;
                 }
             }
         }
@@ -1334,15 +1337,18 @@ namespace FNAEngine2D
         /// <summary>
         /// Enable the default collider rectangle
         /// </summary>
-        public GameObject EnableCollider()
+        public virtual GameObject EnableCollider()
         {
-            _collidable = true;
+            if (!_collidable)
+            {
+                _collidable = true;
 
-            //Already enabled?
-            if (_collider != null)
-                throw new Exception("Already a collider attached to this game object.");
+                //Already enabled?
+                if (_collider != null)
+                    throw new Exception("Already a collider attached to this game object.");
 
-            AddComponent<ColliderRectangle>();
+                AddComponent<ColliderRectangle>();
+            }
 
             return this;
 
@@ -1351,16 +1357,19 @@ namespace FNAEngine2D
         /// <summary>
         /// Enable the default collider rectangle
         /// </summary>
-        public GameObject EnableColliderCircle()
+        public virtual GameObject EnableColliderCircle()
         {
-            _collidable = true;
+            if (!_collidable)
+            {
+                _collidable = true;
 
-            //Already enabled?
-            if (_collider != null)
-                throw new Exception("Already a collider attached to this game object.");
+                //Already enabled?
+                if (_collider != null)
+                    throw new Exception("Already a collider attached to this game object.");
 
-            //Add a collider at the center of the game object
-            AddComponent(new ColliderCircle(new Vector2(this.Width * 0.5f, this.Height * 0.5f), this.Width * 0.5f));
+                //Add a collider at the center of the game object
+                AddComponent(new ColliderCircle(new Vector2(this.Width * 0.5f), this.Width * 0.5f));
+            }
 
             return this;
 
@@ -1369,15 +1378,13 @@ namespace FNAEngine2D
         /// <summary>
         /// Disable the collider
         /// </summary>
-        public GameObject DisableCollider()
+        public virtual GameObject DisableCollider()
         {
             _collidable = false;
 
             //Already disabled?
-            if (_collider == null)
-                return this;
-
-            RemoveComponent<Collider>();
+            if (_collider != null)
+                RemoveComponent<Collider>();
 
             return this;
         }
@@ -1397,6 +1404,7 @@ namespace FNAEngine2D
             if (collider == null)
                 collider = new ColliderRectangle(this);
 
+            collider.OrignalMovingLocation = this._location;
             collider.MovingLocation = this._location;
 
             return container.GetCollision(collider, types);
@@ -1416,6 +1424,7 @@ namespace FNAEngine2D
             if (collider == null)
                 collider = new ColliderRectangle(this);
 
+            collider.OrignalMovingLocation = position;
             collider.MovingLocation = position;
 
             return container.GetCollision(collider, types);
@@ -1443,6 +1452,7 @@ namespace FNAEngine2D
                 return null;
 
             ColliderRectangle collider = new ColliderRectangle(this);
+            collider.OrignalMovingLocation = position;
             collider.MovingLocation = position;
             collider.Size = size;
 

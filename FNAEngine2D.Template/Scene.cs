@@ -1,13 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FNAEngine2D.ColliderSample
+namespace FNAEngine2D.Template
 {
-    public class Sample: GameObject
+    public class Scene: GameObject
     {
         /// <summary>
         /// Load
@@ -23,7 +18,7 @@ namespace FNAEngine2D.ColliderSample
             //Left
             Add(new TextureRender("pixel", new Rectangle(0, 0, 20, this.Game.Height), Color.White)).EnableCollider();
 
-            for(int cpt = 0; cpt < 10; cpt++)
+            for(int cpt = 0; cpt < 1000; cpt++)
                 Add(new Ball()).TranslateTo(GameMath.RandomFloat(25, this.Game.Width - 25 - 50), GameMath.RandomFloat(25, this.Game.Height - 25 - 50));
 
             Add(new FPSRender(ContentManager.FONT_ROBOTO_REGULAR, 12, Color.DarkRed));

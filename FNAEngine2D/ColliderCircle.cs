@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace FNAEngine2D
         /// Moving location
         /// </summary>
         private Vector2 _movingLocation;
+
+        /// <summary>
+        /// Current center location
+        /// </summary>
+        private Vector2 _centerLocation;
 
         /// <summary>
         /// Moving center location
@@ -48,6 +54,7 @@ namespace FNAEngine2D
             {
                 _centerOffset = value;
                 _centerMovingLocation = _movingLocation + value;
+                _centerLocation = this.Location + value;
             }
         }
 
@@ -65,7 +72,12 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Offset location from the game object for the center
+        /// Center location
+        /// </summary>
+        public Vector2 CenterLocation { get { return _centerLocation; } }
+
+        /// <summary>
+        /// Center location of the moving location
         /// </summary>
         public Vector2 CenterMovingLocation { get { return _centerMovingLocation; } }
 
@@ -96,6 +108,7 @@ namespace FNAEngine2D
             this.GameObject.Location = location;
             this.Location = location;
             this.MovingLocation = location;
+            
 
             this.CenterOffset = centerOffset;
             this.Radius = radius;
@@ -117,24 +130,38 @@ namespace FNAEngine2D
         //{
         //}
 
+        /// <summary>
+        /// Object moved
+        /// </summary>
+        protected override void OnMoved()
+        {
+            _centerLocation = this.Location + _centerOffset;
+
+            base.OnMoved();
+        }
 
 
         /// <summary>
         /// Check if the collider intersects with a rectangle
         /// </summary>
-        public override bool Intersects(Collider movingCollider, ref CollisionDirection direction, ref Vector2 hitLocation)
+        public override bool Intersects(Collider movingCollider)
         {
             if (movingCollider is ColliderRectangle)
             {
-                //With another rectangle...
-                return CollisionHelper.Intersects(_centerMovingLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size, ref direction, ref hitLocation);
+                //With a rectangle...
+                //We simulate the previous position
+                //TODO: Create a fonction to calculate the correct stopLocation with a circle and a rectangle
+                //return CollisionHelper.Intersects(_centerMovingLocation - (movingCollider.MovingLocation - movingCollider.Location), _centerMovingLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size, ref hitLocation);
+                return CollisionHelper.Intersects(_centerMovingLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size);
             }
             else if (movingCollider is ColliderCircle)
             {
                 //With a circle..
-                if (CollisionHelper.Intersects(((ColliderCircle)movingCollider).CenterMovingLocation, ((ColliderCircle)movingCollider).Radius, _centerMovingLocation, this.Radius, ref direction, ref hitLocation))
+                ColliderCircle colliderCircle = (ColliderCircle)movingCollider;
+                //if (CollisionHelper.Intersects(colliderCircle.CenterLocation, colliderCircle.CenterMovingLocation, colliderCircle.Radius, _centerMovingLocation, this.Radius, ref hitLocation))
+                if (CollisionHelper.Intersects(colliderCircle.CenterMovingLocation, colliderCircle.Radius, _centerMovingLocation, this.Radius))
                 {
-                    hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
+                    //hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
                     return true;
                 }
                 else

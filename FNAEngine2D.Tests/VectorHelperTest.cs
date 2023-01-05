@@ -44,5 +44,53 @@ namespace FNAEngine2D.Tests
             Assert.AreEqual("3.1416", Math.Round(VectorHelper.ToAngle(new Vector2(-1, 0)), 4).ToString("0.0000"));
 
         }
+
+
+        [TestMethod]
+        public void Direction4Right()
+        {
+            Assert.AreEqual(Direction4.Right, VectorHelper.GetDirection4(new Vector2(10, 0)));
+        }
+
+        [TestMethod]
+        public void Direction4Up()
+        {
+            Assert.AreEqual(Direction4.Up, VectorHelper.GetDirection4(new Vector2(0, -10)));
+        }
+
+        [TestMethod]
+        public void Direction4Left()
+        {
+            Assert.AreEqual(Direction4.Left, VectorHelper.GetDirection4(new Vector2(-10, 0)));
+        }
+
+        [TestMethod]
+        public void Direction4ToRight()
+        {
+            Assert.AreEqual(Direction4.Right, VectorHelper.GetDirection4To(new Vector2(0, 0), new Vector2(10, 0)));
+        }
+
+        [TestMethod]
+        public void Direction4ToUp()
+        {
+            Assert.AreEqual(Direction4.Up, VectorHelper.GetDirection4To(new Vector2(0, 0), new Vector2(0, -10)));
+        }
+
+        [TestMethod]
+        public void Direction4ToLeft()
+        {
+            Assert.AreEqual(Direction4.Left, VectorHelper.GetDirection4To(new Vector2(0, 0), new Vector2(-10, 0)));
+        }
+
+        [TestMethod]
+        public void Direction4ToDown()
+        {
+            //moving down
+            Assert.AreEqual(Direction4.Down, VectorHelper.GetDirection4To(new Vector2(0, 0), new Vector2(0, 10)));
+            Assert.AreEqual(Direction4.Down, VectorHelper.GetDirection4To(new Vector2(576.9939f, 33.39626f), new Vector2(577.0415f, 50.0629f)));
+            //Assert.AreEqual(Direction4.Down, VectorHelper.GetDirection4(new Vector2(0, 50), new Vector2(0, -5)));
+        }
+
+
     }
 }

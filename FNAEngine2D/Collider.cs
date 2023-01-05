@@ -27,6 +27,11 @@ namespace FNAEngine2D
         /// <summary>
         /// Next moving location
         /// </summary>
+        public virtual Vector2 OrignalMovingLocation { get; set; }
+
+        /// <summary>
+        /// Next moving location (can be updated along the way if multiple colliders are found)
+        /// </summary>
         public virtual Vector2 MovingLocation { get; set; }
 
         /// <summary>
@@ -85,7 +90,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a collider
         /// </summary>
-        public abstract bool Intersects(Collider movingCollider, ref CollisionDirection direction, ref Vector2 hitLocation);
+        public abstract bool Intersects(Collider movingCollider);
 
 
         /// <summary>

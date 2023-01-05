@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D
 {
-    /// <summary>
-    /// Emplacement de la collision
-    /// </summary>
-    public enum CollisionDirection
-    {
-        MovingColliderOnLeft,
-        MovingColliderOnRight,
-        MovingColliderOnTop,
-        MovingColliderOnBottom,
-        MovingColliderOver,
-        MovingColliderIn,
-        Indetermined
-    }
+    ///// <summary>
+    ///// Emplacement de la collision
+    ///// </summary>
+    //public enum Direction4
+    //{
+    //    Right,
+    //    Left,
+    //    Down,
+    //    Up,
+    //    MovingColliderOver,
+    //    MovingColliderIn,
+    //    Indetermined
+    //}
 
     /// <summary>
     /// Résultat d'une collision
@@ -36,20 +36,22 @@ namespace FNAEngine2D
         /// </summary>
         public List<GameObject> CollidesWith = new List<GameObject>(1);
 
-        /// <summary>
-        /// Direction d'où vient la collision
-        /// </summary>
-        public CollisionDirection Direction;
+        ///// <summary>
+        ///// Location where the object attempted to move
+        ///// </summary>
+        //public Vector2 AttemptedLocation;
 
         /// <summary>
-        /// Bounds là où l'objet a faire la collision.
+        /// Location where the object has been stopped
         /// </summary>
         public Vector2 StopLocation;
+
+        public Direction4 Direction;
 
         /// <summary>
         /// Collision
         /// </summary>
-        public Collision(GameObject collidesWith, CollisionDirection direction, Vector2 stopLocation)
+        public Collision(GameObject collidesWith, Direction4 direction, Vector2 stopLocation)
         {
             this.CollidesWith.Add(collidesWith);
             this.Direction = direction;

@@ -82,7 +82,7 @@ namespace FNAEngine2D
                             {
                                 //If there is a tile right, left, top and bottom, no need for a collider...
                                 if (tileset.GetTile(x + 1, y) == null || tileset.GetTile(x - 1, y) == null || tileset.GetTile(x, y - 1) == null || tileset.GetTile(x, y + 1) == null)
-                                    Add(new TileGameObject(new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize))).EnableCollider();
+                                    Add(new TileGameObject(new Rectangle(posX, posY, tileset.TileScreenSize, tileset.TileScreenSize)));
                             }
 
                             posY += tileset.TileScreenSize;
@@ -153,6 +153,14 @@ namespace FNAEngine2D
 
         }
 
+
+        /// <summary>
+        /// EnableCollider - We don't want to create a real collider, we will create them with the TileGameObject
+        /// </summary>
+        public override GameObject EnableCollider()
+        {
+            return this;
+        }
 
     }
 }

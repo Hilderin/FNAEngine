@@ -63,7 +63,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Check if the collider intersects with a rectangle
         /// </summary>
-        public override bool Intersects(Collider movingCollider, ref CollisionDirection direction, ref Vector2 hitLocation)
+        public override bool Intersects(Collider movingCollider)
         {
             //if (!VectorHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, this.Location, this.Size))
             //{
@@ -75,14 +75,17 @@ namespace FNAEngine2D
             if (movingCollider is ColliderRectangle)
             {
                 //With another rectangle...
-                return CollisionHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, this.Location, this.Size, ref direction, ref hitLocation);
+                //return CollisionHelper.Intersects(movingCollider.Location, movingCollider.MovingLocation, movingCollider.Size, this.Location, this.Size, ref hitLocation);
+                return CollisionHelper.Intersects(movingCollider.MovingLocation, movingCollider.Size, this.Location, this.Size);
             }
             else if (movingCollider is ColliderCircle)
             {
                 //With a circle..
-                if (CollisionHelper.Intersects(((ColliderCircle)movingCollider).CenterMovingLocation, ((ColliderCircle)movingCollider).Radius, this.Location, this.Size, ref direction, ref hitLocation))
+                ColliderCircle colliderCircle = (ColliderCircle)movingCollider;
+                //if (CollisionHelper.Intersects(colliderCircle.CenterLocation, colliderCircle.CenterMovingLocation, colliderCircle.Radius, this.Location, this.Size, ref hitLocation))
+                if (CollisionHelper.Intersects(colliderCircle.CenterMovingLocation, colliderCircle.Radius, this.Location, this.Size))
                 {
-                    hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
+                    //hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
                     return true;
                 }
                 else
