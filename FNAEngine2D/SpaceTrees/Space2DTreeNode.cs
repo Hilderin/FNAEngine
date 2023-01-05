@@ -11,7 +11,7 @@ namespace FNAEngine2D.SpaceTrees
     /// <summary>
     /// Node in the Space2DTree
     /// </summary>
-    internal class Space2DTreeNode<T>
+    public class Space2DTreeNode<T>
     {
 
         private bool _splitTestDone;

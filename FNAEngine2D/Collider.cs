@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.SpaceTrees;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,11 @@ namespace FNAEngine2D
         /// Size
         /// </summary>
         public virtual Vector2 Size { get; set; }
+
+        /// <summary>
+        /// Link to the data node in the Space2DTree
+        /// </summary>
+        internal Space2DTreeNodeData<Collider> SpaceTreeDataNode;
 
 
         /// <summary>

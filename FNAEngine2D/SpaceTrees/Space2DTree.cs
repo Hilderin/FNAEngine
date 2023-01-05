@@ -32,7 +32,7 @@ namespace FNAEngine2D.SpaceTrees
         /// <summary>
         /// Add a data
         /// </summary>
-        public void Add(float x, float y, float width, float height, T data)
+        public Space2DTreeNodeData<T> Add(float x, float y, float width, float height, T data)
         {
             //Little validation to avoid screwing up the tree...
             if (!IsFloatValid(x))
@@ -65,6 +65,8 @@ namespace FNAEngine2D.SpaceTrees
             _data.Add(data, dataNode);
 
             this.Count++;
+
+            return dataNode;
         }
 
 
@@ -82,45 +84,6 @@ namespace FNAEngine2D.SpaceTrees
             }
         }
 
-        ///// <summary>
-        ///// Move a data
-        ///// </summary>
-        //public void Move(float x, float y, T data)
-        //{
-        //    if (!_data.TryGetValue(data, out var dataNode))
-        //        throw new InvalidOperationException("Data not found in the tree.");
-
-        //    //Little validation to avoid screwing up the tree...
-        //    if (!IsFloatValid(x))
-        //        throw new InvalidOperationException("x value invalid: " + x);
-        //    if (!IsFloatValid(y))
-        //        throw new InvalidOperationException("y value invalid: " + y);
-
-        //    if (dataNode.Width < 0)
-        //    {
-        //        x = x + dataNode.Width;
-        //        dataNode.Right = x - dataNode.Width;
-        //    }
-        //    else
-        //    {
-        //        dataNode.X = x;
-        //        dataNode.Right = x + dataNode.Width;
-        //    }
-        //    if (dataNode.Height < 0)
-        //    {
-        //        y = y + dataNode.Height;
-        //        dataNode.Right = y - dataNode.Height;
-        //    }
-        //    else
-        //    {
-        //        dataNode.Y = y;
-        //        dataNode.Right = y + dataNode.Height;
-        //    }
-            
-        //    dataNode.ContainerNode._bucket.Remove(dataNode);
-        //    _root.Add(dataNode);
-        //}
-
         /// <summary>
         /// Move a data
         /// </summary>
@@ -128,6 +91,16 @@ namespace FNAEngine2D.SpaceTrees
         {
             if (!_data.TryGetValue(data, out var dataNode))
                 throw new InvalidOperationException("Data not found in the tree.");
+
+            Move(x, y, width, height, dataNode);
+        }
+
+
+        /// <summary>
+        /// Move a data node
+        /// </summary>
+        public void Move(float x, float y, float width, float height, Space2DTreeNodeData<T> dataNode)
+        {
 
             //Little validation to avoid screwing up the tree...
             if (!IsFloatValid(x))
@@ -170,7 +143,6 @@ namespace FNAEngine2D.SpaceTrees
 
             //And we and directly on the right node!
             destinationNode.Add(dataNode);
-
 
         }
 

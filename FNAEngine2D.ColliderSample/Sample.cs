@@ -23,7 +23,7 @@ namespace FNAEngine2D.ColliderSample
             //Left
             Add(new TextureRender("pixel", new Rectangle(0, 0, 20, this.Game.Height), Color.White)).EnableCollider();
 
-            for(int cpt = 0; cpt < 10; cpt++)
+            for(int cpt = 0; cpt < 3000; cpt++)
                 Add(new Ball()).TranslateTo(GameMath.RandomFloat(25, this.Game.Width - 25 - 50), GameMath.RandomFloat(25, this.Game.Height - 25 - 50));
 
             Add(new FPSRender(ContentManager.FONT_ROBOTO_REGULAR, 12, Color.DarkRed));

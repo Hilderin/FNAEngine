@@ -11,7 +11,7 @@ namespace FNAEngine2D.SpaceTrees
     /// <summary>
     /// Internal struc to keep the data in the bucket
     /// </summary>
-    internal class Space2DTreeNodeData<T>
+    public class Space2DTreeNodeData<T>
     {
         public float X;
         public float Y;
@@ -22,6 +22,9 @@ namespace FNAEngine2D.SpaceTrees
         public T Data;
         public Space2DTreeNode<T> ContainerNode { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Space2DTreeNodeData(float x, float y, float width, float height, T data)
         {
             X = x;
@@ -47,6 +50,9 @@ namespace FNAEngine2D.SpaceTrees
                     && dataB.Y <= Bottom && dataB.Bottom >= Y);
         }
 
+        /// <summary>
+        /// ToString to help debug
+        /// </summary>
         public override string ToString()
         {
             return "(" + X + ", " + Y + ", Right: " + Right + ", Bottom: " + Bottom + ") " + Data.ToString();

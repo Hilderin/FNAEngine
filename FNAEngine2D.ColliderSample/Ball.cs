@@ -19,8 +19,8 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         public Ball()
         {
-            this.Width = 40;
-            this.Height = 40;
+            this.Width = 3;
+            this.Height = 3;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace FNAEngine2D.ColliderSample
             //Rigid body with gravity
             _rigidBody = AddComponent<RigidBody>();
             _rigidBody.UseGravity = false;
-            _rigidBody.SpeedMps = 5;
+            _rigidBody.SpeedMps = GameMath.RandomFloat(0.2f, 5);
 
             //Random movement
             _rigidBody.Movement = new Vector2(GameMath.RandomFloat(-1, 1), GameMath.RandomFloat(-1, 1));
@@ -53,14 +53,14 @@ namespace FNAEngine2D.ColliderSample
 
                 AdjustMovement(_rigidBody.Collision);
 
-                foreach (GameObject obj in _rigidBody.Collision.CollidesWith)
-                {
-                    if (obj is Ball)
-                    {
-                        //Also invert the movement of the ball
-                        ((Ball)obj).AdjustMovement(_rigidBody.Collision);
-                    }
-                }
+                //foreach (GameObject obj in _rigidBody.Collision.CollidesWith)
+                //{
+                //    if (obj is Ball)
+                //    {
+                //        //Also invert the movement of the ball
+                //        ((Ball)obj).AdjustMovement(_rigidBody.Collision);
+                //    }
+                //}
 
                 
             }
@@ -71,6 +71,13 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         private void AdjustMovement(Collision collision)
         {
+            //Vector2 direction = _rigidBody.Movement;
+
+            //foreach (GameObject obj in _rigidBody.Collision.CollidesWith)
+            //{
+
+            //}
+
             Direction4 direction = collision.Direction;
             if (direction == Direction4.Down || direction == Direction4.Up)
                 _rigidBody.Movement *= new Vector2(1, -1);

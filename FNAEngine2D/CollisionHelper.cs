@@ -134,7 +134,7 @@ namespace FNAEngine2D
                 //New collision...
                 Direction4 direction = GetHitDirection(movingCollider, collidesWith);
                 Vector2 stopLocation = GetHitLocation(movingCollider, collidesWith);
-                collision = new Collision(collidesWith.GameObject, direction, stopLocation);
+                collision = new Collision(movingCollider, collidesWith.GameObject, direction, stopLocation);
                 //collision.AttemptedLocation = movingCollider.MovingLocation;
             }
 

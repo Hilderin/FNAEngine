@@ -26,33 +26,32 @@ namespace FNAEngine2D
     /// </summary>
     public class Collision
     {
-        ///// <summary>
-        ///// CollidesWith
-        ///// </summary>
-        //public List<Collider> CollidesWith = new List<Collider>(1);
-
         /// <summary>
         /// CollidesWith
         /// </summary>
         public List<GameObject> CollidesWith = new List<GameObject>(1);
-
-        ///// <summary>
-        ///// Location where the object attempted to move
-        ///// </summary>
-        //public Vector2 AttemptedLocation;
 
         /// <summary>
         /// Location where the object has been stopped
         /// </summary>
         public Vector2 StopLocation;
 
+        /// <summary>
+        /// Direction
+        /// </summary>
         public Direction4 Direction;
+
+        /// <summary>
+        /// Moving collider
+        /// </summary>
+        public Collider MovingCollider { get; set; }
 
         /// <summary>
         /// Collision
         /// </summary>
-        public Collision(GameObject collidesWith, Direction4 direction, Vector2 stopLocation)
+        public Collision(Collider movingCollider, GameObject collidesWith, Direction4 direction, Vector2 stopLocation)
         {
+            this.MovingCollider = movingCollider;
             this.CollidesWith.Add(collidesWith);
             this.Direction = direction;
             this.StopLocation = stopLocation;

@@ -50,7 +50,7 @@ namespace FNAEngine2D
             if (collider.Size.X == 0 || collider.Size.Y == 0)
                 throw new InvalidOperationException("Cannot add a collider of size zero, size received: " + collider.Size);
 
-            _spaceTree.Add(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
+            collider.SpaceTreeDataNode = _spaceTree.Add(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
 
             ////Add in dictionary per type...
             //List<Collider> colliders;
@@ -74,7 +74,7 @@ namespace FNAEngine2D
                 throw new InvalidOperationException("Cannot update a collider to a size of zero, size received: " + collider.Size);
 
 
-            _spaceTree.Move(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider);
+            _spaceTree.Move(collider.Location.X, collider.Location.Y, collider.Size.X, collider.Size.Y, collider.SpaceTreeDataNode);
         }
 
         /// <summary>
