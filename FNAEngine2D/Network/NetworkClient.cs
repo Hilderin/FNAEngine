@@ -71,7 +71,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Loading
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             Logguer.Info("New NetworkClient " + this.ID);
 
@@ -88,7 +88,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Added
         /// </summary>
-        public override void OnAdded()
+        protected override void OnAdded()
         {
             Current = this;
 
@@ -100,7 +100,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Removed
         /// </summary>
-        public override void OnRemoved()
+        protected override void OnRemoved()
         {
             _shouldInvokeConnected = false;
 
@@ -114,7 +114,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Update on the client
         /// </summary>
-        public override void Update()
+        protected override void Update()
         {
             //Newly connected?
             if (_shouldInvokeConnected)

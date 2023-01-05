@@ -64,7 +64,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Update each frame
         /// </summary>
-        public override void Update()
+        protected override void Update()
         {
             if (!AllowMultiple)
                 _elapedStartSeconds += this.ElapsedGameTimeSeconds;

@@ -43,7 +43,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Load content
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             this.GameContent = GetContent<GameContent>(this.AssetName);
 

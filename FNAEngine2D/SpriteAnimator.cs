@@ -159,7 +159,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Load
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             if(this.Parent != null)
                 this.Bounds = this.Parent.Bounds;

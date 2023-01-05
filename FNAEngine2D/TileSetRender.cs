@@ -56,7 +56,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Loading
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             _editModeOverlayTexture = GetContent<Texture2D>("pixel");
             
@@ -101,7 +101,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Overwride drawing...
         /// </summary>
-        public override void Draw()
+        protected override void Draw()
         {
             if (this.TileSet == null || this.TileSet.Texture == null)
                 return;

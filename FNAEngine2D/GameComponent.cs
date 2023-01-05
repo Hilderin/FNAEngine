@@ -32,49 +32,97 @@ namespace FNAEngine2D
         //}
 
         /// <summary>
+        /// Execute the Load
+        /// </summary>
+        internal void DoLoad()
+        {
+            Load();
+        }
+
+        /// <summary>
         /// Loading
         /// </summary>
-        public virtual void Load()
+        protected virtual void Load()
         {
 
+        }
+
+        /// <summary>
+        /// Execute the Update
+        /// </summary>
+        internal void DoUpdate()
+        {
+            Update();
         }
 
         /// <summary>
         /// Update each frame
         /// </summary>
-        public virtual void Update()
+        protected virtual void Update()
         {
 
+        }
+
+        /// <summary>
+        /// Execute the OnAdded
+        /// </summary>
+        internal virtual void DoOnAdded()
+        {
+            OnAdded();
         }
 
         /// <summary>
         /// Called when the game object is added in another game object as a child
         /// </summary>
-        public virtual void OnAdded()
+        protected virtual void OnAdded()
         {
             
         }
 
         /// <summary>
+        /// Execute the OnRemoved
+        /// </summary>
+        internal virtual void DoOnRemoved()
+        {
+            OnRemoved();
+        }
+
+        /// <summary>
         /// Called when the game object is removed in another game object as a child
         /// </summary>
-        public virtual void OnRemoved()
+        protected virtual void OnRemoved()
         {
 
+        }
+
+        /// <summary>
+        /// Execute the OnResized
+        /// </summary>
+        internal virtual void DoOnResized()
+        {
+            OnResized();
         }
 
         /// <summary>
         /// Called when the game object is resized
         /// </summary>
-        public virtual void OnResized()
+        protected virtual void OnResized()
         {
 
         }
 
         /// <summary>
+        /// Execute the OnMoved
+        /// </summary>
+        internal virtual void DoOnMoved()
+        {
+            OnMoved();
+        }
+
+        /// <summary>
         /// Called when the game object has moved
         /// </summary>
-        public virtual void OnMoved()
+        protected virtual void OnMoved()
         {
 
         }

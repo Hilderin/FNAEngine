@@ -189,7 +189,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Loading...
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             if (String.IsNullOrEmpty(this.SpriteAnimationName))
             {
@@ -240,7 +240,7 @@ namespace FNAEngine2D
         /// <summary>
         /// On resized...
         /// </summary>
-        public override void OnResized()
+        protected override void OnResized()
         {
             RecalculateScale();
         }
@@ -265,7 +265,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Update
         /// </summary>
-        public override void Update()
+        protected override void Update()
         {
             UpdateInternal(this.ElapsedGameTimeMilliseconds);
 
@@ -336,7 +336,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de dessiner l'objet
         /// </summary>
-        public override void Draw()
+        protected override void Draw()
         {
             if (_currentFrame < 0 || (_stopped && HideOnStop))
                 return;

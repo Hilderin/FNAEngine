@@ -19,7 +19,7 @@ namespace FNAEngine2D
             
         }
 
-        public override void Load()
+        protected override void Load()
         {
             this.EnableCollider();
         }

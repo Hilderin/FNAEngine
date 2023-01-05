@@ -1036,7 +1036,7 @@
 //        /// <summary>
 //        /// Called when the game object is added in another game object as a child
 //        /// </summary>
-//        public virtual void OnAdded()
+//        protected virtual void OnAdded()
 //        {
 
 //        }
@@ -1071,7 +1071,7 @@
 //        /// <summary>
 //        /// Called when the game object is removed in another game object as a child
 //        /// </summary>
-//        public virtual void OnRemoved()
+//        protected virtual void OnRemoved()
 //        {
 
 //        }
@@ -1105,7 +1105,7 @@
 //        /// <summary>
 //        /// Called when the game object is resized
 //        /// </summary>
-//        public virtual void OnResized()
+//        protected virtual void OnResized()
 //        {
 
 //        }
@@ -1113,7 +1113,7 @@
 //        /// <summary>
 //        /// Called when the game object has moved
 //        /// </summary>
-//        public virtual void OnMoved()
+//        protected virtual void OnMoved()
 //        {
 
 //        }

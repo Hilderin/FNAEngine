@@ -19,7 +19,7 @@ namespace FNAEngine2D.ColliderSample
             this.Height = 4;
         }
 
-        public override void Load()
+        protected override void Load()
         {
             _obj = Add(new TextureRender("circle", this.Bounds));
             //this.EnableCollider();
@@ -28,7 +28,7 @@ namespace FNAEngine2D.ColliderSample
         }
 
 
-        public override void Update()
+        protected override void Update()
         {
             Vector2 delta = _movement * 3 * this.ElapsedGameTimeSeconds * this.NbPixelPerMeter;
             Vector2 nextLocation = _obj.Location + delta;

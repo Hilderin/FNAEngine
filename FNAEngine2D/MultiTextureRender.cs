@@ -65,7 +65,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Load
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             if(this.Parent != null)
                 this.Bounds = this.Parent.Bounds;
@@ -77,7 +77,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Draw the texture
         /// </summary>
-        public override void Draw()
+        protected override void Draw()
         {
             TextureInfo textureInfo = _textures[this.CurrentValue];
             DrawingContext.Draw(textureInfo.Texture.Data, this.Location, null, this.Color, 0f, Vector2.Zero, textureInfo.Scale, SpriteEffects.None, this.Depth);
@@ -87,7 +87,7 @@ namespace FNAEngine2D
         /// <summary>
         /// On resized...
         /// </summary>
-        public override void OnResized()
+        protected override void OnResized()
         {
             RecalculateScale();
         }

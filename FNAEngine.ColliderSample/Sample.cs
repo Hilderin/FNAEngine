@@ -12,7 +12,7 @@ namespace FNAEngine2D.ColliderSample
         /// <summary>
         /// Load
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             //Top
             Add(new TextureRender("pixel", new Rectangle(0, 0, this.Game.Width, 20), Color.White)).EnableCollider();

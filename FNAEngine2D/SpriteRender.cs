@@ -66,7 +66,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Loading...
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             if (String.IsNullOrEmpty(this.SpriteName))
             {
@@ -89,7 +89,7 @@ namespace FNAEngine2D
         /// <summary>
         /// On resized...
         /// </summary>
-        public override void OnResized()
+        protected override void OnResized()
         {
             RecalculateScale();
         }
@@ -113,7 +113,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de dessiner l'objet
         /// </summary>
-        public override void Draw()
+        protected override void Draw()
         {
             if (_sprite == null || _sprite.Data.Texture == null)
                 return;

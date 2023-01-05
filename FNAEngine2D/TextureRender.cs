@@ -72,7 +72,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Chargement du contenu
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             if (String.IsNullOrEmpty(this.TextureName))
             {
@@ -94,7 +94,7 @@ namespace FNAEngine2D
         /// <summary>
         /// On resized...
         /// </summary>
-        public override void OnResized()
+        protected override void OnResized()
         {
             RecalculateScale();
         }
@@ -117,7 +117,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de dessiner l'objet
         /// </summary>
-        public override void Draw()
+        protected override void Draw()
         {
             if (_texture == null)
                 return;

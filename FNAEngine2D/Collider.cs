@@ -45,14 +45,14 @@ namespace FNAEngine2D
         /// <summary>
         /// On load
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
         }
 
         /// <summary>
         /// Called when the game object has moved
         /// </summary>
-        public override void OnMoved()
+        protected override void OnMoved()
         {
             UpdateLocationAndSize();
         }
@@ -60,7 +60,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Called when the game object is resized
         /// </summary>
-        public override void OnResized()
+        protected override void OnResized()
         {
             UpdateLocationAndSize();
         }
@@ -91,7 +91,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Adding of a collider
         /// </summary>
-        public override void OnAdded()
+        protected override void OnAdded()
         {
             
             this.Location = this.GameObject.Location;
@@ -106,7 +106,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Removing of a collider
         /// </summary>
-        public override void OnRemoved()
+        protected override void OnRemoved()
         {
             this.GameObject.Game.ColliderContainer.Remove(this);
             _added = false;

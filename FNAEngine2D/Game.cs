@@ -177,8 +177,8 @@ namespace FNAEngine2D
                     //Removing the old one, in case we are changing the root game object...
                     if (_rootGameObject != null)
                     {
-                        _rootGameObject.ForEachChild(o => o.OnRemoved());
-                        _rootGameObject.OnRemoved();                        
+                        _rootGameObject.ForEachChild(o => o.DoOnRemoved());
+                        _rootGameObject.DoOnRemoved();                        
                     }
 
                     _rootGameObject = value;
@@ -188,7 +188,7 @@ namespace FNAEngine2D
                     {
                         if (!_rootGameObject._loaded)
                             _rootGameObject.DoLoad();
-                        _rootGameObject.OnAdded();
+                        _rootGameObject.DoOnAdded();
                     }
 
                     //This game objet will be the root
@@ -603,7 +603,7 @@ namespace FNAEngine2D
                 _rootGameObject.Game = this;
                 _rootGameObject._addAuthorized = true;
                 _rootGameObject.DoLoad();
-                _rootGameObject.OnAdded();
+                _rootGameObject.DoOnAdded();
             }
 
 
@@ -627,8 +627,8 @@ namespace FNAEngine2D
         {
             if (_rootGameObject != null)
             {
-                _rootGameObject.ForEachChild(o => o.OnRemoved(), true);
-                _rootGameObject.OnRemoved();
+                _rootGameObject.ForEachChild(o => o.DoOnRemoved(), true);
+                _rootGameObject.DoOnRemoved();
             }
 
             base.UnloadContent();

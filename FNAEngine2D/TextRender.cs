@@ -227,7 +227,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Chargement du contenu
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
             if (String.IsNullOrEmpty(_fontName))
                 _font = null;
@@ -241,7 +241,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Text moved
         /// </summary>
-        public override void OnMoved()
+        protected override void OnMoved()
         {
             RecalculteTextLocation();
         }
@@ -249,7 +249,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Text resized
         /// </summary>
-        public override void OnResized()
+        protected override void OnResized()
         {
             RecalculteTextLocation();
         }
@@ -257,7 +257,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Override de l'update
         /// </summary>
-        public override void Update()
+        protected override void Update()
         {
             if (_textUpdated)
             {
@@ -288,7 +288,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de dessiner l'objet
         /// </summary>
-        public override void Draw()
+        protected override void Draw()
         {
             if (_font == null || _textCache == null)
                 return;

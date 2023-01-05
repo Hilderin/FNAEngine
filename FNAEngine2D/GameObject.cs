@@ -669,8 +669,8 @@ namespace FNAEngine2D
 
             if (_loaded)
             {
-                component.Load();
-                component.OnAdded();
+                component.DoLoad();
+                component.DoOnAdded();
             }
 
             if (component is Collider)
@@ -726,7 +726,7 @@ namespace FNAEngine2D
             _componentsList.Remove(component);
             RemoveComponentTypes(component.GetType(), component);
 
-            component.OnRemoved();
+            component.DoOnRemoved();
 
             if (component is Collider)
                 _collider = null;
@@ -959,7 +959,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Loading content
         /// </summary>
-        public virtual void Load()
+        protected virtual void Load()
         {
 
         }
@@ -975,7 +975,7 @@ namespace FNAEngine2D
             if (_componentsList.Count > 0)
             {
                 foreach (GameComponent component in _componentsList)
-                    component.Load();
+                    component.DoLoad();
             }
 
             _loaded = true;
@@ -984,7 +984,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Update logic for the server
         /// </summary>
-        public virtual void Update()
+        protected virtual void Update()
         {
 
         }
@@ -1002,7 +1002,7 @@ namespace FNAEngine2D
             if (GameManager.DevelopmentMode)
                 GameContentManager.ReloadModifiedContent(this);
 
-            ForEachComponent(o => o.Update());
+            ForEachComponent(o => o.DoUpdate());
 
             this.Update();
 
@@ -1013,7 +1013,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Draw à l'écran
         /// </summary>
-        public virtual void Draw()
+        protected virtual void Draw()
         {
 
         }
@@ -1041,9 +1041,17 @@ namespace FNAEngine2D
 
 
         /// <summary>
+        /// Execute the OnAdded
+        /// </summary>
+        internal virtual void DoOnAdded()
+        {
+            OnAdded();
+        }
+
+        /// <summary>
         /// Called when the game object is added in another game object as a child
         /// </summary>
-        public virtual void OnAdded()
+        protected virtual void OnAdded()
         {
 
         }
@@ -1060,7 +1068,7 @@ namespace FNAEngine2D
             }
 
             //Call OnAdded for components...
-            ForEachComponent(o => o.OnAdded());
+            ForEachComponent(o => o.DoOnAdded());
 
             //Little event OnAdded...
             this.OnAdded();
@@ -1069,9 +1077,17 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Execute the OnRemoved
+        /// </summary>
+        internal virtual void DoOnRemoved()
+        {
+            OnRemoved();
+        }
+
+        /// <summary>
         /// Called when the game object is removed in another game object as a child
         /// </summary>
-        public virtual void OnRemoved()
+        protected virtual void OnRemoved()
         {
 
         }
@@ -1087,7 +1103,7 @@ namespace FNAEngine2D
             Mouse.RemoveGameObject(this);
 
             //Call OnRemoved for components...
-            ForEachComponent(o => o.OnRemoved());
+            ForEachComponent(o => o.DoOnRemoved());
 
             //Little event OnRemoved...
             this.OnRemoved();
@@ -1096,17 +1112,33 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Execute the OnResized
+        /// </summary>
+        internal virtual void DoOnResized()
+        {
+            OnResized();
+        }
+
+        /// <summary>
         /// Called when the game object is resized
         /// </summary>
-        public virtual void OnResized()
+        protected virtual void OnResized()
         {
 
         }
 
         /// <summary>
+        /// Execute the OnMoved
+        /// </summary>
+        internal virtual void DoOnMoved()
+        {
+            OnMoved();
+        }
+
+        /// <summary>
         /// Called when the game object has moved
         /// </summary>
-        public virtual void OnMoved()
+        protected virtual void OnMoved()
         {
 
         }
@@ -1139,7 +1171,7 @@ namespace FNAEngine2D
 
             ForEachChild(o => o.TranslateX(offsetX));
 
-            ForEachComponent(c => c.OnMoved());
+            ForEachComponent(c => c.DoOnMoved());
 
         }
 
@@ -1157,7 +1189,7 @@ namespace FNAEngine2D
 
             ForEachChild(o => o.TranslateY(offsetY));
 
-            ForEachComponent(c => c.OnMoved());
+            ForEachComponent(c => c.DoOnMoved());
 
         }
 
@@ -1177,7 +1209,7 @@ namespace FNAEngine2D
 
             ForEachChild(o => o.Translate(offsetX, offsetY));
 
-            ForEachComponent(c => c.OnMoved());
+            ForEachComponent(c => c.DoOnMoved());
         }
 
         /// <summary>
@@ -1227,7 +1259,7 @@ namespace FNAEngine2D
 
             ForEachChild(o => o.ResizeWidth(offsetX));
 
-            ForEachComponent(c => c.OnResized());
+            ForEachComponent(c => c.DoOnResized());
 
         }
 
@@ -1245,7 +1277,7 @@ namespace FNAEngine2D
 
             ForEachChild(o => o.ResizeHeight(offsetY));
 
-            ForEachComponent(c => c.OnResized());
+            ForEachComponent(c => c.DoOnResized());
 
 
         }
@@ -1266,7 +1298,7 @@ namespace FNAEngine2D
 
             ForEachChild(o => o.Resize(offsetX, offsetY));
 
-            ForEachComponent(c => c.OnResized());
+            ForEachComponent(c => c.DoOnResized());
 
         }
 

@@ -83,14 +83,14 @@ namespace FNAEngine2D
             this.Color = color;
         }
 
-        public override void Load()
+        protected override void Load()
         {
             _gameTimeService = GetService<GameTimeService>();
 
             _textRender = this.Add(new TextRender(GetText(0, 0, 0, 0), this.FontName, this.FontSize, Vector2.Zero, this.Color));
         }
 
-        public override void Update()
+        protected override void Update()
         {
             
             _lastFrameUpdateTimeMillisecondsAverage.Add(_gameTimeService.LastFrameUpdateTimeMilliseconds);
@@ -101,7 +101,7 @@ namespace FNAEngine2D
             _textRender.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());
         }
 
-        public override void Draw()
+        protected override void Draw()
         {
             decimal elapsedMilliseconds = ((decimal)_drawTimer.ElapsedTicks / Stopwatch.Frequency);
             _drawTimer.Restart();

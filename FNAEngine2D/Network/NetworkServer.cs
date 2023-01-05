@@ -115,14 +115,14 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Add a game object
         /// </summary>
-        public override void Load()
+        protected override void Load()
         {
         }
 
         /// <summary>
         /// Start the server
         /// </summary>
-        public override void OnAdded()
+        protected override void OnAdded()
         {
             Current = this;
 
@@ -147,7 +147,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Stop the server
         /// </summary>
-        public override void OnRemoved()
+        protected override void OnRemoved()
         {
             Logguer.Info("Stopping server.");
 
@@ -160,7 +160,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Update each frame
         /// </summary>
-        public override void Update()
+        protected override void Update()
         {
             try
             {
