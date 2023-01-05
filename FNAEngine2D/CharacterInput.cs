@@ -144,12 +144,29 @@ namespace FNAEngine2D
 
 
         /// <summary>
-        /// Return the mouse position in the world
+        /// Return the mouse position
         /// </summary>
         public Vector2 GetMousePosition()
         { 
-            return _gameObject.Input.MousePosition(); 
+            return _gameObject.Input.GetMousePosition(); 
         }
+
+        /// <summary>
+        /// Return the mouse position in the world via the Main Camera
+        /// </summary>
+        public Vector2 GetMouseWorldPosition()
+        {
+            return _gameObject.Input.GetMouseWorldPosition();
+        }
+
+        /// <summary>
+        /// Return the mouse position in the world
+        /// </summary>
+        public Vector2 GetMouseWorldPosition(Camera camera)
+        {
+            return _gameObject.Input.GetMouseWorldPosition(camera);
+        }
+
 
     }
 }

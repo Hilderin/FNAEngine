@@ -59,7 +59,7 @@ namespace FNAEngine2D
 
                 _mouseState = Mouse.GetState();
 
-                _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / _game.ScreenScale) + _game.MainCamera.Location.Substract(_game.MainCamera.ViewLocation);
+                _mousePosition = (new Vector2(_mouseState.X, _mouseState.Y) / _game.ScreenScale);
             }
             else
             {
@@ -196,12 +196,29 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Gets mouse coordinates adjusted for virtual resolution and camera position.
+        /// Gets mouse coordinates adjusted for virtual resolution
         /// </summary>
-        public Vector2 MousePosition()
+        public Vector2 GetMousePosition()
         {
             return _mousePosition;
         }
+
+        /// <summary>
+        /// Gets mouse coordinates adjusted for virtual resolution and main camera position.
+        /// </summary>
+        public Vector2 GetMouseWorldPosition()
+        {
+            return GetMouseWorldPosition(_game.MainCamera);
+        }
+
+        /// <summary>
+        /// Gets mouse coordinates adjusted for virtual resolution and a camera position.
+        /// </summary>
+        public Vector2 GetMouseWorldPosition(Camera camera)
+        {
+            return _mousePosition + camera.Location.Substract(camera.ViewLocation);
+        }
+
 
         /// <summary>
         /// Check if an input map is down

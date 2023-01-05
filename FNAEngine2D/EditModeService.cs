@@ -275,7 +275,7 @@ namespace FNAEngine2D
                 ClearSelection();
             }
 
-            Vector2 mousePosition = _game.Input.MousePosition();
+            Vector2 mousePosition = _game.Input.GetMouseWorldPosition(_game.MainCamera);
 
             if (_game.IsActive)
             {

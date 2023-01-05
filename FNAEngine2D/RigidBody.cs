@@ -125,8 +125,15 @@ namespace FNAEngine2D
                 nextPosition = this.Collistion.StopLocation;
             }
 
+
             LastLocation = this.GameObject.Location;
-            this.GameObject.TranslateTo(nextPosition);
+
+            if (nextPosition != this.GameObject.Location)
+            {
+                if(_networkGameObject != null && _networkGameObject.IsClient && _networkGameObject.IsLocalPlayer)
+                    Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
+                this.GameObject.TranslateTo(nextPosition);
+            }
 
             
         }

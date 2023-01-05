@@ -213,7 +213,7 @@ namespace FNAEngine2D
                 Vector2 newSize = value.GetSize();
                 if (_size != newSize)
                 {
-                    Resize(newSize.X, newSize.Y);
+                    ResizeTo(newSize.X, newSize.Y);
                 }
             }
         }
@@ -313,7 +313,7 @@ namespace FNAEngine2D
             {
                 if (_size != value)
                 {
-                    Resize(value.X, value.Y);
+                    ResizeTo(value.X, value.Y);
                 }
             }
 

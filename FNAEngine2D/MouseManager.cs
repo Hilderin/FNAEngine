@@ -100,10 +100,7 @@ namespace FNAEngine2D
                 return;
 
             //We will need the mouse position...
-            Vector2 mousePosition = _game.Input.MousePosition();
-
-            //We remove the main camera because it's been added, we will rehad it in the IsObjectAtCoord...
-            mousePosition -= _game.MainCamera.Location.Substract(_game.MainCamera.ViewLocation);
+            Vector2 mousePosition = _game.Input.GetMousePosition();
 
             List<IMouseEventHandler> newOverGameObjects = new List<IMouseEventHandler>(_lastOverGameObjects.Count);
 
@@ -212,7 +209,7 @@ namespace FNAEngine2D
             {
                 Camera camera = _game.GetCameraForObject(gameObject);
                 
-                if (VectorHelper.Intersects(mousePosition + camera.Location, gameObject.Bounds))
+                if (VectorHelper.Intersects(mousePosition + camera.Location.Substract(camera.ViewLocation), gameObject.Bounds))
                 {
                     newOverGameObjects.Add((IMouseEventHandler)gameObject);
                 }

@@ -77,6 +77,11 @@ namespace FNAEngine2D
         /// </summary>
         private Vector2 _textLocation = Vector2.Zero;
 
+        /// <summary>
+        /// Indicate if the location of the text should be rounded so the text is clearer at low resolution
+        /// But if set to true and the text is moving, text will not move smoothly
+        /// </summary>
+        private bool _pixelPerfect = false;
 
         /// <summary>
         /// Rotation
@@ -176,7 +181,18 @@ namespace FNAEngine2D
         [Category("Layout")]
         [BrowsableAttribute(true)]
         [DefaultValue(false)]
-        public bool PixelPerfect { get; set; } = false;
+        public bool PixelPerfect
+        {
+            get { return _pixelPerfect; }
+            set
+            {
+                if (_pixelPerfect != value)
+                {
+                    _pixelPerfect = value;
+                    _textUpdated = true;
+                }
+            }
+        }
 
         /// <summary>
         /// Empty constructor
@@ -273,9 +289,9 @@ namespace FNAEngine2D
                 else
                 {
                     _textCache = _font.MakeText(this.Text);
-                    if (this.HorizontalAlignment == TextHorizontalAlignment.Left)
+                    if (this.HorizontalAlignment == TextHorizontalAlignment.Left && this.Width == 0)
                         this.Width = _textCache.Width;
-                    if (this.VerticalAlignment == TextVerticalAlignment.Top)
+                    if (this.VerticalAlignment == TextVerticalAlignment.Top && this.Height == 0)
                         this.Height = _textCache.Height;
                 }
 
