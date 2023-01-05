@@ -68,7 +68,6 @@
     <Compile Include="ColliderRectangle.cs" />
     <Compile Include="ColliderCircle.cs" />
     <Compile Include="GameComponent.cs" />
-    <Compile Include="Components\MovementComponent.cs" />
     <Compile Include="DataStreaming\BinReader.cs" />
     <Compile Include="DataStreaming\BinWriter.cs" />
     <Compile Include="InputMap.cs" />

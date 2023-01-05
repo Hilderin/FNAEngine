@@ -1,5 +1,4 @@
-﻿using FNAEngine2D.Components;
-using FNAEngine2D.Network.Commands;
+﻿using FNAEngine2D.Network.Commands;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Concurrent;
@@ -246,9 +245,9 @@ namespace FNAEngine2D.Network
                     SendCommand(GetSpawnCommand(cwgo.GameObject, false));
                 }
 
-                MovementComponent serverMovement = cwgo.GameObject.GetComponent<MovementComponent>();
-                if (serverMovement != null)
-                    SendCommand(new MovementCommand() { ID = cwgo.GameObject.ID, Movement = serverMovement.Movement, StartPosition = cwgo.GameObject.Location });
+                RigidBody rigidBody = cwgo.GameObject.GetComponent<RigidBody>();
+                if (rigidBody != null)
+                    SendCommand(new MovementCommand() { ID = cwgo.GameObject.ID, Movement = rigidBody.Movement, StartPosition = cwgo.GameObject.Location });
                 
             }
         }

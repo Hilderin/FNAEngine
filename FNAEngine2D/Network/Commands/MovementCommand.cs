@@ -1,5 +1,4 @@
-﻿using FNAEngine2D.Components;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using System.ComponentModel;
 
@@ -59,10 +58,10 @@ namespace FNAEngine2D.Network.Commands
 
             if (gameObject != null)
             {
-                MovementComponent serverMovement = gameObject.GetComponent<MovementComponent>();
+                RigidBody rigidBody = gameObject.GetComponent<RigidBody>();
 
-                if (serverMovement != null)
-                    serverMovement.SetNextMovement(this.Movement, this.StartPosition);
+                if (rigidBody != null)
+                    rigidBody.SetNextMovement(this.Movement, this.StartPosition);
             }
         }
 
@@ -73,11 +72,11 @@ namespace FNAEngine2D.Network.Commands
         {
             if (cw.Player != null)
             {
-                MovementComponent component = cw.Player.GetComponent<MovementComponent>();
+                RigidBody rigidBody = cw.Player.GetComponent<RigidBody>();
 
-                if (component != null)
+                if (rigidBody != null)
                 {
-                    component.SetNextMovement(this.Movement, this.StartPosition);
+                    rigidBody.SetNextMovement(this.Movement, this.StartPosition);
 
                     //Resending commands...
                     cw.SendCommandToAllClients(new MovementCommand() { ID = cw.Player.ID, Movement = this.Movement, StartPosition = this.StartPosition });

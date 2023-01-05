@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.Network.Commands;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,11 @@ namespace FNAEngine2D
     public class RigidBody: GameComponent
     {
         /// <summary>
+        /// If the GameObject is a NetworkGameObject
+        /// </summary>
+        private NetworkGameObject _networkGameObject;
+
+        /// <summary>
         /// Time at which the object begun to fall
         /// </summary>
         private float _timeBeginFall;
@@ -22,6 +28,25 @@ namespace FNAEngine2D
         /// </summary>
         private List<Force> _forces = new List<Force>();
 
+        /// <summary>
+        /// Current movement
+        /// </summary>
+        private Vector2 _movement = Vector2.Zero;
+
+        /// <summary>
+        /// Next movement to to
+        /// </summary>
+        private Vector2? _nextMovement = null;
+
+        /// <summary>
+        /// Next start location
+        /// </summary>
+        private Vector2? _nextStartPosition = null;
+
+        /// <summary>
+        /// Use gravity
+        /// </summary>  
+        public bool UseGravity { get; set; }
 
         /// <summary>
         /// The gravity (meter per second) (default Earth gravirty is 9.81 m/s)
@@ -37,7 +62,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Normalized vector for the movement
         /// </summary>
-        public Vector2 Movement { get; set; }
+        public Vector2 Movement
+        {
+            get { return _movement; }
+            set
+            {
+                SetMovement(value);
+            }
+        }
 
         /// <summary>
         /// Type with which the rigid body collide. If null, then all collider will be used.
@@ -68,6 +100,9 @@ namespace FNAEngine2D
         protected override void Load()
         {
             LastLocation = this.GameObject.Location;
+
+            //_networkGameObject will be set if the game object is a network game object
+            _networkGameObject = this.GameObject as NetworkGameObject;
         }
 
         /// <summary>
@@ -75,7 +110,9 @@ namespace FNAEngine2D
         /// </summary>
         protected override void Update()
         {
-            
+            //Applying next movement and location...
+            if (_nextMovement != null)
+                ApplyNextMovement();
 
             //Applying physics...
             Vector2 nextPosition = GetNextLocation();
@@ -107,6 +144,49 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Set the current movement
+        /// </summary>
+        public void SetMovement(Vector2 movement)
+        {
+            //Be sure to normalize... for hackers maybe if triing to send longer movement or if caller did not normalized
+            if (movement != Vector2.Zero)
+                movement.Normalize();
+
+            if (_movement != movement)
+            {
+                //Sending movement to the server or if we are on the server... to all the other clients
+                if (_networkGameObject != null)
+                {
+                    if (_networkGameObject.IsServer)
+                    {
+                        //Sending movement to all clients...
+                        _networkGameObject.Server.SendCommandToAllClients(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
+                    }
+                    else if (_networkGameObject.IsLocalPlayer)
+                    {
+                        //Sending movement to server...
+                        _networkGameObject.Client.SendCommand(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
+                    }
+                }
+
+                _movement = movement;
+            }
+        }
+
+        /// <summary>
+        /// Set the next movement
+        /// </summary>
+        internal void SetNextMovement(Vector2 movement, Vector2 startPosition)
+        {
+            //We queue... because we are already moving...
+            lock (this)
+            {
+                _nextMovement = movement;
+                _nextStartPosition = startPosition;
+            }
+        }
+
+        /// <summary>
         /// Apply the physics
         /// </summary>
         public Vector2 GetNextLocation()
@@ -119,7 +199,7 @@ namespace FNAEngine2D
 
             //-------------
             //Gavity...
-            if (GravityMps != 0)
+            if (this.UseGravity)
             {
                 if (LastLocation.Y >= this.GameObject.Location.Y)
                     //Did not fall...
@@ -149,6 +229,37 @@ namespace FNAEngine2D
 
             return this.GameObject.Location + delta;
 
+        }
+
+
+        /// <summary>
+        /// Update movement of an object
+        /// </summary>
+        private void ApplyNextMovement()
+        {
+            if (_nextMovement != null)
+            {
+                Vector2? nextMovement;
+                Vector2? nextStartPosition;
+                lock (this)
+                {
+                    nextMovement = _nextMovement;
+                    nextStartPosition = _nextStartPosition;
+                    _nextMovement = null;
+                    _nextStartPosition = null;
+                }
+
+                if (nextMovement != null)
+                {
+                    this.GameObject.Location = nextStartPosition.Value;
+
+                    if (_movement != nextMovement.Value)
+                    {
+                        //Update movement...
+                        _movement = nextMovement.Value;
+                    }
+                }
+            }
         }
 
     }
