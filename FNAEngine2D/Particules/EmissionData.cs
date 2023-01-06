@@ -1,5 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 
 namespace FNAEngine2D.Particules
 {
@@ -24,17 +26,17 @@ namespace FNAEngine2D.Particules
         /// <summary>
         /// Lifespan min in seconds for a particule
         /// </summary>
-        public float LifespanMinSeconds = 0.1f;
+        public float LifespanMinSeconds = 1f;
 
         /// <summary>
         /// Lifespan max in seconds for a particule
         /// </summary>
-        public float LifespanMaxSeconds = 2f;
+        public float LifespanMaxSeconds = 1f;
 
         /// <summary>
         /// Speed min in pixel per seconds
         /// </summary>
-        public float SpeedPPSMin = 10f;
+        public float SpeedPPSMin = 100f;
 
         /// <summary>
         /// Speed max in pixel per seconds
@@ -42,39 +44,14 @@ namespace FNAEngine2D.Particules
         public float SpeedPPSMax = 100f;
         
         /// <summary>
-        /// Start color for the particules
+        /// Number of particules min to emit at each internal
         /// </summary>
-        public Color ColorStart = Color.Yellow;
+        public int EmitCountMin = 1;
 
         /// <summary>
-        /// End color for the particules
+        /// Number of particules max to emit at each internal
         /// </summary>
-        public Color ColorEnd = Color.Red;
-
-        /// <summary>
-        /// Start size in pixels
-        /// </summary>
-        public float SizeStart = 32f;
-
-        /// <summary>
-        /// End size in pixels
-        /// </summary>
-        public float SizeEnd = 4f;
-
-        /// <summary>
-        /// Start opacity
-        /// </summary>
-        public float OpacityStart = 1f;
-
-        /// <summary>
-        /// End opacity
-        /// </summary>
-        public float OpacityEnd = 0f;
-
-        /// <summary>
-        /// Number of particule to emit at each internal
-        /// </summary>
-        public int EmitCount = 1;
+        public int EmitCountMax = 1;
 
         /// <summary>
         /// Interval between each emission (in seconds)
@@ -85,6 +62,16 @@ namespace FNAEngine2D.Particules
         /// Texture to use. If null, default texture will ne used
         /// </summary>
         public Content<Texture2D> Texture;
+
+        /// <summary>
+        /// Effects to apply on the start
+        /// </summary>
+        public List<IParticuleEffect> StartEffects { get; set; } = new List<IParticuleEffect>();
+
+        /// <summary>
+        /// Effects
+        /// </summary>
+        public List<IParticuleEffect> Effects { get; set; } = new List<IParticuleEffect>();
 
     }
 }

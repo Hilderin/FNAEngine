@@ -132,7 +132,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the left mouse button is being pressed.
         /// </summary>
-        public bool MouseLeftDown()
+        public bool IsMouseLeftDown()
         {
             if (_mouseState.LeftButton == ButtonState.Pressed)
                 return true;
@@ -143,7 +143,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the left mouse button is newlly down
         /// </summary>
-        public bool MouseLeftNewDown()
+        public bool IsMouseLeftNewDown()
         {
             if (_mouseState.LeftButton == ButtonState.Pressed && _lastMouseState.LeftButton == ButtonState.Released)
                 return true;
@@ -154,7 +154,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the right mouse button is newlly down
         /// </summary>
-        public bool MouseRightNewDown()
+        public bool IsMouseRightNewDown()
         {
             if (_mouseState.RightButton == ButtonState.Pressed && _lastMouseState.RightButton == ButtonState.Released)
                 return true;
@@ -165,7 +165,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Returns whether or not the right mouse button is being pressed.
         /// </summary>
-        public bool MouseRightDown()
+        public bool IsMouseRightDown()
         {
             if (_mouseState.RightButton == ButtonState.Pressed)
                 return true;
@@ -176,7 +176,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if the left mouse button was clicked.
         /// </summary>
-        public bool MouseLeftClicked()
+        public bool IsMouseLeftClicked()
         {
             if (_mouseState.LeftButton == ButtonState.Released && _lastMouseState.LeftButton == ButtonState.Pressed)
                 return true;
@@ -187,7 +187,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Checks if the right mouse button was clicked.
         /// </summary>
-        public bool MouseRightClicked()
+        public bool IsMouseRightClicked()
         {
             if (_mouseState.RightButton == ButtonState.Pressed && _lastMouseState.RightButton == ButtonState.Released)
                 return true;

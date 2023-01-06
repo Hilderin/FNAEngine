@@ -74,6 +74,7 @@
     <Compile Include="InputMap.cs" />
     <Compile Include="Logguer.cs" />
     <Compile Include="MouseButton.cs" />
+    <Compile Include="MultiSoundEffectPlayer.cs" />
     <Compile Include="Network\ClientWorker.cs" />
     <Compile Include="Network\Commands\UnspawnObjectCommand.cs" />
     <Compile Include="Network\INetworkSerializable.cs" />
@@ -100,9 +101,13 @@
     <Compile Include="GameObjectEnums.cs" />
     <Compile Include="GameTimeService.cs" />
     <Compile Include="GraphicSettings.cs" />
-    <Compile Include="Particules\Particle.cs" />
-    <Compile Include="Particules\ParticleData.cs" />
-    <Compile Include="Particules\ParticleEmitter.cs" />
+    <Compile Include="Particules\OpacityEffect.cs" />
+    <Compile Include="Particules\SizeEffect.cs" />
+    <Compile Include="Particules\ColorEffect.cs" />
+    <Compile Include="Particules\IParticuleEffect.cs" />
+    <Compile Include="Particules\Particule.cs" />
+    <Compile Include="Particules\ParticuleData.cs" />
+    <Compile Include="Particules\ParticuleEmitter.cs" />
     <Compile Include="Particules\EmissionData.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="MultiTextureRender.cs" />

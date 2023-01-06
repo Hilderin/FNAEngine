@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Windows.Forms.VisualStyles;
 
 namespace FNAEngine2D.Particules
 {
@@ -7,7 +8,7 @@ namespace FNAEngine2D.Particules
     /// <summary>
     /// Particule emitter
     /// </summary>
-    public class ParticleEmitter: GameObject
+    public class ParticuleEmitter: GameObject
     {
         /// <summary>
         /// Information on the particules to emit
@@ -32,7 +33,7 @@ namespace FNAEngine2D.Particules
         /// <summary>
         /// Constructor
         /// </summary>
-        public ParticleEmitter() : this(new EmissionData())
+        public ParticuleEmitter()
         {
 
         }
@@ -40,7 +41,15 @@ namespace FNAEngine2D.Particules
         /// <summary>
         /// Constructor
         /// </summary>
-        public ParticleEmitter(EmissionData data)
+        public ParticuleEmitter(Vector2 location)
+        {
+            this.Location = location;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public ParticuleEmitter(EmissionData data)
         {
             _emissionData = data;
             _intervalLeft = data.IntervalSeconds;
@@ -53,9 +62,12 @@ namespace FNAEngine2D.Particules
         /// </summary>
         protected override void Load()
         {
-            //Default texture if needed
-            if (_emissionData.Texture == null)
-                _emissionData.Texture = GetContent<Texture2D>(ContentManager.TEXTURE_PARTICULE);
+            if (_emissionData != null)
+            {
+                //Default texture if needed
+                if (_emissionData.Texture == null)
+                    _emissionData.Texture = GetContent<Texture2D>(ContentManager.TEXTURE_PARTICULE);
+            }
         }
 
 
@@ -64,34 +76,46 @@ namespace FNAEngine2D.Particules
         /// </summary>
         protected override void Update()
         {
-            //Default texture if needed
-            if (_emissionData.Texture == null)
-                _emissionData.Texture = GetContent<Texture2D>(ContentManager.TEXTURE_PARTICULE);
-
-            _intervalLeft -= this.ElapsedGameTimeSeconds;
-            while (_intervalLeft <= 0f)
+            if (_emissionData != null && _emissionData.IntervalSeconds > 0f)
             {
-                _intervalLeft += _emissionData.IntervalSeconds;
-
-                for (int i = 0; i < _emissionData.EmitCount; i++)
+                _intervalLeft -= this.ElapsedGameTimeSeconds;
+                while (_intervalLeft <= 0f)
                 {
+                    _intervalLeft += _emissionData.IntervalSeconds;
+
                     Emit();
                 }
             }
         }
 
+        /// <summary>
+        /// Do the emission
+        /// </summary>
+        public void Emit()
+        {
+            //Default texture if needed
+            if (_emissionData.Texture == null)
+                _emissionData.Texture = GetContent<Texture2D>(ContentManager.TEXTURE_PARTICULE);
+
+            int nbParticules = GameMath.RandomInt(_emissionData.EmitCountMin, _emissionData.EmitCountMax);
+            for (int i = 0; i <= nbParticules; i++)
+            {
+                EmitParticule();
+            }
+
+        }
 
         /// <summary>
         /// Do the emission
         /// </summary>
-        private void Emit()
+        public void EmitParticule()
         {
-            ParticleData particuleData = new ParticleData();
+            ParticuleData particuleData = new ParticuleData();
             particuleData.LifespanSeconds = GameMath.RandomFloat(_emissionData.LifespanMinSeconds, _emissionData.LifespanMaxSeconds);
             particuleData.SpeedPPS = GameMath.RandomFloat(_emissionData.SpeedPPSMin, _emissionData.SpeedPPSMax);
             particuleData.Angle = GameMath.RandomFloat(_emissionData.Angle - _emissionData.AngleVariance, _emissionData.Angle + _emissionData.AngleVariance);
 
-            Add(new Particle(this.Location, particuleData, _emissionData));
+            Add(new Particule(this.Location, particuleData, _emissionData));
         }
 
     }

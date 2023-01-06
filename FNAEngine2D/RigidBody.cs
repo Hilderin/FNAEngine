@@ -132,6 +132,7 @@ namespace FNAEngine2D
                 this.Collision = this.GameObject.GetCollision(nextPosition, this.ColliderTypes);
                 if (this.Collision != null)
                 {
+                    //float distance = this.Collision.StopLocation.Distance(nextPosition);
                     nextPosition = this.Collision.StopLocation;
                 }
             }

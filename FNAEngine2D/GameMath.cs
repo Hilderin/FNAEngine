@@ -79,7 +79,15 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Permet d'obtenir une valeur random entre 2 floats
+        /// Get a random int between 2 values (max is exclusive)
+        /// </summary>
+        public static int RandomInt(int min, int exlusiveMax)
+        {
+            return _random.Next(min, exlusiveMax);
+        }
+
+        /// <summary>
+        /// Get a random int between 2 values (max is exclusive)
         /// </summary>
         public static float RandomFloat(float min, float max)
         {

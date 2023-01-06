@@ -318,12 +318,12 @@ namespace FNAEngine2D
                 //Mouse left click to place a tile...
                 if (MovePlayerMode)
                 {
-                    if (_game.Input.MouseLeftNewDown())
+                    if (_game.Input.IsMouseLeftNewDown())
                     {
                         //Leaving moving player mode...
                         MovePlayerMode = false;
                     }
-                    else if (_game.Input.MouseRightNewDown())
+                    else if (_game.Input.IsMouseRightNewDown())
                     {
                         //Reset moving player mode...
                         ResetMovePlayerMode();
@@ -331,24 +331,24 @@ namespace FNAEngine2D
                 }
                 else
                 {
-                    if (_game.Input.MouseLeftDown() || _game.Input.MouseRightDown())
+                    if (_game.Input.IsMouseLeftDown() || _game.Input.IsMouseRightDown())
                     {
                         if (IsTileSetEditorOpened)
                         {
-                            if (_game.Input.MouseLeftDown())
+                            if (_game.Input.IsMouseLeftDown())
                                 _tileSetEditor.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                            if (_game.Input.MouseRightDown())
+                            if (_game.Input.IsMouseRightDown())
                                 _tileSetEditor.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
                         }
                     }
 
-                    if (_game.Input.MouseLeftNewDown() || _game.Input.MouseRightNewDown())
+                    if (_game.Input.IsMouseLeftNewDown() || _game.Input.IsMouseRightNewDown())
                     {
                         if (_designer != null && !_designer.IsDisposed)
                         {
-                            if (_game.Input.MouseLeftDown())
+                            if (_game.Input.IsMouseLeftDown())
                                 _designer.OnMouseLeftClickInGame((int)mousePosition.X, (int)mousePosition.Y);
-                            if (_game.Input.MouseRightDown())
+                            if (_game.Input.IsMouseRightDown())
                                 _designer.OnMouseRightClickInGame((int)mousePosition.X, (int)mousePosition.Y);
                         }
                     }

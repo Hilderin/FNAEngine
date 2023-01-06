@@ -5,9 +5,9 @@ namespace FNAEngine2D.Particules
 {
 
     /// <summary>
-    /// Particle data
+    /// Particule data
     /// </summary>
-    public class ParticleData
+    public class ParticuleData
     {
         /// <summary>
         /// Life span in seconds

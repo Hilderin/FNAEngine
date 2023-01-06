@@ -31,7 +31,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Volume
         /// </summary>
-        public float Volume { get; set; }
+        public float Volume { get; set; } = 1f;
 
         /// <summary>
         /// Minimum rate for playing the sound

@@ -120,12 +120,12 @@ namespace FNAEngine2D
                             //Enter...
                             newOverGameObjects[index].HandleMouseEvent(MouseAction.Enter);
 
-                            if (_game.Input.MouseLeftDown())
+                            if (_game.Input.IsMouseLeftDown())
                             {
                                 newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
                                 _mouseLeftDownObjects.Add(newOverGameObjects[index]);
                             }
-                            if (_game.Input.MouseRightDown())
+                            if (_game.Input.IsMouseRightDown())
                             {
                                 newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
                                 _mouseRightDownObjects.Add(newOverGameObjects[index]);
@@ -147,12 +147,12 @@ namespace FNAEngine2D
                         else
                         {
                             //Object was already there...
-                            if (_game.Input.MouseLeftNewDown())
+                            if (_game.Input.IsMouseLeftNewDown())
                             {
                                 _lastOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
                                 _mouseLeftDownObjects.Add(_lastOverGameObjects[index]);
                             }
-                            if (_game.Input.MouseRightNewDown())
+                            if (_game.Input.IsMouseRightNewDown())
                             {
                                 _lastOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
                                 _mouseRightDownObjects.Add(_lastOverGameObjects[index]);
@@ -162,7 +162,7 @@ namespace FNAEngine2D
                 }
 
                 //Left Clicked... ??
-                if (_game.Input.MouseLeftClicked())
+                if (_game.Input.IsMouseLeftClicked())
                 {
                     for (int index = 0; index < newOverGameObjects.Count; index++)
                     {
@@ -178,7 +178,7 @@ namespace FNAEngine2D
                 }
 
                 //Right Clicked... ??
-                if (_game.Input.MouseRightClicked())
+                if (_game.Input.IsMouseRightClicked())
                 {
                     for (int index = 0; index < newOverGameObjects.Count; index++)
                     {

@@ -71,16 +71,24 @@ namespace FNAEngine2D.Network
         /// </summary>
         private void BeginAcceptCallback(IAsyncResult ar)
         {
-            if (_listener == null)
-                return;
+            try
+            {
+                if (_listener == null)
+                    return;
 
-            Socket clientSocket = _listener.EndAccept(ar);
+                Socket clientSocket = _listener.EndAccept(ar);
 
-            _listener.BeginAccept(BeginAcceptCallback, null);
+                _listener.BeginAccept(BeginAcceptCallback, null);
 
-            SocketChannel socketChannel = new SocketChannel(clientSocket, this);
-            this.Channels.Add(socketChannel);
-            NewChannels.Enqueue(socketChannel);
+                SocketChannel socketChannel = new SocketChannel(clientSocket, this);
+                this.Channels.Add(socketChannel);
+                NewChannels.Enqueue(socketChannel);
+
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
 
         }
 
