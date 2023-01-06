@@ -93,6 +93,16 @@ namespace FNAEngine2D {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] particule {
+            get {
+                object obj = ResourceManager.GetObject("particule", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] pixel {
             get {
                 object obj = ResourceManager.GetObject("pixel", resourceCulture);

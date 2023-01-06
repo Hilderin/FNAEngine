@@ -88,8 +88,9 @@ namespace FNAEngine2D
 
         /// <summary>
         /// Blend state of textures
+        /// NonPremultiplied by default because we dont premultiply in our ContentManager.
         /// </summary>
-        public BlendState BlendState { get; set; } = BlendState.AlphaBlend;
+        public BlendState BlendState { get; set; } = BlendState.NonPremultiplied;
 
         /// <summary>
         /// PointWrap is perfect for PixelArts. Use LinearWrap for better texture smoothing with scaling

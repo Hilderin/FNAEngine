@@ -40,6 +40,11 @@ namespace FNAEngine2D
         public const string TEXTURE_CIRCLE = "circle";
 
         /// <summary>
+        /// Built in texture for a particule
+        /// </summary>
+        public const string TEXTURE_PARTICULE = "particule";
+
+        /// <summary>
         /// Embed font: Roboto-Regular
         /// </summary>
         public const string FONT_ROBOTO_REGULAR = "Roboto-Regular";

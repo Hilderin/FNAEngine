@@ -100,6 +100,10 @@
     <Compile Include="GameObjectEnums.cs" />
     <Compile Include="GameTimeService.cs" />
     <Compile Include="GraphicSettings.cs" />
+    <Compile Include="Particules\Particle.cs" />
+    <Compile Include="Particules\ParticleData.cs" />
+    <Compile Include="Particules\ParticleEmitter.cs" />
+    <Compile Include="Particules\EmissionData.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="MultiTextureRender.cs" />
     <Compile Include="SpaceTrees\Space2DTree.cs" />
@@ -217,6 +221,7 @@
   <ItemGroup>
     <None Include="Resources\circle.bin" />
     <None Include="Resources\empty_sfx.bin" />
+    <None Include="Resources\particule.bin" />
     <None Include="Resources\pixel.bin" />
     <None Include="Resources\pixel_magenta.bin" />
     <None Include="Resources\Roboto-Regular.bin" />
@@ -226,7 +231,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Asperite\Utils\" />
-    <Folder Include="Particules\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

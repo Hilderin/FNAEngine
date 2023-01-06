@@ -103,10 +103,10 @@ namespace FNAEngine2D
                 Color a = baseLayerColors[i];
                 Color b = layerColors[i];
 
-                b.SetAFloat(b.GetAFloat() * opacity);
+                b.A = GameMath.Float1ToByte(b.GetAFloat() * opacity);
 
                 Color c = a.Multiply(1f - b.GetAFloat()).Add(b.Multiply(b.GetAFloat()));
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -131,10 +131,10 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat((a.GetRFloat()) * (opacity * (2f - b.GetAFloat() * (1f - b.GetRFloat()))));
-                c.SetGFloat((a.GetGFloat()) * (opacity * (1f - b.GetAFloat() * (1f - b.GetGFloat()))));
-                c.SetBFloat((a.GetBFloat()) * (opacity * (1f - b.GetAFloat() * (1f - b.GetBFloat()))));
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.R = GameMath.Float1ToByte((a.GetRFloat()) * (opacity * (2f - b.GetAFloat() * (1f - b.GetRFloat()))));
+                c.G = GameMath.Float1ToByte((a.GetGFloat()) * (opacity * (1f - b.GetAFloat() * (1f - b.GetGFloat()))));
+                c.B = GameMath.Float1ToByte((a.GetBFloat()) * (opacity * (1f - b.GetAFloat() * (1f - b.GetBFloat()))));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -187,24 +187,24 @@ namespace FNAEngine2D
 
 
                 if (a.R < 0.5)
-                    c.SetRFloat((byte)(2f * a.R * b.R * 255));
+                    c.R = GameMath.Float1ToByte((byte)(2f * a.R * b.R * 255));
                 else
-                    c.SetRFloat(1f - 2f * (1f - b.GetRFloat()) * (1f - a.GetRFloat()));
+                    c.R = GameMath.Float1ToByte(1f - 2f * (1f - b.GetRFloat()) * (1f - a.GetRFloat()));
 
                 if (a.G < 0.5)
-                    c.SetGFloat(2f * a.G * b.GetGFloat());
+                    c.G = GameMath.Float1ToByte(2f * a.G * b.GetGFloat());
                 else
-                    c.SetGFloat(1f - 2f * (1f - b.GetGFloat()) * (1f - a.GetGFloat()));
+                    c.G = GameMath.Float1ToByte(1f - 2f * (1f - b.GetGFloat()) * (1f - a.GetGFloat()));
 
                 if (a.B < 0.5)
-                    c.SetBFloat(2f * a.GetBFloat() * b.GetBFloat());
+                    c.B = GameMath.Float1ToByte(2f * a.GetBFloat() * b.GetBFloat());
                 else
-                    c.SetBFloat(1f - 2f * (1f - b.GetBFloat()) * (1f - a.GetBFloat()));
+                    c.B = GameMath.Float1ToByte(1f - 2f * (1f - b.GetBFloat()) * (1f - a.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
 
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
 
 
@@ -233,13 +233,13 @@ namespace FNAEngine2D
                 Color c = new Color();
 
 
-                c.SetRFloat(MathHelper.Min(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(MathHelper.Min(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(MathHelper.Min(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(MathHelper.Min(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(MathHelper.Min(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(MathHelper.Min(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -265,13 +265,13 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat(Lighten(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(Lighten(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(Lighten(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(Lighten(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(Lighten(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(Lighten(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -298,13 +298,13 @@ namespace FNAEngine2D
                 Color c = new Color();
 
 
-                c.SetRFloat(ColorDodge(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(ColorDodge(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(ColorDodge(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(ColorDodge(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(ColorDodge(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(ColorDodge(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -330,13 +330,13 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat(ColorBurn(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(ColorBurn(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(ColorBurn(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(ColorBurn(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(ColorBurn(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(ColorBurn(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -362,13 +362,13 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat(HardLight(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(HardLight(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(HardLight(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(HardLight(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(HardLight(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(HardLight(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -394,13 +394,13 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat(SoftLight(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(SoftLight(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(SoftLight(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(SoftLight(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(SoftLight(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(SoftLight(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -426,13 +426,13 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat(Difference(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(Difference(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(Difference(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(Difference(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(Difference(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(Difference(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -458,13 +458,13 @@ namespace FNAEngine2D
 
                 Color c = new Color();
 
-                c.SetRFloat(Exclusion(a.GetRFloat(), b.GetRFloat()));
-                c.SetGFloat(Exclusion(a.GetGFloat(), b.GetGFloat()));
-                c.SetBFloat(Exclusion(a.GetBFloat(), b.GetBFloat()));
+                c.R = GameMath.Float1ToByte(Exclusion(a.GetRFloat(), b.GetRFloat()));
+                c.G = GameMath.Float1ToByte(Exclusion(a.GetGFloat(), b.GetGFloat()));
+                c.B = GameMath.Float1ToByte(Exclusion(a.GetBFloat(), b.GetBFloat()));
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -497,7 +497,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -528,7 +528,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -556,7 +556,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c);
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -586,7 +586,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c); ;
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -615,7 +615,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c); ;
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -644,7 +644,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c); ;
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -677,7 +677,7 @@ namespace FNAEngine2D
 
                 c = a.Multiply(1f - b.GetAFloat()).Add(c.Multiply(b.GetAFloat()));
                 //c = ((1f - b.GetAFloat()) * a) + (b.GetAFloat() * c); ;
-                c.SetAFloat(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
+                c.A = GameMath.Float1ToByte(a.GetAFloat() + b.GetAFloat() * (1f - a.GetAFloat()));
 
                 newLayerColors[i] = c;
             }
@@ -713,15 +713,15 @@ namespace FNAEngine2D
 
             if (n < 0)
             {
-                c.SetRFloat((float)(l + (((c.GetRFloat() - l) * l) / (l - n))));
-                c.SetGFloat((float)(l + (((c.GetGFloat() - l) * l) / (l - n))));
-                c.SetBFloat((float)(l + (((c.GetBFloat() - l) * l) / (l - n))));
+                c.R = GameMath.Float1ToByte((float)(l + (((c.GetRFloat() - l) * l) / (l - n))));
+                c.G = GameMath.Float1ToByte((float)(l + (((c.GetGFloat() - l) * l) / (l - n))));
+                c.B = GameMath.Float1ToByte((float)(l + (((c.GetBFloat() - l) * l) / (l - n))));
             }
             if (x > 1)
             {
-                c.SetRFloat((float)(l + (((c.GetRFloat() - l) * (1 - l)) / (x - l))));
-                c.SetGFloat((float)(l + (((c.GetGFloat() - l) * (1 - l)) / (x - l))));
-                c.SetBFloat((float)(l + (((c.GetBFloat() - l) * (1 - l)) / (x - l))));
+                c.R = GameMath.Float1ToByte((float)(l + (((c.GetRFloat() - l) * (1 - l)) / (x - l))));
+                c.G = GameMath.Float1ToByte((float)(l + (((c.GetGFloat() - l) * (1 - l)) / (x - l))));
+                c.B = GameMath.Float1ToByte((float)(l + (((c.GetBFloat() - l) * (1 - l)) / (x - l))));
             }
 
             return c;
@@ -733,9 +733,9 @@ namespace FNAEngine2D
         private static Color SetLum(Color c, double l)
         {
             double d = l - Lum(c);
-            c.SetRFloat((float)(c.GetRFloat() + d));
-            c.SetGFloat((float)(c.GetGFloat() + d));
-            c.SetBFloat((float)(c.GetBFloat() + d));
+            c.R = GameMath.Float1ToByte((float)(c.GetRFloat() + d));
+            c.G = GameMath.Float1ToByte((float)(c.GetGFloat() + d));
+            c.B = GameMath.Float1ToByte((float)(c.GetBFloat() + d));
 
             return ClipColor(c);
         }
@@ -802,9 +802,9 @@ namespace FNAEngine2D
         {
             switch (component)
             {
-                case 'r': c.SetRFloat(value); break;
-                case 'g': c.SetGFloat(value); break;
-                case 'b': c.SetBFloat(value); break;
+                case 'r': c.R = GameMath.Float1ToByte(value); break;
+                case 'g': c.G = GameMath.Float1ToByte(value); break;
+                case 'b': c.B = GameMath.Float1ToByte(value); break;
             }
 
             return c;

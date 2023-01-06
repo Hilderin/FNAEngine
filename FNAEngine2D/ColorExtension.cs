@@ -47,37 +47,37 @@ namespace FNAEngine2D
             return GameMath.ByteToFloat1(color.A);
         }
 
-        /// <summary>
-        /// Get R in a float based 1
-        /// </summary>
-        public static void SetRFloat(this Color color, float value)
-        {
-            color.R = GameMath.Float1ToByte(value);
-        }
+        ///// <summary>
+        ///// Get R in a float based 1
+        ///// </summary>
+        //public static void SetRFloat(this Color color, float value)
+        //{
+        //    color.R = GameMath.Float1ToByte(value);
+        //}
 
-        /// <summary>
-        /// Get G in a float based 1
-        /// </summary>
-        public static void SetGFloat(this Color color, float value)
-        {
-            color.G = GameMath.Float1ToByte(value);
-        }
+        ///// <summary>
+        ///// Get G in a float based 1
+        ///// </summary>
+        //public static void SetGFloat(this Color color, float value)
+        //{
+        //    color.G = GameMath.Float1ToByte(value);
+        //}
 
-        /// <summary>
-        /// Get B in a float based 1
-        /// </summary>
-        public static void SetBFloat(this Color color, float value)
-        {
-            color.B = GameMath.Float1ToByte(value);
-        }
+        ///// <summary>
+        ///// Get B in a float based 1
+        ///// </summary>
+        //public static void SetBFloat(this Color color, float value)
+        //{
+        //    color.B = GameMath.Float1ToByte(value);
+        //}
 
-        /// <summary>
-        /// Get A in a float based 1
-        /// </summary>
-        public static void SetAFloat(this Color color, float value)
-        {
-            color.A = GameMath.Float1ToByte(value);
-        }
+        ///// <summary>
+        ///// Get A in a float based 1
+        ///// </summary>
+        //public static void SetAFloat(this Color color, float value)
+        //{
+        //    color.A = GameMath.Float1ToByte(value);
+        //}
 
 
         /// <summary>
