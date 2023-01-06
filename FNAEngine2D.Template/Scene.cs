@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D;
+using Microsoft.Xna.Framework;
 
 namespace FNAEngine2D.Template
 {
