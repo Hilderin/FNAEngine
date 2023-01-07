@@ -68,6 +68,14 @@ namespace FNAEngine2D
             return Vector2.Distance(vector, target);
         }
 
+        /// <summary>
+        /// Get the distance squaredbetween the Vector and another vector
+        /// </summary>
+        public static float DistanceSquared(this Vector2 vector, Vector2 target)
+        {
+            return Vector2.DistanceSquared(vector, target);
+        }
+
 
         /// <summary>
         /// Calculate the direction of the vector on 4 directions

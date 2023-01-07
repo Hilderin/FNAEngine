@@ -152,6 +152,14 @@ namespace FNAEngine2D
             return new Vector2(x * val, y * val);
         }
 
+        /// <summary>
+		/// Creates a new <see cref="Vector2"/> that contains a normalized values from x and y
+		/// </summary>
+		public static Vector2 Normalize(Vector2 vector)
+        {
+            return Vector2.Normalize(vector);
+        }
+
 
 
         /// <summary>

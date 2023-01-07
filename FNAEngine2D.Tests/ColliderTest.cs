@@ -5,7 +5,7 @@ using System;
 namespace FNAEngine2D.Tests
 {
     [TestClass]
-    public class CollisionTest
+    public class ColliderTest
     {
         [TestMethod]
         public void IntersectsRectTest()

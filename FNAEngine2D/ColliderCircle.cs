@@ -152,16 +152,18 @@ namespace FNAEngine2D
                 //We simulate the previous position
                 //TODO: Create a fonction to calculate the correct stopLocation with a circle and a rectangle
                 //return CollisionHelper.Intersects(_centerMovingLocation - (movingCollider.MovingLocation - movingCollider.Location), _centerMovingLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size, ref hitLocation);
-                return CollisionHelper.Intersects(_centerMovingLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size);
+                return CollisionHelper.Intersects(_centerLocation, this.Radius, movingCollider.MovingLocation, movingCollider.Size);
             }
             else if (movingCollider is ColliderCircle)
             {
                 //With a circle..
                 ColliderCircle colliderCircle = (ColliderCircle)movingCollider;
                 //if (CollisionHelper.Intersects(colliderCircle.CenterLocation, colliderCircle.CenterMovingLocation, colliderCircle.Radius, _centerMovingLocation, this.Radius, ref hitLocation))
-                if (CollisionHelper.Intersects(colliderCircle.CenterMovingLocation, colliderCircle.Radius, _centerMovingLocation, this.Radius))
+                if (CollisionHelper.Intersects(colliderCircle.CenterMovingLocation, colliderCircle.Radius, _centerLocation, this.Radius))
                 {
                     //hitLocation -= ((ColliderCircle)movingCollider).CenterOffset;
+                    //Console.WriteLine("collide " + ((NetworkGameObject)this.GameObject).ID + " " + ((NetworkGameObject)movingCollider.GameObject).ID + " " + this.CenterLocation + " " + colliderCircle.CenterMovingLocation);
+
                     return true;
                 }
                 else

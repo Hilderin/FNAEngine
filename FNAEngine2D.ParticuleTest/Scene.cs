@@ -49,7 +49,7 @@ namespace FNAEngine2D.ParticuleTest
                 EmitCountMax = 10,
                 Effects = new List<IParticuleEffect>
                 {
-                    new ColorEffect(Color.Yellow, Color.Red),
+                    new ColorEffect(Color.Red, Color.Blue),
                     new SizeEffect(8, 32),
                     new OpacityEffect(1f, 0f),
                 }
@@ -98,7 +98,7 @@ namespace FNAEngine2D.ParticuleTest
         {
             _mouseCursor.Location = this.Input.GetMousePosition();
 
-            //_mouseEmitter.Location = this.Input.GetMousePosition();
+            _mouseEmitter.Location = this.Input.GetMousePosition();
 
             if (this.Input.IsMouseLeftClicked())
             {

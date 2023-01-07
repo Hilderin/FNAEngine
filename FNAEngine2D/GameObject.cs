@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -1177,6 +1178,8 @@ namespace FNAEngine2D
         {
             if (offsetX == 0)
                 return;
+            if (offsetX == float.NaN)
+                throw new InvalidOperationException("offsetX cannot be NaN.");
 
             _location.X += offsetX;
 
@@ -1195,6 +1198,8 @@ namespace FNAEngine2D
         {
             if (offsetY == 0)
                 return;
+            if (offsetY == float.NaN)
+                throw new InvalidOperationException("offsetY cannot be NaN.");
 
             _location.Y += offsetY;
 
@@ -1214,6 +1219,11 @@ namespace FNAEngine2D
         {
             if (offsetX == 0 && offsetY == 0)
                 return;
+
+            if (offsetX == float.NaN)
+                throw new InvalidOperationException("offsetX cannot be NaN.");
+            if (offsetY == float.NaN)
+                throw new InvalidOperationException("offsetY cannot be NaN.");
 
             _location.X += offsetX;
             _location.Y += offsetY;
@@ -1265,6 +1275,8 @@ namespace FNAEngine2D
         {
             if (offsetX == 0)
                 return;
+            if (offsetX == float.NaN)
+                throw new InvalidOperationException("offsetX cannot be NaN.");
 
             _size.X += offsetX;
 
@@ -1283,6 +1295,8 @@ namespace FNAEngine2D
         {
             if (offsetY == 0)
                 return;
+            if (offsetY == float.NaN)
+                throw new InvalidOperationException("offsetX cannot be NaN.");
 
             _size.Y += offsetY;
 
@@ -1303,6 +1317,10 @@ namespace FNAEngine2D
         {
             if (offsetX == 0 && offsetY == 0)
                 return;
+            if (offsetX == float.NaN)
+                throw new InvalidOperationException("offsetX cannot be NaN.");
+            if (offsetY == float.NaN)
+                throw new InvalidOperationException("offsetY cannot be NaN.");
 
             _size.X += offsetX;
             _size.Y += offsetY;

@@ -19,8 +19,8 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         public Ball()
         {
-            this.Width = 3;
-            this.Height = 3;
+            this.Width = 4;
+            this.Height = 4;
         }
 
         /// <summary>
@@ -71,18 +71,27 @@ namespace FNAEngine2D.ColliderSample
         /// </summary>
         private void AdjustMovement(Collision collision)
         {
-            //Vector2 direction = _rigidBody.Movement;
+            Vector2 direction = _rigidBody.Movement;
 
-            //foreach (GameObject obj in _rigidBody.Collision.CollidesWith)
-            //{
+            foreach (GameObject obj in _rigidBody.Collision.CollidesWith)
+            {
+                if (obj is Ball)
+                {
+                    direction -= VectorHelper.Normalize(obj.Location - this.Location);
+                }
+                else
+                {
+                    if (collision.Direction == Direction4.Down || collision.Direction == Direction4.Up)
+                        direction *= new Vector2(1, -1);
+                    else
+                        direction *= new Vector2(-1, 1);
+                }
+            }
 
-            //}
+            _rigidBody.Movement = direction;
 
-            Direction4 direction = collision.Direction;
-            if (direction == Direction4.Down || direction == Direction4.Up)
-                _rigidBody.Movement *= new Vector2(1, -1);
-            else
-                _rigidBody.Movement *= new Vector2(-1, 1);
+
+
         }
     }
 }

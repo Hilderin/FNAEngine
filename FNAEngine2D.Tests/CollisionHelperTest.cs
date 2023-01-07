@@ -148,5 +148,6 @@ namespace FNAEngine2D.Tests
             bool result = CollisionHelper.Intersects(new Vector2(10, 10), 10f, new Vector2(15, 15), new Vector2(100, 100));
             Assert.IsTrue(result);
         }
+
     }
 }

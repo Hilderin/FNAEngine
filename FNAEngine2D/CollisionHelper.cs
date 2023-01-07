@@ -378,6 +378,7 @@ namespace FNAEngine2D
             if (distance > movingColliderRadius + colliderRadius)
                 return false;
 
+            //Console.WriteLine("distance: " + distance + " " + movingColliderLocation + " with " + colliderLocation);
             ////Calculating the distance that the moving object penetrated into the other circle.
             ////easy to do with the distance between the 2 circles. We juste need to substract the radius of the other circle.
             //float penetrationDistance = movingColliderRadius - (distance - colliderRadius);
@@ -401,7 +402,15 @@ namespace FNAEngine2D
         /// </summary>
         public static Direction4 GetHitDirection(Collider movingCollider, Collider collidesWith)
         {
-            return GetHitDirection(movingCollider.MovingLocation, movingCollider.Size, collidesWith.Location, collidesWith.Size);
+
+            //if (movingCollider is ColliderCircle && collidesWith is ColliderCircle)
+            //{
+            //    return VectorHelper.GetDirection4To(movingCollider.Location, movingCollider.MovingLocation);
+            //}
+            //else
+            //{
+                return GetHitDirection(movingCollider.MovingLocation, movingCollider.Size, collidesWith.Location, collidesWith.Size);
+            //}
         }
 
         /// <summary>
@@ -511,14 +520,29 @@ namespace FNAEngine2D
                 ColliderCircle movingColliderCircle = (ColliderCircle)movingCollider;
                 ColliderCircle collidesWithCircle = (ColliderCircle)collidesWith;
 
+                if (movingColliderCircle.Location == movingColliderCircle.MovingLocation)
+                    return movingColliderCircle.Location;
+                //Console.WriteLine(((NetworkGameObject)movingColliderCircle.GameObject).ID + " " + ((NetworkGameObject)collidesWith.GameObject).ID + " " + movingColliderCircle.Location + " to " + movingColliderCircle.MovingLocation + " colloc: " + collidesWith.Location);
                 float distance = movingColliderCircle.CenterMovingLocation.Distance(collidesWithCircle.CenterLocation);
 
                 //Calculating the distance that the moving object penetrated into the other circle.
                 //easy to do with the distance between the 2 circles. We juste need to substract the radius of the other circle.
                 float penetrationDistance = movingColliderCircle.Radius - (distance - collidesWithCircle.Radius);
 
+                if (penetrationDistance <= 0)
+                    return movingColliderCircle.Location;
+
+
                 //We are going backwards on the inverted direction.
-                return movingColliderCircle.MovingLocation + (Vector2.Normalize(movingColliderCircle.MovingLocation - movingColliderCircle.Location) * -(penetrationDistance + 5));
+                Vector2 hitLocation = movingColliderCircle.MovingLocation + (Vector2.Normalize(movingColliderCircle.CenterLocation - movingColliderCircle.CenterMovingLocation) * penetrationDistance);
+
+                //If the deplacement is to little, the collider cannot move. This prevent rounding error.
+                float distanceSquared = hitLocation.DistanceSquared(movingColliderCircle.Location);
+                if (distanceSquared < 0.1f)
+                    return hitLocation; // return movingColliderCircle.Location;
+
+                //Console.WriteLine(((NetworkGameObject)movingColliderCircle.GameObject).ID + " " + ((NetworkGameObject)collidesWith.GameObject).ID + " " + hitLocation + ", distance: " + distance + ", penDist: " + penetrationDistance);
+                return hitLocation;
 
             }
             else

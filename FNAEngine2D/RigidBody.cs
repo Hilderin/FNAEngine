@@ -125,26 +125,29 @@ namespace FNAEngine2D
             //Applying physics...
             Vector2 nextPosition = GetNextLocation();
 
-
-            //Check for collision... only if the gameobject has a collider.
-            if (this.GameObject.Collider != null)
-            {
-                this.Collision = this.GameObject.GetCollision(nextPosition, this.ColliderTypes);
-                if (this.Collision != null)
-                {
-                    //float distance = this.Collision.StopLocation.Distance(nextPosition);
-                    nextPosition = this.Collision.StopLocation;
-                }
-            }
-
-
-            LastLocation = this.GameObject.Location;
-
+            //Are we moving?
             if (nextPosition != this.GameObject.Location)
             {
-                //if(_networkGameObject != null && _networkGameObject.IsClient && _networkGameObject.IsLocalPlayer)
-                //    Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
-                this.GameObject.TranslateTo(nextPosition);
+                //Check for collision... only if the gameobject has a collider.
+                if (this.GameObject.Collider != null)
+                {
+                    this.Collision = this.GameObject.GetCollision(nextPosition, this.ColliderTypes);
+                    if (this.Collision != null)
+                    {
+                        //float distance = this.Collision.StopLocation.Distance(nextPosition);
+                        nextPosition = this.Collision.StopLocation;
+                    }
+                }
+
+
+                LastLocation = this.GameObject.Location;
+
+                if (nextPosition != this.GameObject.Location)
+                {
+                    //if(_networkGameObject != null && _networkGameObject.IsClient && _networkGameObject.IsLocalPlayer)
+                    //    Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
+                    this.GameObject.TranslateTo(nextPosition);
+                }
             }
 
 
