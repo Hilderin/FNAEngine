@@ -10,12 +10,46 @@ namespace FNAEngine2D
 {
     public static class GameMath
     {
+        /// <summary>
+		/// Represents the value of pi(3.14159274).
+		/// </summary>
+		public const float Pi = (float)Math.PI;
 
+        /// <summary>
+        /// Represents the value of pi divided by two(1.57079637).
+        /// </summary>
+        public const float PiOver2 = (float)(Math.PI / 2.0);
+
+        /// <summary>
+        /// Represents the value of pi divided by four (0.7853982).
+        /// </summary>
+        public const float PiOver4 = (float)(Math.PI / 4.0);
+
+        /// <summary>
+        /// Represents the value of pi divided by minus four (-0.7853982).
+        /// </summary>
+        public const float MinusPiMinusOver4 = (float)Math.PI * -0.25f;
+
+        /// <summary>
+        /// Represents the value of pi times two (6.28318548).
+        /// </summary>
+        public const float TwoPi = (float)(Math.PI * 2.0);
+
+        /// <summary>
+        /// Represents the value of pi multiplied by 0.75 (2.3562).
+        /// </summary>
         public const float PiThreeQuarter = (float)Math.PI * 0.75f;
-        public const float MinusPiThreeQuarter = (float)Math.PI * -0.75f;
-        public const float PiQuarter = (float)Math.PI * 0.25f;
-        public const float MinusPiQuarter = (float)Math.PI * -0.25f;
 
+        /// <summary>
+        /// Represents the value of pi multiplied by minus 0.75 (-2.3562).
+        /// </summary>
+        public const float PiMinusThreeQuarter = (float)Math.PI * -0.75f;
+
+        /// <summary>
+        /// The value we use to avoid floating point precision issues
+        /// http://sandervanrossen.blogspot.com/2009/12/realtime-csg-part-1.html
+        /// </summary>
+        public const float EPSILON = 0.00001f;
 
         /// <summary>
         /// Random object
@@ -143,6 +177,35 @@ namespace FNAEngine2D
             valueA = temp;
         }
 
+        /// <summary>
+        /// Test if a float is the same as another float
+        /// </summary>
+        public static bool AreFloatsEqual(float a, float b)
+        {
+            float diff = a - b;
+
+            float e = EPSILON;
+
+            if (diff < e && diff > -e)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Clamp list indices
+        /// Will even work if index is larger/smaller than listSize, so can loop multiple times
+        /// </summary>
+        public static int ClampListIndex(int index, int listSize)
+        {
+            index = ((index % listSize) + listSize) % listSize;
+
+            return index;
+        }
 
     }
 }

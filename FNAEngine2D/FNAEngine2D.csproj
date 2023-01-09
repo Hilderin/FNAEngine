@@ -72,6 +72,14 @@
     <Compile Include="DataStreaming\BinReader.cs" />
     <Compile Include="DataStreaming\BinWriter.cs" />
     <Compile Include="InputMap.cs" />
+    <Compile Include="Edge.cs" />
+    <Compile Include="HalfEdge.cs" />
+    <Compile Include="Plane.cs" />
+    <Compile Include="Triangle.cs" />
+    <Compile Include="Triangulation\ConstrainedDelauney.cs" />
+    <Compile Include="Vertex.cs" />
+    <Compile Include="TriangleRender.cs" />
+    <Compile Include="VerticesRender.cs" />
     <Compile Include="Logguer.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="MultiSoundEffectPlayer.cs" />
@@ -109,6 +117,7 @@
     <Compile Include="Particules\ParticuleData.cs" />
     <Compile Include="Particules\ParticuleEmitter.cs" />
     <Compile Include="Particules\EmissionData.cs" />
+    <Compile Include="LineRender.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="MultiTextureRender.cs" />
     <Compile Include="SpaceTrees\Space2DTree.cs" />
@@ -191,6 +200,7 @@
     <Compile Include="TileSet.cs" />
     <Compile Include="TilesJsonConverter.cs" />
     <Compile Include="TileSetRender.cs" />
+    <Compile Include="Triangulation\GeometryHelper.cs" />
     <Compile Include="Vector2Extensions.cs" />
     <Compile Include="VectorHelper.cs" />
     <Compile Include="Win32.cs" />

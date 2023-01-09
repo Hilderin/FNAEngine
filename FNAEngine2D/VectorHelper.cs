@@ -169,13 +169,13 @@ namespace FNAEngine2D
         {
             float radians = vector.ToAngle();
 
-            if (radians >= GameMath.PiThreeQuarter || radians <= GameMath.MinusPiThreeQuarter)
+            if (radians >= GameMath.PiThreeQuarter || radians <= GameMath.PiMinusThreeQuarter)
                 return Direction4.Left;
 
-            if (radians >= GameMath.MinusPiThreeQuarter && radians <= GameMath.MinusPiQuarter)
+            if (radians >= GameMath.PiMinusThreeQuarter && radians <= GameMath.MinusPiMinusOver4)
                 return Direction4.Up;
 
-            if (radians >= GameMath.MinusPiQuarter && radians <= GameMath.PiQuarter)
+            if (radians >= GameMath.MinusPiMinusOver4 && radians <= GameMath.PiOver4)
                 return Direction4.Right;
 
             return Direction4.Down;
@@ -190,13 +190,13 @@ namespace FNAEngine2D
         {
             float radians = (destination - origin).ToAngle();
 
-            if (radians >= GameMath.PiThreeQuarter || radians <= GameMath.MinusPiThreeQuarter)
+            if (radians >= GameMath.PiThreeQuarter || radians <= GameMath.PiMinusThreeQuarter)
                 return Direction4.Left;
 
-            if (radians >= GameMath.MinusPiThreeQuarter && radians <= GameMath.MinusPiQuarter)
+            if (radians >= GameMath.PiMinusThreeQuarter && radians <= GameMath.MinusPiMinusOver4)
                 return Direction4.Up;
 
-            if (radians >= GameMath.MinusPiQuarter && radians <= GameMath.PiQuarter)
+            if (radians >= GameMath.MinusPiMinusOver4 && radians <= GameMath.PiOver4)
                 return Direction4.Right;
 
             return Direction4.Down;
