@@ -23,7 +23,7 @@ namespace FNAEngine2D.Particules
         public float Rotation;
 
         public Texture2D Texture;
-        public Vector2 Position;
+        //public Vector2 Position;
 
 
         //public bool isFinished = false;
@@ -36,7 +36,7 @@ namespace FNAEngine2D.Particules
             _particuleData = particuleData;
             _emissionData = emissionData;
 
-            this.Position = location;
+            this.Location = location;
 
             Texture = emissionData.Texture.Data;
             LifespanLeft = particuleData.LifespanSeconds;
@@ -101,7 +101,7 @@ namespace FNAEngine2D.Particules
             //float scaleHeightLerp = MathHelper.Lerp(heightEnd, heightStart, LifespanAmount);
             //Scale = new Vector2(scaleWidthLerp / _emissionData.Texture.Data.Width, scaleHeightLerp / _emissionData.Texture.Data.Height);
 
-            this.Position += Direction * _particuleData.SpeedPPS * this.ElapsedGameTimeSeconds;
+            this.Location += Direction * _particuleData.SpeedPPS * this.ElapsedGameTimeSeconds;
 
             //I update the size to be sure to draw it on screen
             this.Size = new Vector2(_emissionData.Texture.Data.Width, _emissionData.Texture.Data.Height) * this.Scale;
@@ -112,7 +112,7 @@ namespace FNAEngine2D.Particules
         /// </summary>
         protected override void Draw()
         {
-            DrawingContext.Draw(_emissionData.Texture.Data, this.Position, null, Color * Opacity, this.Rotation, Origin, Scale, SpriteEffects.None, this.Depth);
+            DrawingContext.Draw(_emissionData.Texture.Data, this.Location, null, Color * Opacity, this.Rotation, Origin, Scale, SpriteEffects.None, this.Depth);
         }
     }
 }

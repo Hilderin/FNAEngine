@@ -115,7 +115,10 @@ namespace FNAEngine2D.Particules
             particuleData.SpeedPPS = GameMath.RandomFloat(_emissionData.SpeedPPSMin, _emissionData.SpeedPPSMax);
             particuleData.Angle = GameMath.RandomFloat(_emissionData.Angle - _emissionData.AngleVariance, _emissionData.Angle + _emissionData.AngleVariance);
 
-            Add(new Particule(this.Location, particuleData, _emissionData));
+
+            //Add in the root object so the particule does not move with the emitter and if we disable the emitter
+            //the particules continue to update, etc...
+            this.RootGameObject.Add(new Particule(this.Location, particuleData, _emissionData));
         }
 
     }
