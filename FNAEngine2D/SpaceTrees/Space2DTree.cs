@@ -11,7 +11,7 @@ namespace FNAEngine2D.SpaceTrees
     /// <summary>
     /// Custom KD tree implementation to store objects with 2D positions
     /// </summary>
-    public class Space2DTree<T>
+    public class Space2DTree<T>: ISearchableSpace
     {
         /// <summary>
         /// Root
@@ -164,9 +164,20 @@ namespace FNAEngine2D.SpaceTrees
         /// <summary>
         /// Get values in a rectangle
         /// </summary>
-        public Space2DTreeResult<T> Search(float x, float y, float width, float height)
+        public IEnumerable<T> Search(float x, float y, float width, float height)
         {
             return new Space2DTreeResult<T>(x, y, width, height, this);
+        }
+
+        /// <summary>
+        /// Check if there is something in a rect
+        /// </summary>
+        public bool Any(float x, float y, float width, float height)
+        {
+            float right = x + width;
+            float bottom = y + height;
+
+            return _root.Any(x, y, right, bottom);
         }
 
 

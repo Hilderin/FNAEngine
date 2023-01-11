@@ -48,6 +48,7 @@
     <Compile Include="Communication\SocketChannelTest.cs" />
     <Compile Include="DataStreaming\BinReaderWriterTest.cs" />
     <Compile Include="ForceTest.cs" />
+    <Compile Include="PathFinding\AStartTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

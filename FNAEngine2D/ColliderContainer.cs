@@ -122,6 +122,17 @@ namespace FNAEngine2D
             return collision;
         }
 
+
+
+        /// <summary>
+        /// Check if there is something un a rect
+        /// </summary>
+        public bool Any(float x, float y, float width, float height)
+        {
+            return _spaceTree.Any(x, y, width, height);
+        }
+
+
         /// <summary>
         /// Check if a game object is the right type
         /// </summary>

@@ -130,6 +130,64 @@ namespace FNAEngine2D.SpaceTrees
         }
 
         /// <summary>
+        /// Check if there is something un a rect
+        /// </summary>
+        public bool Any(float x, float y, float right, float bottom)
+        {
+            if (_lowerNode == null)
+            {
+                //Check all bucket...
+                foreach (Space2DTreeNodeData<T> data in _bucket)
+                {
+                    if (data.Intersects(x, y, right, bottom))
+                        return true;
+                }
+            }
+            else
+            {
+                if (_splitOnX)
+                {
+                    //Split on X
+                    if (x <= _splitValue)
+                    {
+                        //There could be some of our data in here
+                        if (_lowerNode.Any(x, y, right, bottom))
+                            return true;
+                    }
+                    if (right >= _splitValue)
+                    {
+                        if (_upperNode.Any(x, y, right, bottom))
+                            return true;
+                    }
+
+                    if (_intersectNode.Any(x, y, right, bottom))
+                        return true;
+
+                }
+                else
+                {
+                    //Split on Y
+                    if (y <= _splitValue)
+                    {
+                        if (_lowerNode.Any(x, y, right, bottom))
+                            return true;
+                    }
+                    if (bottom >= _splitValue)
+                    {
+                        if (_upperNode.Any(x, y, right, bottom))
+                            return true;
+                    }
+
+                    if (_intersectNode.Any(x, y, right, bottom))
+                        return true;
+
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Get values in a rectangle
         /// </summary>
         internal Space2DTreeNode<T> GetDestinationNode(Space2DTreeNodeData<T> dataNode)

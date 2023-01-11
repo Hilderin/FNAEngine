@@ -74,7 +74,11 @@
     <Compile Include="InputMap.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="HalfEdge.cs" />
+    <Compile Include="PathFinding\AStar.cs" />
+    <Compile Include="PathFinding\Path.cs" />
+    <Compile Include="PathFinding\PathNode.cs" />
     <Compile Include="Plane.cs" />
+    <Compile Include="SpaceTrees\ISearchableSpace.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Triangulation\ConstrainedDelauney.cs" />
     <Compile Include="Vertex.cs" />
