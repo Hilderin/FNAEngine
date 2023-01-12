@@ -14,7 +14,6 @@ namespace FNAEngine2D
     /// </summary>
     public class NetworkGameObject: GameObject
     {
-
         /// <summary>
         /// NetworkClient object
         /// </summary>

@@ -123,6 +123,73 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Set the tile
+        /// </summary>
+        public bool SetTile(int tileX, int tileY, Tile tile)
+        {
+            if (tileX < 0 || tileY < 0)
+                return false;
+
+            if (this.Tiles == null)
+            {
+                this.Tiles = new Tile[tileX + 1][];
+            }
+            else if (this.Tiles.Length <= tileX)
+            {
+                //We need to grow the tiles array...
+                Tile[][] newColTiles = new Tile[tileX + 1][];
+
+                //Copy the existing data...
+                Array.Copy(this.Tiles, newColTiles, this.Tiles.Length);
+
+                this.Tiles = newColTiles;
+            }
+
+            if (this.Tiles[tileX] == null)
+            {
+                this.Tiles[tileX] = new Tile[tileY + 1];
+            }
+            else if (this.Tiles[tileX].Length <= tileY)
+            {
+                //We need to grow the tiles array...
+                Tile[] newRowTiles = new Tile[tileY + 1];
+
+                //Copy the existing data...
+                Array.Copy(this.Tiles[tileX], newRowTiles, this.Tiles[tileX].Length);
+
+                this.Tiles[tileX] = newRowTiles;
+
+            }
+
+            if (!AreTileEguals(this.Tiles[tileX][tileY], tile))
+            {
+                //Needs to update...
+                this.Tiles[tileX][tileY] = tile;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+
+        }
+
+        /// <summary>
+        /// Check if 2 tiles are eguals
+        /// </summary>
+        private bool AreTileEguals(Tile a, Tile b)
+        {
+            if (a == null && b == null)
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            return a.Col == b.Col && a.Row == b.Row;
+        }
+
+        /// <summary>
         /// Override of the ToString to display the TileSet name
         /// </summary>
         public override string ToString()

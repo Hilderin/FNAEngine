@@ -1048,7 +1048,10 @@ namespace FNAEngine2D
 
             //Check if object must be renderer by the camera...
             if ((DrawingContext.Camera.LayerMask & this.LayerMask) != 0)
+            {
+                ForEachComponent(o => o.DoDraw());
                 this.Draw();
+            }
 
             ForEachChild(o => o.DoDraw());
         }
@@ -1215,10 +1218,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Permet de déplacer en X et Y l'objet et tous ses enfants
         /// </summary>
-        public void Translate(float offsetX, float offsetY)
+        public GameObject Translate(float offsetX, float offsetY)
         {
             if (offsetX == 0 && offsetY == 0)
-                return;
+                return this;
 
             if (offsetX == float.NaN)
                 throw new InvalidOperationException("offsetX cannot be NaN.");
@@ -1233,48 +1236,50 @@ namespace FNAEngine2D
             ForEachChild(o => o.Translate(offsetX, offsetY));
 
             ForEachComponent(c => c.DoOnMoved());
+
+            return this;
         }
 
         /// <summary>
         /// Permet de déplacer en X et Y l'objet et tous ses enfants
         /// </summary>
-        public void Translate(Vector2 translation)
+        public GameObject Translate(Vector2 translation)
         {
-            this.Translate(translation.X, translation.Y);
+            return this.Translate(translation.X, translation.Y);
         }
 
         /// <summary>
         /// Permet de déplacer vers une coordonnées
         /// </summary>
-        public void TranslateTo(float x, float y)
+        public GameObject TranslateTo(float x, float y)
         {
-            this.Translate(x - _location.X, y - _location.Y);
+            return this.Translate(x - _location.X, y - _location.Y);
         }
 
         /// <summary>
         /// Permet de déplacer vers une coordonnées
         /// </summary>
-        public void TranslateTo(Vector2 destination)
+        public GameObject TranslateTo(Vector2 destination)
         {
-            this.Translate(destination.X - _location.X, destination.Y - _location.Y);
+            return this.Translate(destination.X - _location.X, destination.Y - _location.Y);
         }
 
         /// <summary>
         /// Permet de déplacer vers une coordonnées
         /// </summary>
-        public void TranslateTo(Point destination)
+        public GameObject TranslateTo(Point destination)
         {
-            this.Translate(destination.X - _location.X, destination.Y - _location.Y);
+            return this.Translate(destination.X - _location.X, destination.Y - _location.Y);
         }
 
 
         /// <summary>
         /// Resize width of an offset
         /// </summary>
-        public void ResizeWidth(float offsetX)
+        public GameObject ResizeWidth(float offsetX)
         {
             if (offsetX == 0)
-                return;
+                return this;
             if (offsetX == float.NaN)
                 throw new InvalidOperationException("offsetX cannot be NaN.");
 
@@ -1286,15 +1291,17 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnResized());
 
+            return this;
+
         }
 
         /// <summary>
         /// Resize height of an offset
         /// </summary>
-        public void ResizeHeight(float offsetY)
+        public GameObject ResizeHeight(float offsetY)
         {
             if (offsetY == 0)
-                return;
+                return this;
             if (offsetY == float.NaN)
                 throw new InvalidOperationException("offsetX cannot be NaN.");
 
@@ -1306,6 +1313,7 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnResized());
 
+            return this;
 
         }
 
@@ -1313,10 +1321,10 @@ namespace FNAEngine2D
         /// <summary>
         /// Resize width and height of an offset
         /// </summary>
-        public void Resize(float offsetX, float offsetY)
+        public GameObject Resize(float offsetX, float offsetY)
         {
             if (offsetX == 0 && offsetY == 0)
-                return;
+                return this;
             if (offsetX == float.NaN)
                 throw new InvalidOperationException("offsetX cannot be NaN.");
             if (offsetY == float.NaN)
@@ -1331,14 +1339,16 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnResized());
 
+            return this;
+
         }
 
         /// <summary>
         /// Resize to a width and height
         /// </summary>
-        public void ResizeTo(float offsetX, float offsetY)
+        public GameObject ResizeTo(float offsetX, float offsetY)
         {
-            this.Resize(offsetX - _size.X, offsetY - _size.Y);
+            return this.Resize(offsetX - _size.X, offsetY - _size.Y);
         }
 
 
@@ -1349,6 +1359,16 @@ namespace FNAEngine2D
         public GameObject SetLayerMask(Layers layerMask)
         {
             this.LayerMask = layerMask;
+            return this;
+
+        }
+
+        /// <summary>
+        /// Set the depth
+        /// </summary>
+        public GameObject SetDepth(float depth)
+        {
+            this.Depth = depth;
             return this;
         }
 

@@ -39,6 +39,16 @@ namespace FNAEngine2D
 
 
         /// <summary>
+        /// Bounds renderer to screen
+        /// </summary>
+        public Rectangle DisplayBounds
+        {
+            get { return _camera.DisplayBounds; }
+        }
+
+
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public DrawingContext()

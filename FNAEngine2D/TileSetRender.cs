@@ -34,7 +34,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Information on tileset
         /// </summary>
-        [EditorAttribute(typeof(TileSetUITypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Editor(typeof(TileSetUITypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public TileSet TileSet { get; set; }
 
 

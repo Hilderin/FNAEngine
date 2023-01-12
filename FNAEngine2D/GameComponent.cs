@@ -17,6 +17,14 @@ namespace FNAEngine2D
         public GameObject GameObject { get; set; }
 
         /// <summary>
+        /// Drawing context
+        /// </summary>
+        public DrawingContext DrawingContext
+        {
+            get { return this.GameObject.DrawingContext; }
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public GameComponent()
@@ -59,6 +67,22 @@ namespace FNAEngine2D
         /// Update each frame
         /// </summary>
         protected virtual void Update()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the Draw
+        /// </summary>
+        internal void DoDraw()
+        {
+            Draw();
+        }
+
+        /// <summary>
+        /// Draw each frame
+        /// </summary>
+        protected virtual void Draw()
         {
 
         }

@@ -141,7 +141,7 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void OnMouseRightClickInGame(int x, int y)
         {
-            if (SetTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null, _tileSet))
+            if (_tileSet.SetTile(x / _tileSet.TileScreenSize, y / _tileSet.TileScreenSize, null))
             {
                 _editModeService.SetDirty(true);
                 _editModeService.AddHistory();
@@ -231,7 +231,7 @@ namespace FNAEngine2D.Desginer
             {
                 for (int row = 0; row < _currentRowLength; row++)
                 {
-                    if (SetTile((x / tileSet.TileScreenSize) + col, (y / tileSet.TileScreenSize) + row, new Tile(_currentColIndex + col, _currentRowIndex + row), tileSet))
+                    if (tileSet.SetTile((x / tileSet.TileScreenSize) + col, (y / tileSet.TileScreenSize) + row, new Tile(_currentColIndex + col, _currentRowIndex + row)))
                         updated = true;
                 }
             }
@@ -239,72 +239,8 @@ namespace FNAEngine2D.Desginer
             return updated;
         }
 
-        /// <summary>
-        /// Set the tile
-        /// </summary>
-        private bool SetTile(int tileX, int tileY, Tile tile, TileSet tileSet)
-        {
-            if (tileX < 0 || tileY < 0)
-                return false;
 
-            if (tileSet.Tiles == null)
-            {
-                tileSet.Tiles = new Tile[tileX + 1][];
-            }
-            else if(tileSet.Tiles.Length <= tileX)
-            {
-                //We need to grow the tiles array...
-                Tile[][] newColTiles = new Tile[tileX + 1][];
-
-                //Copy the existing data...
-                Array.Copy(tileSet.Tiles, newColTiles, tileSet.Tiles.Length);
-
-                tileSet.Tiles = newColTiles;
-            }
-
-            if (tileSet.Tiles[tileX] == null)
-            {
-                tileSet.Tiles[tileX] = new Tile[tileY + 1];
-            }
-            else if (tileSet.Tiles[tileX].Length <= tileY)
-            {
-                //We need to grow the tiles array...
-                Tile[] newRowTiles = new Tile[tileY + 1];
-
-                //Copy the existing data...
-                Array.Copy(tileSet.Tiles[tileX], newRowTiles, tileSet.Tiles[tileX].Length);
-
-                tileSet.Tiles[tileX] = newRowTiles;
-
-            }
-
-            if (!AreTileEguals(tileSet.Tiles[tileX][tileY], tile))
-            {
-                //Needs to update...
-                tileSet.Tiles[tileX][tileY] = tile;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-
-        }
-
-        /// <summary>
-        /// Check if 2 tiles are eguals
-        /// </summary>
-        private bool AreTileEguals(Tile a, Tile b)
-        {
-            if (a == null && b == null)
-                return true;
-
-            if (a == null || b == null)
-                return false;
-
-            return a.Col == b.Col && a.Row == b.Row;
-        }
+        
 
         /// <summary>
         /// Load the tileset

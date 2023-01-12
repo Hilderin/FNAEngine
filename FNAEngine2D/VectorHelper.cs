@@ -40,6 +40,21 @@ namespace FNAEngine2D
             return new Vector2((width / 2) - (objectWidth / 2), (height / 2) - (objectHeight / 2));
         }
 
+        /// <summary>
+        /// Get the location centered and align with the bottom
+        /// </summary>
+        public static Vector2 CenterBottom(Vector2 parentLocation, Vector2 parentSize, Vector2 size)
+        {
+            return new Vector2(parentLocation.X + (parentSize.X / 2) - (size.X / 2), parentLocation.Y - size.Y);
+        }
+
+        /// <summary>
+        /// Get the location centered and align with the bottom
+        /// </summary>
+        public static Vector2 CenterBottom(Vector2 parentLocation, Vector2 parentSize, float width, float height)
+        {
+            return new Vector2(parentLocation.X + (parentSize.X / 2) - (width / 2), parentLocation.Y + parentSize.Y - height);
+        }
 
         /// <summary>
         /// Permet de faire une rotation sur un point d'origine

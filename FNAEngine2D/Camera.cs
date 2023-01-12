@@ -231,6 +231,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Bounds renderer to screen
+        /// </summary>
+        public Rectangle DisplayBounds
+        {
+            get { return _displayBounds; }
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public Camera(int width, int height)
