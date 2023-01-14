@@ -57,9 +57,9 @@ namespace FNAEngine2D.GameObjects
         public Color Color { get; set; } = Color.Yellow;
         
         /// <summary>
-        /// TextRenderer
+        /// Labeler
         /// </summary>
-        private TextRender _textRender;
+        private Label _label;
 
         /// <summary>
         /// Game time service
@@ -87,7 +87,7 @@ namespace FNAEngine2D.GameObjects
         {
             _gameTimeService = GetService<GameTimeService>();
 
-            _textRender = this.Add(new TextRender(GetText(0, 0, 0, 0), this.FontName, this.FontSize, Vector2.Zero, this.Color));
+            _label = this.Add(new Label(GetText(0, 0, 0, 0), this.FontName, this.FontSize, Vector2.Zero, this.Color));
         }
 
         protected override void Update()
@@ -98,7 +98,7 @@ namespace FNAEngine2D.GameObjects
             _lastFrameTimeMillisecondsAverage.Add(_gameTimeService.LastFrameTimeMilliseconds);
 
 
-            _textRender.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());
+            _label.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());
         }
 
         protected override void Draw()

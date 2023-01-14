@@ -30,9 +30,9 @@ namespace FNAEngine2D.GameObjects
         public Color Color { get; set; } = Color.Yellow;
         
         /// <summary>
-        /// TextRenderer
+        /// Labeler
         /// </summary>
-        private TextRender _textRender;
+        private Label _label;
 
         /// <summary>
         /// Renderer de texture
@@ -53,12 +53,12 @@ namespace FNAEngine2D.GameObjects
 
         protected override void Load()
         {
-            _textRender = this.Add(new TextRender(GetText(), this.FontName, this.FontSize, this.Location, this.Color));
+            _label = this.Add(new Label(GetText(), this.FontName, this.FontSize, this.Location, this.Color));
         }
 
         protected override void Update()
         {
-            _textRender.Text = GetText();
+            _label.Text = GetText();
         }
 
         private string GetText()

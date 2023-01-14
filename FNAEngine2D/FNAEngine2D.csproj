@@ -189,7 +189,7 @@
     <Compile Include="Animations\SpriteAnimator.cs" />
     <Compile Include="Animations\SpriteAnimationFrame.cs" />
     <Compile Include="Animations\MultiSpriteAnimator.cs" />
-    <Compile Include="GameObjects\TextRender.cs" />
+    <Compile Include="GameObjects\Label.cs" />
     <Compile Include="GameObjects\SpriteRender.cs" />
     <Compile Include="Texture2DExtensions.cs" />
     <Compile Include="Texture2DHelper.cs" />

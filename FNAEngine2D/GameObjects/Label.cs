@@ -29,7 +29,7 @@ namespace FNAEngine2D.GameObjects
     /// <summary>
     /// Text render
     /// </summary>
-    public class TextRender : GameObject
+    public class Label : GameObject
     {
         /// <summary>
         /// TextUpdated
@@ -188,14 +188,14 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public TextRender()
+        public Label()
         {
         }
 
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fontName, int fontSize, Vector2 location, Color color)
+        public Label(string text, string fontName, int fontSize, Vector2 location, Color color)
         {
             _fontName = fontName;
             _fontSize = fontSize;
@@ -209,7 +209,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fontName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment)
+        public Label(string text, string fontName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment)
         {
             _fontName = fontName;
             _fontSize = fontSize;
@@ -226,7 +226,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextRender(string text, string fontName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment, bool pixelPerfect): this(text, fontName, fontSize, bounds, color, horizontalAlignment, verticalAlignment)
+        public Label(string text, string fontName, int fontSize, Rectangle bounds, Color color, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment, bool pixelPerfect): this(text, fontName, fontSize, bounds, color, horizontalAlignment, verticalAlignment)
         {
             PixelPerfect = true;
         }

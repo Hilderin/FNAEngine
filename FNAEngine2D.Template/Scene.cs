@@ -13,7 +13,7 @@ namespace FNAEngine2D.Template
         {
             Add(new FPSRender());
 
-            Add(new TextRender("Template", ContentManager.FONT_ROBOTO_REGULAR, 32, this.Game.Rectangle, Color.White, TextHorizontalAlignment.Center, TextVerticalAlignment.Middle));
+            Add(new Label("Template", ContentManager.FONT_ROBOTO_REGULAR, 32, this.Game.Rectangle, Color.White, TextHorizontalAlignment.Center, TextVerticalAlignment.Middle));
         }
 
     }
