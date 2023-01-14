@@ -80,9 +80,9 @@ namespace FNAEngine2D.GameObjects
 
             if (Triangle != null)
             {
-                Add(new LineRender(Triangle.v1.position, Triangle.v2.position, this.Color, this.LineWidth));
-                Add(new LineRender(Triangle.v2.position, Triangle.v3.position, this.Color, this.LineWidth));
-                Add(new LineRender(Triangle.v3.position, Triangle.v1.position, this.Color, this.LineWidth));
+                Add(new LineRenderer(Triangle.v1.position, Triangle.v2.position, this.Color, this.LineWidth));
+                Add(new LineRenderer(Triangle.v2.position, Triangle.v3.position, this.Color, this.LineWidth));
+                Add(new LineRenderer(Triangle.v3.position, Triangle.v1.position, this.Color, this.LineWidth));
             }
 
             _lastTriangle = this.Triangle;

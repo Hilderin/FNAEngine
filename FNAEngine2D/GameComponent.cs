@@ -151,5 +151,13 @@ namespace FNAEngine2D
 
         }
 
+
+        /// <summary>
+        /// Get a content
+        /// </summary>
+        public Content<T> GetContent<T>(string assetName)
+        {
+            return this.GameObject.GetContent<T>(assetName);
+        }
     }
 }

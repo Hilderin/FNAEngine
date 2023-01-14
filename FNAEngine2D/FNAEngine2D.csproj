@@ -105,7 +105,6 @@
     <Compile Include="Network\NetworkServer.cs" />
     <Compile Include="Network\SocketChannel.cs" />
     <Compile Include="Network\SocketServer.cs" />
-    <Compile Include="ContentService.cs" />
     <Compile Include="Databases\JsonDatabase.cs" />
     <Compile Include="ErrorHelper.cs" />
     <Compile Include="GameLoop.cs" />
@@ -121,7 +120,7 @@
     <Compile Include="Particules\ParticuleData.cs" />
     <Compile Include="Particules\ParticuleEmitter.cs" />
     <Compile Include="Particules\EmissionData.cs" />
-    <Compile Include="GameObjects\LineRender.cs" />
+    <Compile Include="GameObjects\LineRenderer.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="GameObjects\MultiTextureRender.cs" />
     <Compile Include="SpaceTrees\Space2DTree.cs" />
@@ -250,6 +249,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Asperite\Utils\" />
+    <Folder Include="Components\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

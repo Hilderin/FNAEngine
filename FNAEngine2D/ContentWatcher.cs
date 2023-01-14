@@ -53,7 +53,6 @@ namespace FNAEngine2D
         /// </summary>
         public bool _contentToReload = false;
 
-
         /// <summary>
         /// Indicate if we should watch the modifications
         /// </summary>

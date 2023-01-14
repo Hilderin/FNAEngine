@@ -124,6 +124,19 @@ namespace FNAEngine2D
         private static string _contentFolder;
 
         /// <summary>
+        /// Current instance
+        /// </summary>
+        private static ContentManager _current;
+
+        /// <summary>
+        /// Current instance
+        /// </summary>
+        public static ContentManager Current
+        {
+            get { return _current; }
+        }
+
+        /// <summary>
         /// Permet de retourner le path du content folder
         /// </summary>
         public static string ContentFolder
@@ -152,6 +165,7 @@ namespace FNAEngine2D
         /// </summary>
         public ContentManager(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            _current = this;
         }
 
         /// <summary>
@@ -159,6 +173,7 @@ namespace FNAEngine2D
         /// </summary>
         public ContentManager(IServiceProvider serviceProvider, string rootDirectory) : base(serviceProvider, rootDirectory)
         {
+            _current = this;
         }
 
         /// <summary>

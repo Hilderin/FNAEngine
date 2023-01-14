@@ -1,21 +1,14 @@
 ﻿
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SharpFont.Cache;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FNAEngine2D.GameObjects
 {
     /// <summary>
     /// Render for lines
     /// </summary>
-    public class LineRender : GameObject
+    public class LineRenderer : GameObject
     {
         /// <summary>
         /// Texture to renderer
@@ -49,7 +42,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public LineRender()
+        public LineRenderer()
         {
 
         }
@@ -57,7 +50,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public LineRender(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
+        public LineRenderer(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
         {
             this.Location = startPosition;
             this.Size = stopPosition - startPosition;

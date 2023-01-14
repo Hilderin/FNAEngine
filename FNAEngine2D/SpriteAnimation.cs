@@ -45,7 +45,7 @@ namespace FNAEngine2D
                     _spriteName = value;
 
                     //Loading Sprite...
-                    _sprite = ServiceProvider.GetService<ContentService>().GetContent<Sprite>(value);
+                    _sprite = ContentManager.Current.GetContent<Sprite>(value);
                 }
             }
         }

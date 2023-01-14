@@ -105,11 +105,6 @@ namespace FNAEngine2D
         private GameContentManager _gameContentManager;
 
         /// <summary>
-        /// Content service
-        /// </summary>
-        private ContentService _contentService;
-
-        /// <summary>
         /// Input system
         /// </summary>
         private InputManager _input;
@@ -290,11 +285,6 @@ namespace FNAEngine2D
         public GameContentManager GameContentManager { get { return _gameContentManager; } }
 
         /// <summary>
-        /// ContentService
-        /// </summary>
-        public ContentService ContentService { get { return _contentService; } }
-
-        /// <summary>
         /// EditModeService
         /// </summary>
         public EditModeService EditModeService { get { return _editModeService; } }
@@ -365,9 +355,6 @@ namespace FNAEngine2D
 
             //Game content manager
             _gameContentManager = new GameContentManager(this);
-
-            //Content service
-            _contentService = new ContentService(this);
 
             //Input
             _input = new InputManager(this);
