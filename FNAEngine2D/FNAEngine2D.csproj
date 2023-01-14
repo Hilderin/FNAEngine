@@ -185,16 +185,16 @@
     </Compile>
     <Compile Include="Physics\RigidBody.cs" />
     <Compile Include="GameObjects\SoundEffectPlayer.cs" />
-    <Compile Include="SpriteAnimation.cs" />
-    <Compile Include="GameObjects\SpriteAnimationRender.cs" />
-    <Compile Include="SpriteAnimationFrame.cs" />
-    <Compile Include="GameObjects\SpriteAnimator.cs" />
+    <Compile Include="Animations\SpriteAnimation.cs" />
+    <Compile Include="Animations\SpriteAnimator.cs" />
+    <Compile Include="Animations\SpriteAnimationFrame.cs" />
+    <Compile Include="Animations\MultiSpriteAnimator.cs" />
     <Compile Include="GameObjects\TextRender.cs" />
     <Compile Include="GameObjects\SpriteRender.cs" />
     <Compile Include="Texture2DExtensions.cs" />
     <Compile Include="Texture2DHelper.cs" />
     <Compile Include="GameObjects\PrimitiveRender.cs" />
-    <Compile Include="GameObjects\TextureRender.cs" />
+    <Compile Include="GameObjects\TextureBox.cs" />
     <Compile Include="RectangleHelper.cs" />
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="TileSets\Tile.cs" />
@@ -202,7 +202,7 @@
     <Compile Include="TileSets\TileGameObject.cs" />
     <Compile Include="TileSets\TileSet.cs" />
     <Compile Include="TileSets\TilesJsonConverter.cs" />
-    <Compile Include="TileSets\TileSetRender.cs" />
+    <Compile Include="TileSets\TileSetGrid.cs" />
     <Compile Include="Geometry\GeometryHelper.cs" />
     <Compile Include="Vector2Extensions.cs" />
     <Compile Include="VectorHelper.cs" />

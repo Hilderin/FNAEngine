@@ -85,7 +85,7 @@ namespace FNAEngine2D.Desginer
         /// <summary>
         /// Texture render for the preview
         /// </summary>
-        private TextureRender _previewTextureRender = new TextureRender("pixel", new Microsoft.Xna.Framework.Rectangle(0, 0, 0, 0), Microsoft.Xna.Framework.Color.White * 0.5f);
+        private TextureBox _previewTextureBox = new TextureBox("pixel", new Microsoft.Xna.Framework.Rectangle(0, 0, 0, 0), Microsoft.Xna.Framework.Color.White * 0.5f);
 
 
         /// <summary>
@@ -162,11 +162,11 @@ namespace FNAEngine2D.Desginer
 
                 if (_editModeService.SelectedGameObject != null)
                 {
-                    if (!(_editModeService.SelectedGameObject is TileSetRender))
+                    if (!(_editModeService.SelectedGameObject is TileSetGrid))
                     {
                         if (_previewEditObject == null)
                         {
-                            _previewEditObject = _previewTextureRender;
+                            _previewEditObject = _previewTextureBox;
                             _currentContainer.RootGameObject.Add(_previewEditObject);
 
                         }
@@ -364,9 +364,9 @@ namespace FNAEngine2D.Desginer
             //Reopening the TileSetEditor...
             if (_editModeService.IsTileSetEditorOpened)
             {
-                if (cboGameObjects.SelectedItem is TileSetRender)
+                if (cboGameObjects.SelectedItem is TileSetGrid)
                     //Reopenning the tileset editor for the new tileset...
-                    _editModeService.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
+                    _editModeService.ShowTileSetEditor((TileSetGrid)cboGameObjects.SelectedItem, false);
                 else
                     _editModeService.HideTileSetEditor();
             }
@@ -569,9 +569,9 @@ namespace FNAEngine2D.Desginer
                 {
                     if (_editModeService.IsTileSetEditorOpened)
                     {
-                        if (cboGameObjects.SelectedItem is TileSetRender)
+                        if (cboGameObjects.SelectedItem is TileSetGrid)
                             //Reopenning the tileset editor for the new tileset...
-                            _editModeService.ShowTileSetEditor((TileSetRender)cboGameObjects.SelectedItem, false);
+                            _editModeService.ShowTileSetEditor((TileSetGrid)cboGameObjects.SelectedItem, false);
                         else
                             _editModeService.HideTileSetEditor();
                     }

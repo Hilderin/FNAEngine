@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D
+namespace FNAEngine2D.Animations
 {
     /// <summary>
     /// Information about a frame in the sprite animation

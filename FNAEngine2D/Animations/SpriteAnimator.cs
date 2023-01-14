@@ -9,10 +9,10 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D.GameObjects
+namespace FNAEngine2D.Animations
 {
     
-    public class SpriteAnimationRender : GameObject
+    public class SpriteAnimator : GameObject
     {
         /// <summary>
         /// CurrentFrame
@@ -116,7 +116,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public SpriteAnimationRender()
+        public SpriteAnimator()
         {
             
         }
@@ -124,7 +124,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public SpriteAnimationRender(string spriteAnimationName): this()
+        public SpriteAnimator(string spriteAnimationName): this()
         {
             this.SpriteAnimationName = spriteAnimationName;
         }
@@ -132,7 +132,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public SpriteAnimationRender(string spriteAnimationName, StartPosition startPosition) : this(spriteAnimationName)
+        public SpriteAnimator(string spriteAnimationName, StartPosition startPosition) : this(spriteAnimationName)
         {
             _startPosition = startPosition;
         }
@@ -140,7 +140,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public SpriteAnimationRender(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop) : this(spriteAnimationName)
+        public SpriteAnimator(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop) : this(spriteAnimationName)
         {
             this.Loop = loop;
             this.PlayOnStart = playOnStart;
@@ -150,7 +150,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public SpriteAnimationRender(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop, StartPosition startPosition) : this(spriteAnimationName, loop, playOnStart, hideOnStop)
+        public SpriteAnimator(string spriteAnimationName, bool loop, bool playOnStart, bool hideOnStop, StartPosition startPosition) : this(spriteAnimationName, loop, playOnStart, hideOnStop)
         {
             _startPosition = startPosition;
         }

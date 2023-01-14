@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Reflection;
 using System.Windows.Forms;
+using FNAEngine2D.Animations;
 
 namespace FNAEngine2D.Aseprite
 {

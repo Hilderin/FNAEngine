@@ -16,7 +16,7 @@ namespace FNAEngine2D.GameObjects
     /// <summary>
     /// Multi texture render from a enum
     /// </summary>
-    public class MultiTextureRender<T> : GameObject where T : System.Enum
+    public class MultiTextureBox<T> : GameObject where T : System.Enum
     {
         /// <summary>
         /// Textures
@@ -52,7 +52,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public MultiTextureRender(string textureFolder)
+        public MultiTextureBox(string textureFolder)
         {
             this.TextureFolder = textureFolder;
 

@@ -8,22 +8,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D.GameObjects
+namespace FNAEngine2D.Animations
 {
     /// <summary>
     /// Sprite animator
     /// </summary>
-    public class SpriteAnimator<T> : GameObject where T : System.Enum
+    public class MultiSpriteAnimator<T> : GameObject where T : System.Enum
     {
         /// <summary>
         /// Animations of the character
         /// </summary>
-        private Dictionary<T, SpriteAnimationRender> _animations = new Dictionary<T, SpriteAnimationRender>();
+        private Dictionary<T, SpriteAnimator> _animations = new Dictionary<T, SpriteAnimator>();
 
         /// <summary>
         /// Current animation
         /// </summary>
-        private SpriteAnimationRender _currentAnimation;
+        private SpriteAnimator _currentAnimation;
 
         /// <summary>
         /// Loop the animation
@@ -71,8 +71,8 @@ namespace FNAEngine2D.GameObjects
                     _loop = value;
 
                     //End we change the animations...
-                    foreach (SpriteAnimationRender spriteAnimationRender in _animations.Values)
-                        spriteAnimationRender.Loop = value;
+                    foreach (SpriteAnimator SpriteAnimator in _animations.Values)
+                        SpriteAnimator.Loop = value;
                 }
             }
         }
@@ -91,8 +91,8 @@ namespace FNAEngine2D.GameObjects
                     _playOnStart = value;
 
                     //End we change the animations...
-                    foreach (SpriteAnimationRender spriteAnimationRender in _animations.Values)
-                        spriteAnimationRender.PlayOnStart = value;
+                    foreach (SpriteAnimator SpriteAnimator in _animations.Values)
+                        SpriteAnimator.PlayOnStart = value;
                 }
             }
         }
@@ -111,8 +111,8 @@ namespace FNAEngine2D.GameObjects
                     _hideOnStop = value;
 
                     //End we change the animations...
-                    foreach (SpriteAnimationRender spriteAnimationRender in _animations.Values)
-                        spriteAnimationRender.HideOnStop = value;
+                    foreach (SpriteAnimator SpriteAnimator in _animations.Values)
+                        SpriteAnimator.HideOnStop = value;
                 }
             }
         }
@@ -131,8 +131,8 @@ namespace FNAEngine2D.GameObjects
                     _invertedX = value;
 
                     //End we change the animations...
-                    foreach (SpriteAnimationRender spriteAnimationRender in _animations.Values)
-                        spriteAnimationRender.InvertedX = value;
+                    foreach (SpriteAnimator SpriteAnimator in _animations.Values)
+                        SpriteAnimator.InvertedX = value;
                 }
             }
         }
@@ -140,7 +140,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public SpriteAnimator(string animationFolder)
+        public MultiSpriteAnimator(string animationFolder)
         {
             this.AnimationFolder = animationFolder;
 
@@ -149,7 +149,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public SpriteAnimator(string animationFolder, bool loop, bool playOnStart, bool hideOnStop): this(animationFolder)
+        public MultiSpriteAnimator(string animationFolder, bool loop, bool playOnStart, bool hideOnStop): this(animationFolder)
         {
             _loop = loop;
             _playOnStart = playOnStart;
@@ -178,19 +178,19 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         public void Play(T animation)
         {
-            SpriteAnimationRender spriteAnimationRender = _animations[animation];
+            SpriteAnimator SpriteAnimator = _animations[animation];
 
-            if (spriteAnimationRender != _currentAnimation)
+            if (SpriteAnimator != _currentAnimation)
             {
                 if (_currentAnimation != null)
                     Remove(_currentAnimation);
 
-                Add(spriteAnimationRender);
-                spriteAnimationRender.Bounds = this.Bounds.CenterBottom(spriteAnimationRender.Width, spriteAnimationRender.Height);
-                _currentAnimation = spriteAnimationRender;
+                Add(SpriteAnimator);
+                SpriteAnimator.Bounds = this.Bounds.CenterBottom(SpriteAnimator.Width, SpriteAnimator.Height);
+                _currentAnimation = SpriteAnimator;
             }
             
-            spriteAnimationRender.Restart();
+            SpriteAnimator.Restart();
             
 
             this.CurrentAnimation = animation;
@@ -218,13 +218,13 @@ namespace FNAEngine2D.GameObjects
                 string assetName = Path.Combine(this.AnimationFolder, characterAnimation.ToString());
 
                 
-                SpriteAnimationRender spriteAnimationRender = new SpriteAnimationRender(assetName, _loop, _playOnStart, _hideOnStop);
+                SpriteAnimator SpriteAnimator = new SpriteAnimator(assetName, _loop, _playOnStart, _hideOnStop);
 
                 //Adding and removing to load the animation...
-                Add(spriteAnimationRender);
-                Remove(spriteAnimationRender);
+                Add(SpriteAnimator);
+                Remove(SpriteAnimator);
 
-                _animations[characterAnimation] = spriteAnimationRender;
+                _animations[characterAnimation] = SpriteAnimator;
             }
         }
 

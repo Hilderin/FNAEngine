@@ -8,7 +8,7 @@ namespace FNAEngine2D.TileSets
     /// <summary>
     /// Tileset
     /// </summary>
-    public class TileSetRender: GameObject
+    public class TileSetGrid: GameObject
     {
         /// <summary>
         /// Edit mode overlay
@@ -36,14 +36,14 @@ namespace FNAEngine2D.TileSets
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public TileSetRender()
+        public TileSetGrid()
         {
         }
 
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public TileSetRender(TileSet tileSet)
+        public TileSetGrid(TileSet tileSet)
         {
             this.TileSet = tileSet;
         }

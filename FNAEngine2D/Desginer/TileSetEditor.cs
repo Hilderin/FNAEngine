@@ -54,7 +54,7 @@ namespace FNAEngine2D.Desginer
         /// <summary>
         /// Preview object
         /// </summary>
-        private TileSetRender _previewObject = null;
+        private TileSetGrid _previewObject = null;
 
         /// <summary>
         /// Indicateur that the form is closing
@@ -62,7 +62,7 @@ namespace FNAEngine2D.Desginer
         public bool IsClosing { get; set; }
 
         /// <summary>
-        /// Game object TileSetRenderer
+        /// Game object TileSetGrid
         /// </summary>
         private GameObject _gameObject;
 
@@ -88,12 +88,12 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void SetGameObject(GameObject gameObject)
         {
-            if (gameObject is TileSetRender)
+            if (gameObject is TileSetGrid)
             {
                 _gameObject = _editModeService.SelectedGameObject;
                 this.Text = "Tile Set Editor - " + _gameObject.DisplayName;
 
-                TileSetRender tileSetRender = (TileSetRender)gameObject;
+                TileSetGrid tileSetRender = (TileSetGrid)gameObject;
                 if (tileSetRender.TileSet == null)
                     tileSetRender.TileSet = new TileSet();
 
@@ -178,7 +178,7 @@ namespace FNAEngine2D.Desginer
             //Preview object creation...
             if (_previewObject == null)
             {
-                _previewObject = new TileSetRender(new TileSet());
+                _previewObject = new TileSetGrid(new TileSet());
 
                 UpdatePreviewTileSet();
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D
+namespace FNAEngine2D.Animations
 {
     /// <summary>
     /// Sprite animation

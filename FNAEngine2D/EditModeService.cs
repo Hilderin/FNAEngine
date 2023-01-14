@@ -556,7 +556,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Show tileset editor
         /// </summary>
-        public void ShowTileSetEditor(TileSetRender gameObject, bool setFocus)
+        public void ShowTileSetEditor(TileSetGrid gameObject, bool setFocus)
         {
 
             if (_tileSetEditor == null || _tileSetEditor.IsDisposed)

@@ -1,4 +1,5 @@
-﻿using FNAEngine2D.Aseprite;
+﻿using FNAEngine2D.Animations;
+using FNAEngine2D.Aseprite;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;

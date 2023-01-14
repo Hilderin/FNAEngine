@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D.GameObjects
 {
-    public class TextureRender: GameObject
+    public class TextureBox: GameObject
     {
         /// <summary>
         /// Texture to renderer
@@ -40,7 +40,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public TextureRender()
+        public TextureBox()
         {
             
         }
@@ -48,7 +48,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public TextureRender(string textureName): this()
+        public TextureBox(string textureName): this()
         {
             this.TextureName = textureName;
         }
@@ -56,7 +56,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public TextureRender(string textureName, Rectangle bounds) : this(textureName)
+        public TextureBox(string textureName, Rectangle bounds) : this(textureName)
         {
             this.Bounds = bounds;
         }
@@ -64,7 +64,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureRender(string TextureName, Rectangle bounds, Color color) : this(TextureName, bounds)
+        public TextureBox(string TextureName, Rectangle bounds, Color color) : this(TextureName, bounds)
         {
             this.Color = color;
         }
@@ -72,7 +72,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Constructor
         /// </summary>
-        public TextureRender(string TextureName, Vector2 location, Vector2 size, Color color) : this(TextureName)
+        public TextureBox(string TextureName, Vector2 location, Vector2 size, Color color) : this(TextureName)
         {
             this.Color = color;
             this.Location = location;

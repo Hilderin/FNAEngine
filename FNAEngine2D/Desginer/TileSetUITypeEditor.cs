@@ -37,10 +37,10 @@ namespace FNAEngine2D.Desginer
             if (value != null && value.GetType() != typeof(TileSet))
                 return value;
 
-            if(_editModeService.SelectedGameObject == null || !(_editModeService.SelectedGameObject is TileSetRender))
+            if(_editModeService.SelectedGameObject == null || !(_editModeService.SelectedGameObject is TileSetGrid))
                 return value;
 
-            TileSetRender tileSetRender = (TileSetRender)_editModeService.SelectedGameObject;
+            TileSetGrid tileSetRender = (TileSetGrid)_editModeService.SelectedGameObject;
 
             if (tileSetRender.TileSet == null)
                 tileSetRender.TileSet = new TileSet();
