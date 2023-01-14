@@ -1,4 +1,5 @@
 ﻿using FNAEngine2D;
+using FNAEngine2D.GameObjects;
 using Microsoft.Xna.Framework;
 
 namespace FNAEngine2D.Template

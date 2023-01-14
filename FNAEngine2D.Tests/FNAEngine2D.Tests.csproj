@@ -43,8 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsepriteTest.cs" />
-    <Compile Include="ColliderTest.cs" />
-    <Compile Include="CollisionHelperTest.cs" />
+    <Compile Include="Collisions\ColliderTest.cs" />
+    <Compile Include="Collisions\CollisionHelperTest.cs" />
     <Compile Include="Communication\SocketChannelTest.cs" />
     <Compile Include="DataStreaming\BinReaderWriterTest.cs" />
     <Compile Include="ForceTest.cs" />

@@ -1,4 +1,5 @@
 ﻿using FNAEngine2D;
+using FNAEngine2D.GameObjects;
 using FNAEngine2D.Particules;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,7 +36,7 @@ namespace FNAEngine2D.ParticuleTest
         {
             Add(new FPSRender());
 
-            _mouseCursor = Add(new PrimitiveRender(PrimitiveType.RectangleFill, Vector2.Zero, Vector2.One, Color.White));
+            _mouseCursor = Add(new PrimitiveRender(GameObjects.PrimitiveType.RectangleFill, Vector2.Zero, Vector2.One, Color.White));
 
 
             //Mouse emitter at the mouse position

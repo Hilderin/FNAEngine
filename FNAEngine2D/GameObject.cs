@@ -1,4 +1,5 @@
-﻿using FNAEngine2D.Desginer;
+﻿using FNAEngine2D.Collisions;
+using FNAEngine2D.Desginer;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

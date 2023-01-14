@@ -1,5 +1,6 @@
 ﻿using FNAEngine2D;
-using FNAEngine2D.Triangulation;
+using FNAEngine2D.GameObjects;
+using FNAEngine2D.Geometry;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Reflection;

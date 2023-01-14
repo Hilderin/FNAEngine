@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.Components;
+using Microsoft.Xna.Framework;
 using System;
 using System.ComponentModel;
 

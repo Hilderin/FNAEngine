@@ -14,6 +14,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Security.Permissions;
 using FNAEngine2D.Network;
+using FNAEngine2D.Collisions;
 
 namespace FNAEngine2D
 {

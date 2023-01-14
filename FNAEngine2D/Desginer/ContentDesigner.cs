@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.GameObjects;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
