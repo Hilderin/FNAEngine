@@ -178,13 +178,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameObjects\FPSRender.cs" />
-    <Compile Include="Force.cs" />
+    <Compile Include="Physics\Force.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="Components\RigidBody.cs" />
+    <Compile Include="Physics\RigidBody.cs" />
     <Compile Include="GameObjects\SoundEffectPlayer.cs" />
     <Compile Include="SpriteAnimation.cs" />
     <Compile Include="GameObjects\SpriteAnimationRender.cs" />

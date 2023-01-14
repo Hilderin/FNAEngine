@@ -1,5 +1,5 @@
 ﻿using FNAEngine2D.Collisions;
-using FNAEngine2D.Components;
+using FNAEngine2D.Physics;
 using FNAEngine2D.GameObjects;
 using Microsoft.Xna.Framework;
 using System;

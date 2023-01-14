@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D.Components
+namespace FNAEngine2D.Physics
 {
     /// <summary>
     /// Object simulating physic

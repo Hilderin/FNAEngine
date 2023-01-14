@@ -1,4 +1,4 @@
-﻿using FNAEngine2D.Components;
+﻿using FNAEngine2D.Physics;
 using Microsoft.Xna.Framework;
 using System;
 using System.ComponentModel;
