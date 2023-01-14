@@ -120,7 +120,7 @@
     <Compile Include="Particules\ParticuleData.cs" />
     <Compile Include="Particules\ParticuleEmitter.cs" />
     <Compile Include="Particules\EmissionData.cs" />
-    <Compile Include="GameObjects\LineRenderer.cs" />
+    <Compile Include="GameObjects\LineRender.cs" />
     <Compile Include="ServiceProvider.cs" />
     <Compile Include="GameObjects\MultiTextureRender.cs" />
     <Compile Include="SpaceTrees\Space2DTree.cs" />
@@ -197,12 +197,12 @@
     <Compile Include="GameObjects\TextureRender.cs" />
     <Compile Include="RectangleHelper.cs" />
     <Compile Include="RectangleExtensions.cs" />
-    <Compile Include="Tile.cs" />
+    <Compile Include="TileSets\Tile.cs" />
     <Compile Include="Sprite.cs" />
-    <Compile Include="GameObjects\TileGameObject.cs" />
-    <Compile Include="TileSet.cs" />
-    <Compile Include="TilesJsonConverter.cs" />
-    <Compile Include="GameObjects\TileSetRender.cs" />
+    <Compile Include="TileSets\TileGameObject.cs" />
+    <Compile Include="TileSets\TileSet.cs" />
+    <Compile Include="TileSets\TilesJsonConverter.cs" />
+    <Compile Include="TileSets\TileSetRender.cs" />
     <Compile Include="Geometry\GeometryHelper.cs" />
     <Compile Include="Vector2Extensions.cs" />
     <Compile Include="VectorHelper.cs" />

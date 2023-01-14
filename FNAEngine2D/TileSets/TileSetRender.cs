@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 
-namespace FNAEngine2D.GameObjects
+namespace FNAEngine2D.TileSets
 {
     /// <summary>
     /// Tileset

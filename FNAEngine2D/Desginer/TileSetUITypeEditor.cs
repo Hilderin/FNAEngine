@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.Design;
 using FNAEngine2D.GameObjects;
+using FNAEngine2D.TileSets;
 
 namespace FNAEngine2D.Desginer
 {

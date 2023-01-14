@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FNAEngine2D
+namespace FNAEngine2D.TileSets
 {
     /// <summary>
     /// TileSet JsonConverter to take less space in the json file

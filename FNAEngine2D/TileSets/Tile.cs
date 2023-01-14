@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D
+namespace FNAEngine2D.TileSets
 {
     /// <summary>
     /// Tile information

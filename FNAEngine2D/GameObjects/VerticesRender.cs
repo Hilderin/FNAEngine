@@ -44,7 +44,7 @@ namespace FNAEngine2D.GameObjects
         {
             for (int index = 1; index < this.Vectices.Count; index++)
             {
-                var line = Add(new LineRenderer());
+                var line = Add(new LineRender());
                 line.TranslateTo(this.Vectices[index - 1]);
                 line.Size = this.Vectices[index] - this.Vectices[index - 1];
                 line.Color = this.Color;

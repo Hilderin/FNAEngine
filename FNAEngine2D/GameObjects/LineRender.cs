@@ -8,7 +8,7 @@ namespace FNAEngine2D.GameObjects
     /// <summary>
     /// Render for lines
     /// </summary>
-    public class LineRenderer : GameObject
+    public class LineRender : GameObject
     {
         /// <summary>
         /// Texture to renderer
@@ -42,7 +42,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public LineRenderer()
+        public LineRender()
         {
 
         }
@@ -50,7 +50,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public LineRenderer(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
+        public LineRender(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
         {
             this.Location = startPosition;
             this.Size = stopPosition - startPosition;

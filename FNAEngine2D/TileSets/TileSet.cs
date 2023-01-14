@@ -1,13 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FNAEngine2D
+namespace FNAEngine2D.TileSets
 {
     /// <summary>
     /// Information on a tileset

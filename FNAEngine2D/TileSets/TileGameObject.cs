@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D.GameObjects
+namespace FNAEngine2D.TileSets
 {
     public class TileGameObject: GameObject
     {

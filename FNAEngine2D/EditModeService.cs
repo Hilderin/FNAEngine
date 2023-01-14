@@ -1,5 +1,6 @@
 ﻿using FNAEngine2D.Desginer;
 using FNAEngine2D.GameObjects;
+using FNAEngine2D.TileSets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
