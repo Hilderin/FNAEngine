@@ -8,7 +8,7 @@ using System.Reflection;
 namespace FNAEngine2D.TriangulationTest
 {
 
-    public class Scene : GameObject
+    public class Scene : GameObject, IUpdate
     {
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace FNAEngine2D.TriangulationTest
         /// <summary>
         /// Update each frame
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             _mouseCursor.Location = this.Input.GetMousePosition();
             //_line.Size = (_line.Location - this.Input.GetMousePosition());

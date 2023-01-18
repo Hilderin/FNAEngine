@@ -24,7 +24,7 @@ namespace FNAEngine2D.GameObjects
     /// <summary>
     /// Render for primitives
     /// </summary>
-    public class PrimitiveRender : GameObject
+    public class PrimitiveRender : GameObject, IUpdate, IDraw
     {
         /// <summary>
         /// Texture to renderer
@@ -136,7 +136,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Update
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             if (_updated)
             {
@@ -165,7 +165,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Permet de dessiner l'objet
         /// </summary>
-        protected override void Draw()
+        public void Draw()
         {
             if (_texture == null)
                 return;

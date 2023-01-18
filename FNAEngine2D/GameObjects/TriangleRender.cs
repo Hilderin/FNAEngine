@@ -8,7 +8,7 @@ namespace FNAEngine2D.GameObjects
     /// <summary>
     /// Render for Triangle
     /// </summary>
-    public class TriangleRender : GameObject
+    public class TriangleRender : GameObject, IUpdate
     {
         /// <summary>
         /// Last triangle
@@ -59,13 +59,13 @@ namespace FNAEngine2D.GameObjects
         {
             UpdateLines();
 
-            
+
         }
 
         /// <summary>
         /// Loading
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             if (_lastTriangle != this.Triangle)
                 UpdateLines();

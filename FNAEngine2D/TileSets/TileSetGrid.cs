@@ -8,7 +8,7 @@ namespace FNAEngine2D.TileSets
     /// <summary>
     /// Tileset
     /// </summary>
-    public class TileSetGrid: GameObject
+    public class TileSetGrid: GameObject, IDraw
     {
         /// <summary>
         /// Edit mode overlay
@@ -96,7 +96,7 @@ namespace FNAEngine2D.TileSets
         /// <summary>
         /// Overwride drawing...
         /// </summary>
-        protected override void Draw()
+        public void Draw()
         {
             if (this.TileSet == null || this.TileSet.Texture == null)
                 return;

@@ -10,7 +10,7 @@ namespace FNAEngine2D.Network
     /// <summary>
     /// NetworkClient
     /// </summary>
-    public class NetworkClient : GameObject
+    public class NetworkClient : Component
     {
         /// <summary>
         /// Unique id of the client
@@ -76,7 +76,7 @@ namespace FNAEngine2D.Network
             Logguer.Info("New NetworkClient " + this.ID);
 
             //Creation of the communication channel
-            if (this.RootGameObject.Find<NetworkServer>() != null)
+            if (this.GameObject.Game.RootGameObject.Find(go => go.GetComponent<NetworkServer>() != null) != null)
                 _channel = new InProcessChannel();
             else
                 _channel = new SocketChannel(this.PortNumber);
@@ -114,7 +114,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Update on the client
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             //Newly connected?
             if (_shouldInvokeConnected)
@@ -144,7 +144,7 @@ namespace FNAEngine2D.Network
         /// </summary>
         public void AddGameObject(NetworkGameObject obj)
         {
-            Add(obj);
+            this.GameObject.Add(obj);
             _dictObjects[obj.ID] = obj;
         }
 
@@ -156,7 +156,7 @@ namespace FNAEngine2D.Network
             if (_dictObjects.TryGetValue(id, out var gameObject))
             {
                 _dictObjects.Remove(id);
-                Remove(gameObject);
+                this.GameObject.Remove(gameObject);
             }
         }
 

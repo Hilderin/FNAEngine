@@ -12,7 +12,7 @@ using Velentr.Font;
 
 namespace FNAEngine2D.GameObjects
 {
-    public class DebugInfoRender : GameObject
+    public class DebugInfoRender : GameObject, IUpdate
     {
         /// <summary>
         /// Font name
@@ -56,7 +56,7 @@ namespace FNAEngine2D.GameObjects
             _label = this.Add(new Label(GetText(), this.FontName, this.FontSize, this.Location, this.Color));
         }
 
-        protected override void Update()
+        public void Update()
         {
             _label.Text = GetText();
         }

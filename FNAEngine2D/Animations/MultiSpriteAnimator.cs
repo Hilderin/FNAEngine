@@ -183,10 +183,10 @@ namespace FNAEngine2D.Animations
             if (SpriteAnimator != _currentAnimation)
             {
                 if (_currentAnimation != null)
-                    Remove(_currentAnimation);
+                    RemoveComponent(_currentAnimation);
 
-                Add(SpriteAnimator);
-                SpriteAnimator.Bounds = this.Bounds.CenterBottom(SpriteAnimator.Width, SpriteAnimator.Height);
+                AddComponent(SpriteAnimator);
+                //SpriteAnimator.Bounds = this.Bounds.CenterBottom(SpriteAnimator.Width, SpriteAnimator.Height);
                 _currentAnimation = SpriteAnimator;
             }
             
@@ -221,8 +221,8 @@ namespace FNAEngine2D.Animations
                 SpriteAnimator SpriteAnimator = new SpriteAnimator(assetName, _loop, _playOnStart, _hideOnStop);
 
                 //Adding and removing to load the animation...
-                Add(SpriteAnimator);
-                Remove(SpriteAnimator);
+                AddComponent(SpriteAnimator);
+                RemoveComponent(SpriteAnimator);
 
                 _animations[characterAnimation] = SpriteAnimator;
             }

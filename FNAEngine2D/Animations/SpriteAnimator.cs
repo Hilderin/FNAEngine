@@ -5,14 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FNAEngine2D.Animations
 {
     
-    public class SpriteAnimator : GameObject
+    public class SpriteAnimator : Component, IUpdate, IDraw
     {
         /// <summary>
         /// CurrentFrame
@@ -53,6 +55,23 @@ namespace FNAEngine2D.Animations
         /// StartPosition
         /// </summary>
         private StartPosition _startPosition = StartPosition.TopLeft;
+
+
+        /// <summary>
+        /// Width
+        /// </summary>
+        private float _width;
+
+        /// <summary>
+        /// Height
+        /// </summary>
+        private float _height;
+
+        /// <summary>
+        /// Location
+        /// </summary>
+        private Vector2 _location;
+
 
         /// <summary>
         /// Information on the sprite animation
@@ -200,20 +219,17 @@ namespace FNAEngine2D.Animations
             {
                 _spriteAnimation = GetContent<SpriteAnimation>(this.SpriteAnimationName);
 
-                if (this.Width == 0)
-                    this.Width = _spriteAnimation.Data.Sprite.ColumnScreenWidth;
-                if (this.Height == 0)
-                    this.Height = _spriteAnimation.Data.Sprite.RowScreenHeight;
+                _width = _spriteAnimation.Data.Sprite.ColumnScreenWidth;
+                _height = _spriteAnimation.Data.Sprite.RowScreenHeight;
 
-                //Adjust the starting position...
-                if (this.Location == Vector2.Zero)
-                {
-                    if (_startPosition == StartPosition.CenterBottom)
-                        this.Bounds = this.Parent.Bounds.CenterBottom(this.Width, this.Height);
-                    else if (_startPosition == StartPosition.TopLeft)
-                        this.Location = this.Parent.Location;
-                }
+                ////Adjust the starting position...
+                //if (_startPosition == StartPosition.CenterBottom)
+                //        this.Bounds = this.Parent.Bounds.CenterBottom(_width, _height);
+                //    else if (_startPosition == StartPosition.TopLeft)
+                //        this.Location = this.Parent.Location;
+                //}
 
+                RecalculateLocation();
                 RecalculateScale();
 
                 if (_spriteAnimation.Data.Frames.Length == 0 || _spriteAnimation.Data.Sprite == null || _spriteAnimation.Data.Sprite.Texture == null)
@@ -245,6 +261,14 @@ namespace FNAEngine2D.Animations
             RecalculateScale();
         }
 
+        /// <summary>
+        /// On removed...
+        /// </summary>
+        protected override void OnMoved()
+        {
+            RecalculateLocation();
+        }
+
 
         /// <summary>
         /// Recalculate the scale
@@ -257,7 +281,25 @@ namespace FNAEngine2D.Animations
             }
             else
             {
-                _scale = new Vector2(this.Width / _spriteAnimation.Data.Sprite.ColumnScreenWidth, this.Height / _spriteAnimation.Data.Sprite.RowScreenHeight);
+                _scale = new Vector2(_width / _spriteAnimation.Data.Sprite.ColumnScreenWidth, _height / _spriteAnimation.Data.Sprite.RowScreenHeight);
+            }
+        }
+
+        /// <summary>
+        /// Recalculate the scale
+        /// </summary>
+        private void RecalculateLocation()
+        {
+            switch (_startPosition)
+            {
+                case StartPosition.CenterBottom:
+                    _location = VectorHelper.CenterBottom(this.GameObject.Location, this.GameObject.Size, _width, _height);
+                    break;
+                default:
+                    //Top left...
+                    _location = this.GameObject.Location;
+                    break;
+
             }
         }
 
@@ -265,7 +307,7 @@ namespace FNAEngine2D.Animations
         /// <summary>
         /// Update
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             UpdateInternal(this.ElapsedGameTimeMilliseconds);
 
@@ -336,7 +378,7 @@ namespace FNAEngine2D.Animations
         /// <summary>
         /// Permet de dessiner l'objet
         /// </summary>
-        protected override void Draw()
+        public void Draw()
         {
             if (_currentFrame < 0 || (_stopped && HideOnStop))
                 return;
@@ -348,7 +390,7 @@ namespace FNAEngine2D.Animations
             if (InvertedX)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            DrawingContext.Draw(spriteAnimation.Sprite.Texture, this.Location, _frameBounds[_currentFrame], this.Color, 0f, Vector2.Zero, _scale, spriteEffects, this.Depth);
+            DrawingContext.Draw(spriteAnimation.Sprite.Texture, _location, _frameBounds[_currentFrame], this.Color, 0f, Vector2.Zero, _scale, spriteEffects, this.GameObject.Depth);
 
         }
 

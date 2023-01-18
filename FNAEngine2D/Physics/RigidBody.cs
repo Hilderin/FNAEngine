@@ -13,7 +13,7 @@ namespace FNAEngine2D.Physics
     /// <summary>
     /// Object simulating physic
     /// </summary>
-    public class RigidBody : GameComponent
+    public class RigidBody : Component, IUpdate
     {
         /// <summary>
         /// If the GameObject is a NetworkGameObject
@@ -118,7 +118,7 @@ namespace FNAEngine2D.Physics
         /// <summary>
         /// Update each frame
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             //Applying next movement and location...
             if (_nextMovement != null)

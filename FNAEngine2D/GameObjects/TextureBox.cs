@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FNAEngine2D.Renderers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SharpFont.Cache;
 using System;
@@ -14,35 +15,29 @@ namespace FNAEngine2D.GameObjects
     public class TextureBox: GameObject
     {
         /// <summary>
-        /// Texture to renderer
+        /// Texture renderer
         /// </summary>
-        private Content<Texture2D> _texture;
-
-        /// <summary>
-        /// Scale
-        /// </summary>
-        private Vector2 _scale = Vector2.One;
-
+        private TextureRenderer _textureRenderer;
 
         /// <summary>
         /// TextureName
         /// </summary>
         [Category("Layout")]
         [DefaultValue("")]
-        public string TextureName { get; set; } = String.Empty;
+        public string TextureName { get { return _textureRenderer.TextureName; } set { _textureRenderer.TextureName = value; } }
 
         /// <summary>
         /// Color
         /// </summary>
         [Category("Layout")]
-        public Color Color { get; set; } = Color.White;
+        public Color Color { get { return _textureRenderer.Color; } set { _textureRenderer.Color = value; } }
 
         /// <summary>
         /// Empty constructor
         /// </summary>
         public TextureBox()
         {
-            
+            _textureRenderer = new TextureRenderer();
         }
 
         /// <summary>
@@ -50,7 +45,7 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         public TextureBox(string textureName): this()
         {
-            this.TextureName = textureName;
+            _textureRenderer.TextureName = textureName;
         }
 
         /// <summary>
@@ -64,17 +59,17 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Renderer de texture
         /// </summary>
-        public TextureBox(string TextureName, Rectangle bounds, Color color) : this(TextureName, bounds)
+        public TextureBox(string textureName, Rectangle bounds, Color color) : this(textureName, bounds)
         {
-            this.Color = color;
+            _textureRenderer.Color = color;
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public TextureBox(string TextureName, Vector2 location, Vector2 size, Color color) : this(TextureName)
+        public TextureBox(string textureName, Vector2 location, Vector2 size, Color color) : this(textureName)
         {
-            this.Color = color;
+            _textureRenderer.Color = color;
             this.Location = location;
             this.Size = size;
         }
@@ -84,55 +79,7 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         protected override void Load()
         {
-            if (String.IsNullOrEmpty(this.TextureName))
-            {
-                _texture = null;
-            }
-            else
-            {
-                _texture = GetContent<Texture2D>(this.TextureName);
-
-                if (this.Width == 0)
-                    this.Width = _texture.Data.Width;
-                if (this.Height == 0)
-                    this.Height = _texture.Data.Height;
-
-                RecalculateScale();
-            }
-        }
-
-        /// <summary>
-        /// On resize...
-        /// </summary>
-        protected override void OnResized()
-        {
-            RecalculateScale();
-        }
-
-        /// <summary>
-        /// Recalculate the scale
-        /// </summary>
-        private void RecalculateScale()
-        {
-            if (_texture == null || _texture.Data.Width == 0 || _texture.Data.Height == 0)
-            {
-                _scale = Vector2.Zero;
-            }
-            else
-            {
-                _scale = new Vector2(this.Width / _texture.Data.Width, this.Height / _texture.Data.Height);
-            }
-        }
-
-        /// <summary>
-        /// Permet de dessiner l'objet
-        /// </summary>
-        protected override void Draw()
-        {
-            if (_texture == null)
-                return;
-
-            DrawingContext.Draw(_texture.Data, this.Location, null, this.Color, 0f, Vector2.Zero, _scale, SpriteEffects.None, this.Depth);
+            AddComponent(_textureRenderer);
         }
 
     }

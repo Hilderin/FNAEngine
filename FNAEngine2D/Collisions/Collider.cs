@@ -7,7 +7,7 @@ namespace FNAEngine2D.Collisions
     /// <summary>
     /// Collider
     /// </summary>
-    public abstract class Collider: GameComponent
+    public abstract class Collider: Component
     {
         /// <summary>
         /// Added on the scene?

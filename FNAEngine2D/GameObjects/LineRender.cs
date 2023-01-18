@@ -1,4 +1,4 @@
-﻿
+﻿using FNAEngine2D.Renderers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
@@ -11,40 +11,30 @@ namespace FNAEngine2D.GameObjects
     public class LineRender : GameObject
     {
         /// <summary>
-        /// Texture to renderer
+        /// Line renderer
         /// </summary>
-        private Content<Texture2D> _texture;
-
-        /// <summary>
-        /// Scale
-        /// </summary>
-        private Vector2 _scale;
-
-        /// <summary>
-        /// Rotation
-        /// </summary>
-        private float _rotation;
+        private LineRenderer _lineRenderer;
 
 
         /// <summary>
         /// Color
         /// </summary>
         [Category("Layout")]
-        public Color Color { get; set; } = Color.White;
+        public Color Color { get { return _lineRenderer.Color; } set { _lineRenderer.Color = value; } }
 
         /// <summary>
         /// LineWidth
         /// </summary>
         [Category("Layout")]
         [DefaultValue(1f)]
-        public float LineWidth { get; set; } = 1f;
+        public float LineWidth { get { return _lineRenderer.LineWidth; } set { _lineRenderer.LineWidth = value; } }
 
         /// <summary>
         /// Empty constructor
         /// </summary>
         public LineRender()
         {
-
+            _lineRenderer = new LineRenderer();
         }
 
         /// <summary>
@@ -52,22 +42,19 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         public LineRender(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
         {
+            _lineRenderer = new LineRenderer(startPosition, stopPosition, color, lineWidth);
             this.Location = startPosition;
             this.Size = stopPosition - startPosition;
-            this.Color = color;
-            this.LineWidth = lineWidth;
+            //this.Color = color;
+            //this.LineWidth = lineWidth;
         }
-
 
         /// <summary>
         /// Loading
         /// </summary>
         protected override void Load()
         {
-            //Texture pixel 1x1
-            _texture = GetContent<Texture2D>(ContentManager.TEXTURE_PIXEL);
-
-            RecalculateScale();
+            AddComponent(_lineRenderer);
         }
 
         /// <summary>
@@ -75,28 +62,17 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         protected override void OnResized()
         {
-            RecalculateScale();
-        }
-                
-
-
-        /// <summary>
-        /// Permet de dessiner l'objet
-        /// </summary>
-        protected override void Draw()
-        {
-            DrawingContext.Draw(_texture.Data, this.Location, null, this.Color, _rotation, Vector2.Zero, _scale, SpriteEffects.None, this.Depth);
+            _lineRenderer.StopPosition = this.Location + this.Size;
         }
 
         /// <summary>
-        /// Recalculate the scale of the texture
+        /// On moved...
         /// </summary>
-        private void RecalculateScale()
+        protected override void OnMoved()
         {
-            float distance = this.Size.Length();
-
-            _scale = new Vector2(this.LineWidth, distance);
-            _rotation = this.Size.ToAngle() - GameMath.PiOver2;
+            _lineRenderer.StartPosition = this.Location;
+            _lineRenderer.StopPosition = this.Location + this.Size;
         }
+
     }
 }

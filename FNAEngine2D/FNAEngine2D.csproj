@@ -67,13 +67,19 @@
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
     <Compile Include="Collisions\ColliderRectangle.cs" />
     <Compile Include="Collisions\ColliderCircle.cs" />
+    <Compile Include="Renderers\LineRenderer.cs" />
+    <Compile Include="Renderers\MultiTextureRenderer.cs" />
+    <Compile Include="Renderers\TextureRenderer.cs" />
     <Compile Include="Directions.cs" />
-    <Compile Include="GameComponent.cs" />
+    <Compile Include="Component.cs" />
     <Compile Include="DataStreaming\BinReader.cs" />
     <Compile Include="DataStreaming\BinWriter.cs" />
+    <Compile Include="IDraw.cs" />
     <Compile Include="InputMap.cs" />
     <Compile Include="Geometry\Edge.cs" />
     <Compile Include="Geometry\HalfEdge.cs" />
+    <Compile Include="IUpdate.cs" />
+    <Compile Include="Renderers\TextRenderer.cs" />
     <Compile Include="PathFinding\AStar.cs" />
     <Compile Include="PathFinding\Path.cs" />
     <Compile Include="PathFinding\PathNode.cs" />
@@ -86,7 +92,7 @@
     <Compile Include="GameObjects\VerticesRender.cs" />
     <Compile Include="Logguer.cs" />
     <Compile Include="MouseButton.cs" />
-    <Compile Include="GameObjects\MultiSoundEffectPlayer.cs" />
+    <Compile Include="Audio\MultiSoundEffectPlayer.cs" />
     <Compile Include="Network\ClientWorker.cs" />
     <Compile Include="Network\Commands\UnspawnObjectCommand.cs" />
     <Compile Include="Network\INetworkSerializable.cs" />
@@ -128,6 +134,7 @@
     <Compile Include="SpaceTrees\Space2DTreeNode.cs" />
     <Compile Include="SpaceTrees\Space2DTreeNodeData.cs" />
     <Compile Include="SpaceTrees\SpaceTreeConstants.cs" />
+    <Compile Include="TextHorizontalAlignment.cs" />
     <Compile Include="Texture2DBlender.cs" />
     <Compile Include="AverageCalculator.cs" />
     <Compile Include="Camera.cs" />
@@ -184,7 +191,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Physics\RigidBody.cs" />
-    <Compile Include="GameObjects\SoundEffectPlayer.cs" />
+    <Compile Include="Audio\SoundEffectPlayer.cs" />
     <Compile Include="Animations\SpriteAnimation.cs" />
     <Compile Include="Animations\SpriteAnimator.cs" />
     <Compile Include="Animations\SpriteAnimationFrame.cs" />
@@ -197,6 +204,7 @@
     <Compile Include="GameObjects\TextureBox.cs" />
     <Compile Include="RectangleHelper.cs" />
     <Compile Include="RectangleExtensions.cs" />
+    <Compile Include="TextVerticalAlignment.cs" />
     <Compile Include="TileSets\Tile.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="TileSets\TileGameObject.cs" />
@@ -249,7 +257,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Asperite\Utils\" />
-    <Folder Include="Components\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

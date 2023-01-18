@@ -1,4 +1,5 @@
-﻿using FNAEngine2D.Collisions;
+﻿using FNAEngine2D.Aseprite;
+using FNAEngine2D.Collisions;
 using FNAEngine2D.Desginer;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
@@ -23,6 +24,10 @@ namespace FNAEngine2D
     /// </summary>
     public class GameObject
     {
+        /// <summary>
+        /// Indicate if the component is present in the active list
+        /// </summary>
+        private bool _presentInActiveList = false;
 
         /// <summary>
         /// Link the the Internal game
@@ -81,14 +86,19 @@ namespace FNAEngine2D
         private float _depth = 0f;
 
         /// <summary>
-        /// Components
+        /// Enabled
         /// </summary>
-        private Dictionary<Type, List<GameComponent>> _componentsDict = new Dictionary<Type, List<GameComponent>>();
+        private bool _enabled = true;
 
         /// <summary>
         /// Components
         /// </summary>
-        private List<GameComponent> _componentsList = new List<GameComponent>();
+        private Dictionary<Type, List<Component>> _componentsDict = new Dictionary<Type, List<Component>>();
+
+        /// <summary>
+        /// Components
+        /// </summary>
+        private List<Component> _componentsList = new List<Component>();
 
         /// <summary>
         /// RootGameObject
@@ -168,7 +178,26 @@ namespace FNAEngine2D
         [Category("Behavior")]
         [DefaultValue(true)]
         [Description("Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.")]
-        public bool Enabled { get; set; } = true;
+        public bool Enabled
+        {
+            get { return _enabled; }
+            set
+            {
+                if (_enabled != value)
+                {
+                    _enabled = value;
+
+                    if (value)
+                    {
+                        DoOnEnabled();
+                    }
+                    else
+                    {
+                        DoOnDisabled();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Indicate if GameObject is paused. If paused, GameObject is not updated.
@@ -594,12 +623,12 @@ namespace FNAEngine2D
             {
                 gameObject._addAuthorized = true;
                 gameObject.DoLoad();
-                gameObject.ProcessAddition(false);
+                gameObject.DoOnAdded(false);
             }
             else
             {
                 //Already loaded so we will reexecute all the OnAdded
-                gameObject.ProcessAddition(true);
+                gameObject.DoOnAdded(true);
             }
 
             return gameObject;
@@ -617,7 +646,7 @@ namespace FNAEngine2D
             //RemoveColliders(gameObject);
 
 
-            gameObject.ProcessRemoval();
+            gameObject.DoOnRemoved();
 
             this._childrens.Remove(gameObject);
 
@@ -633,7 +662,7 @@ namespace FNAEngine2D
             gameObject.Parent = null;
             gameObject.RootGameObject = null;
 
-            gameObject.ProcessRemoval();
+            gameObject.DoOnRemoved();
 
             this._childrens.RemoveAt(index);
 
@@ -668,7 +697,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Add a component
         /// </summary>
-        public T AddComponent<T>() where T : GameComponent
+        public T AddComponent<T>() where T : Component
         {
             return AddComponent<T>((T)Activator.CreateInstance(typeof(T)));
         }
@@ -676,7 +705,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Add a component
         /// </summary>
-        public T AddComponent<T>(T component) where T : GameComponent
+        public T AddComponent<T>(T component) where T : Component
         {
             component.GameObject = this;
             AddComponentTypes(typeof(T), component);
@@ -697,15 +726,15 @@ namespace FNAEngine2D
         /// <summary>
         /// Add all component types
         /// </summary>
-        private void AddComponentTypes(Type componentType, GameComponent gameComponent)
+        private void AddComponentTypes(Type componentType, Component gameComponent)
         {
-            if (componentType == typeof(GameComponent))
+            if (componentType == typeof(Component))
                 return;
 
-            List<GameComponent> list;
+            List<Component> list;
             if (!_componentsDict.TryGetValue(componentType, out list))
             {
-                list = new List<GameComponent>();
+                list = new List<Component>();
                 _componentsDict[componentType] = list;
             }
             list.Add(gameComponent);
@@ -720,9 +749,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Remove a component
         /// </summary>
-        public void RemoveComponent<T>() where T : GameComponent
+        public void RemoveComponent<T>() where T : Component
         {
-            List<GameComponent> list;
+            List<Component> list;
             if (_componentsDict.TryGetValue(typeof(T), out list))
             {
                 for (int index = list.Count - 1; index >= 0; index--)
@@ -736,7 +765,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Remove a component
         /// </summary>
-        public void RemoveComponent(GameComponent component)
+        public void RemoveComponent(Component component)
         {
             _componentsList.Remove(component);
             RemoveComponentTypes(component.GetType(), component);
@@ -750,12 +779,12 @@ namespace FNAEngine2D
         /// <summary>
         /// Remove all component types
         /// </summary>
-        private void RemoveComponentTypes(Type componentType, GameComponent gameComponent)
+        private void RemoveComponentTypes(Type componentType, Component gameComponent)
         {
-            if (componentType == typeof(GameComponent))
+            if (componentType == typeof(Component))
                 return;
 
-            List<GameComponent> list;
+            List<Component> list;
             if (_componentsDict.TryGetValue(componentType, out list))
             {
                 list.Remove(gameComponent);
@@ -771,9 +800,9 @@ namespace FNAEngine2D
         /// <summary>
         /// Get a component
         /// </summary>
-        public T GetComponent<T>() where T : GameComponent
+        public T GetComponent<T>() where T : Component
         {
-            if (_componentsDict.TryGetValue(typeof(T), out List<GameComponent> list))
+            if (_componentsDict.TryGetValue(typeof(T), out List<Component> list))
             {
                 if (list.Count > 0)
                     return (T)list[0];
@@ -784,7 +813,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Execute an action for each GameComponent of the game object
         /// </summary>
-        public void ForEachComponent(Action<GameComponent> action)
+        public void ForEachComponent(Action<Component> action)
         {
             if (_componentsList.Count == 0)
                 return;
@@ -989,81 +1018,93 @@ namespace FNAEngine2D
             //Call OnRemove for components...
             if (_componentsList.Count > 0)
             {
-                foreach (GameComponent component in _componentsList)
+                foreach (Component component in _componentsList)
                     component.DoLoad();
             }
 
             _loaded = true;
         }
 
-        /// <summary>
-        /// Update logic for the server
-        /// </summary>
-        protected virtual void Update()
-        {
+        ///// <summary>
+        ///// Update logic for the server
+        ///// </summary>
+        //protected virtual void Update()
+        //{
 
-        }
+        //}
 
-        /// <summary>
-        /// Logique d'update
-        /// </summary>
-        internal void DoUpdate()
-        {
-            //Paused or disabled?
-            if (this.Paused || !this.Enabled)
-                return;
+        ///// <summary>
+        ///// Logique d'update
+        ///// </summary>
+        //internal void DoUpdate()
+        //{
+        //    //Paused or disabled?
+        //    if (this.Paused || !this.Enabled)
+        //        return;
 
-            //Update GameContent if needed...
-            if (GameManager.DevelopmentMode)
-                GameContentManager.ReloadModifiedContent(this);
+        //    //Update GameContent if needed...
+        //    if (GameManager.DevelopmentMode)
+        //        GameContentManager.ReloadModifiedContent(this);
 
-            ForEachComponent(o => o.DoUpdate());
+        //    ForEachComponent(o => o.DoUpdate());
 
-            this.Update();
+        //    this.Update();
 
-            ForEachChild(o => o.DoUpdate());
+        //    ForEachChild(o => o.DoUpdate());
 
-        }
+        //}
 
-        /// <summary>
-        /// Draw à l'écran
-        /// </summary>
-        protected virtual void Draw()
-        {
+        ///// <summary>
+        ///// Draw à l'écran
+        ///// </summary>
+        //protected virtual void Draw()
+        //{
 
-        }
+        //}
 
-        /// <summary>
-        /// Draw à l'écran
-        /// </summary>
-        internal virtual void DoDraw()
-        {
-            //Disabled?
-            if (!this.Enabled)
-                return;
+        ///// <summary>
+        ///// Draw à l'écran
+        ///// </summary>
+        //internal void DoDraw()
+        //{
+        //    //Disabled?
+        //    if (!this.Enabled)
+        //        return;
 
-            //If not visible...
-            if (!this.Visible)
-                return;
+        //    //If not visible...
+        //    if (!this.Visible)
+        //        return;
 
 
-            //Check if object must be renderer by the camera...
-            if ((DrawingContext.Camera.LayerMask & this.LayerMask) != 0)
-            {
-                ForEachComponent(o => o.DoDraw());
-                this.Draw();
-            }
+        //    //Check if object must be renderer by the camera...
+        //    if ((DrawingContext.Camera.LayerMask & this.LayerMask) != 0)
+        //    {
+        //        ForEachComponent(o => o.DoDraw());
+        //        this.Draw();
+        //    }
 
-            ForEachChild(o => o.DoDraw());
-        }
+        //    ForEachChild(o => o.DoDraw());
+        //}
 
 
         /// <summary>
         /// Execute the OnAdded
         /// </summary>
-        internal virtual void DoOnAdded()
+        internal void DoOnAdded(bool processChildren)
         {
-            OnAdded();
+            if (processChildren)
+            {
+                //And the children because they are not really removed but we will want to known if the parent is removed.
+                ForEachChild(o => o.DoOnAdded(true));
+            }
+
+            AddActiveComponent();
+
+            //Call OnAdded for components...
+            ForEachComponent(o => o.DoOnAdded());
+
+            //Little event OnAdded...
+            this.OnAdded();
         }
 
         /// <summary>
@@ -1074,32 +1115,63 @@ namespace FNAEngine2D
 
         }
 
+
         /// <summary>
-        /// Process the addition
+        /// Called when the game object is enabled
         /// </summary>
-        private void ProcessAddition(bool processChildren)
+        protected virtual void OnEnabled()
         {
-            if (processChildren)
-            {
-                //And the children because they are not really removed but we will want to known if the parent is removed.
-                ForEachChild(o => o.ProcessAddition(true));
-            }
-
-            //Call OnAdded for components...
-            ForEachComponent(o => o.DoOnAdded());
-
-            //Little event OnAdded...
-            this.OnAdded();
-
 
         }
 
         /// <summary>
+        /// Execute the OnEnabled
+        /// </summary>
+        internal void DoOnEnabled()
+        {
+            AddActiveComponent();
+
+            ForEachComponent(c => c.DoOnEnabled());
+            OnEnabled();
+        }
+
+        /// <summary>
+        /// Called when the game object is disabled
+        /// </summary>
+        protected virtual void OnDisabled()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnDisabled
+        /// </summary>
+        internal void DoOnDisabled()
+        {
+            RemoveActiveComponent();
+
+            ForEachComponent(c => c.DoOnDisabled());
+            OnDisabled();
+        }
+
+
+        /// <summary>
         /// Execute the OnRemoved
         /// </summary>
-        internal virtual void DoOnRemoved()
+        internal void DoOnRemoved()
         {
-            OnRemoved();
+            RemoveActiveComponent();
+
+            //And the children because they are not really removed but we will want to known if the parent is removed.
+            ForEachChild(o => o.DoOnRemoved());
+
+            Mouse.RemoveGameObject(this);
+
+            //Call OnRemoved for components...
+            ForEachComponent(o => o.DoOnRemoved());
+
+            //Little event OnRemoved...
+            this.OnRemoved();
         }
 
         /// <summary>
@@ -1111,28 +1183,9 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Process the removal
-        /// </summary>
-        private void ProcessRemoval()
-        {
-            //And the children because they are not really removed but we will want to known if the parent is removed.
-            ForEachChild(o => o.ProcessRemoval());
-
-            Mouse.RemoveGameObject(this);
-
-            //Call OnRemoved for components...
-            ForEachComponent(o => o.DoOnRemoved());
-
-            //Little event OnRemoved...
-            this.OnRemoved();
-
-
-        }
-
-        /// <summary>
         /// Execute the OnResized
         /// </summary>
-        internal virtual void DoOnResized()
+        internal void DoOnResized()
         {
             OnResized();
         }
@@ -1148,7 +1201,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Execute the OnMoved
         /// </summary>
-        internal virtual void DoOnMoved()
+        internal void DoOnMoved()
         {
             OnMoved();
         }
@@ -1159,6 +1212,32 @@ namespace FNAEngine2D
         protected virtual void OnMoved()
         {
 
+        }
+
+        /// <summary>
+        /// Add the current component to the active list
+        /// </summary>
+        private void AddActiveComponent()
+        {
+            if (!_presentInActiveList)
+            {
+                _game.AddActiveComponent(this);
+
+                _presentInActiveList = true;
+            }
+        }
+
+        /// <summary>
+        /// Remove the current component from the active list
+        /// </summary>
+        private void RemoveActiveComponent()
+        {
+            if (_presentInActiveList)
+            {
+                _game.RemoveActiveComponent(this);
+
+                _presentInActiveList = false;
+            }
         }
 
         /// <summary>

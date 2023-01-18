@@ -8,7 +8,7 @@ namespace FNAEngine2D.Particules
     /// <summary>
     /// Particule emitter
     /// </summary>
-    public class ParticuleEmitter: GameObject
+    public class ParticuleEmitter: GameObject, IUpdate
     {
         /// <summary>
         /// Information on the particules to emit
@@ -74,7 +74,7 @@ namespace FNAEngine2D.Particules
         /// <summary>
         /// Update the particules
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             if (_emissionData != null && _emissionData.IntervalSeconds > 0f)
             {

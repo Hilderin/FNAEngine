@@ -12,7 +12,7 @@ using Velentr.Font;
 
 namespace FNAEngine2D.GameObjects
 {
-    public class FPSRender : GameObject
+    public class FPSRender : GameObject, IUpdate, IDraw
     {
         /// <summary>
         /// Fps average calculator
@@ -90,7 +90,7 @@ namespace FNAEngine2D.GameObjects
             _label = this.Add(new Label(GetText(0, 0, 0, 0), this.FontName, this.FontSize, Vector2.Zero, this.Color));
         }
 
-        protected override void Update()
+        public void Update()
         {
             
             _lastFrameUpdateTimeMillisecondsAverage.Add(_gameTimeService.LastFrameUpdateTimeMilliseconds);
@@ -101,7 +101,7 @@ namespace FNAEngine2D.GameObjects
             _label.Text = GetText(_fpsAverage.GetAverage(), _lastFrameUpdateTimeMillisecondsAverage.GetAverage(), _lastFrameDrawTimeMillisecondsAverage.GetAverage(), _lastFrameTimeMillisecondsAverage.GetAverage());
         }
 
-        protected override void Draw()
+        public void Draw()
         {
             decimal elapsedMilliseconds = ((decimal)_drawTimer.ElapsedTicks / Stopwatch.Frequency);
             _drawTimer.Restart();

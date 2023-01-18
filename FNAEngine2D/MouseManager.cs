@@ -85,8 +85,8 @@ namespace FNAEngine2D
                 _mouseRightDownObjects.Remove((IMouseEventHandler)gameObject);
             }
 
-            //Also remove for childrens...
-            gameObject.ForEachChild(o => RemoveGameObject(o));
+            ////Also remove for childrens...
+            //gameObject.ForEachChild(o => RemoveGameObject(o));
 
         }
 

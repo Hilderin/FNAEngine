@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace FNAEngine2D.ParticuleTest
 {
-    public class Scene : GameObject
+    public class Scene : GameObject, IUpdate
     {
         /// <summary>
         /// Cursor
@@ -95,7 +95,7 @@ namespace FNAEngine2D.ParticuleTest
         /// <summary>
         /// Update each frame
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             _mouseCursor.Location = this.Input.GetMousePosition();
 

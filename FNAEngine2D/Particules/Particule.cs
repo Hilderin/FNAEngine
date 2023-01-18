@@ -7,7 +7,7 @@ namespace FNAEngine2D.Particules
     /// <summary>
     /// A particule
     /// </summary>
-    public class Particule: GameObject
+    public class Particule: GameObject, IUpdate, IDraw
     {
         private readonly ParticuleData _particuleData;
         private readonly EmissionData _emissionData;
@@ -64,7 +64,7 @@ namespace FNAEngine2D.Particules
         /// <summary>
         /// Update the particule
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             
             LifespanLeft -= this.ElapsedGameTimeSeconds;
@@ -110,7 +110,7 @@ namespace FNAEngine2D.Particules
         /// <summary>
         /// Draw the particule
         /// </summary>
-        protected override void Draw()
+        public void Draw()
         {
             DrawingContext.Draw(_emissionData.Texture.Data, this.Location, null, Color * Opacity, this.Rotation, Origin, Scale, SpriteEffects.None, this.Depth);
         }

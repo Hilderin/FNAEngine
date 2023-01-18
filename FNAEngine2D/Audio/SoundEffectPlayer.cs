@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FNAEngine2D.GameObjects
+namespace FNAEngine2D.Audio
 {
     /// <summary>
     /// Player for sound effect
     /// </summary>
-    public class SoundEffectPlayer: GameObject
+    public class SoundEffectPlayer: Component, IUpdate
     {
         /// <summary>
         /// Currentply play...
@@ -64,7 +64,7 @@ namespace FNAEngine2D.GameObjects
         /// <summary>
         /// Update each frame
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             if (!AllowMultiple)
                 _elapedStartSeconds += this.ElapsedGameTimeSeconds;

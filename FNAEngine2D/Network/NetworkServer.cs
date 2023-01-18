@@ -32,7 +32,7 @@ namespace FNAEngine2D.Network
     /// <summary>
     /// Server
     /// </summary>
-    public class NetworkServer: GameObject
+    public class NetworkServer: Component
     {
         /// <summary>
         /// Socket server
@@ -160,7 +160,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Update each frame
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             try
             {
@@ -186,7 +186,7 @@ namespace FNAEngine2D.Network
                     GameObject objToAdd;
                     lock (_objectsToAdd)
                         objToAdd = _objectsToAdd.Dequeue();
-                    Add(objToAdd);
+                    this.GameObject.Add(objToAdd);
                 }
 
                 //remove object in the scene...
@@ -195,7 +195,7 @@ namespace FNAEngine2D.Network
                     GameObject objToRemove;
                     lock (_objectsToRemove)
                         objToRemove = _objectsToRemove.Dequeue();
-                    Remove(objToRemove);
+                    this.GameObject.Remove(objToRemove);
                 }
 
 

@@ -114,6 +114,19 @@ namespace FNAEngine2D
         /// </summary>
         private MouseManager _mouseManager;
 
+
+        /// <summary>
+        /// Updatables elements
+        /// </summary>
+        internal List<IUpdate> _updateables = new List<IUpdate>();
+
+        /// <summary>
+        /// Drawables elements
+        /// </summary>
+        internal List<IDraw> _drawables = new List<IDraw>();
+
+
+
         /// <summary>
         /// Singleton instance
         /// </summary>
@@ -174,7 +187,7 @@ namespace FNAEngine2D
                     if (_rootGameObject != null)
                     {
                         _rootGameObject.ForEachChild(o => o.DoOnRemoved());
-                        _rootGameObject.DoOnRemoved();                        
+                        _rootGameObject.DoOnRemoved();
                     }
 
                     _rootGameObject = value;
@@ -183,8 +196,16 @@ namespace FNAEngine2D
                     if (_loadContentDone)
                     {
                         if (!_rootGameObject._loaded)
+                        {
+                            _rootGameObject._addAuthorized = true;
                             _rootGameObject.DoLoad();
-                        _rootGameObject.DoOnAdded();
+                            _rootGameObject.DoOnAdded(false);
+                        }
+                        else
+                        {
+                            //Already loaded so we will reexecute all the OnAdded
+                            _rootGameObject.DoOnAdded(true);
+                        }
                     }
 
                     //This game objet will be the root
@@ -422,7 +443,7 @@ namespace FNAEngine2D
             //Basic settings...
             this.NbPixelPerMeter = graphicSettings.NbPixelPerMeter;
             this.BackgroundColor = graphicSettings.BackgroundColor;
-                     
+
 
 
             //Recalculate internal things...
@@ -529,7 +550,8 @@ namespace FNAEngine2D
             if (_rootGameObject != null)
             {
                 //Call du update du current game...
-                _rootGameObject.DoUpdate();
+                for (int index = 0; index < _updateables.Count; index++)
+                    _updateables[index].Update();
             }
 
             DoAfterUpdate();
@@ -543,7 +565,7 @@ namespace FNAEngine2D
             try
             {
                 //Check if modification in the designer before closing
-                if(_editModeService != null)
+                if (_editModeService != null)
                     _editModeService.Quit(false);
             }
             finally
@@ -591,7 +613,7 @@ namespace FNAEngine2D
                 _rootGameObject.Game = this;
                 _rootGameObject._addAuthorized = true;
                 _rootGameObject.DoLoad();
-                _rootGameObject.DoOnAdded();
+                _rootGameObject.DoOnAdded(false);
             }
 
 
@@ -675,10 +697,11 @@ namespace FNAEngine2D
             {
                 _editModeService.ProcessUpdateEditMode();
             }
-            else if (_rootGameObject != null)
+            else
             {
                 //Call du update du current game...
-                _rootGameObject.DoUpdate();
+                for (int index = 0; index < _updateables.Count; index++)
+                    _updateables[index].Update();
             }
         }
 
@@ -731,7 +754,7 @@ namespace FNAEngine2D
             //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
             _gameTimeService.LastFrameTimeMilliseconds = ((decimal)_internalTimer.ElapsedTicks / Stopwatch.Frequency) * 1000;
             _gameTimeService.LastFrameDrawTimeMilliseconds = _gameTimeService.LastFrameTimeMilliseconds - _gameTimeService.LastFrameUpdateTimeMilliseconds;
-            
+
         }
 
         /// <summary>
@@ -768,9 +791,41 @@ namespace FNAEngine2D
             _drawingContext.Begin(camera);
 
             //Drawing children...
-            _rootGameObject.DoDraw();
+            //_rootGameObject.DoDraw();
+            for (int index = 0; index < _drawables.Count; index++)
+                _drawables[index].Draw();
 
             _drawingContext.End();
+        }
+
+        /// <summary>
+        /// Add the current component to the active list
+        /// </summary>
+        internal void AddActiveComponent(object obj)
+        {
+            IUpdate updateable = obj as IUpdate;
+            if (updateable != null)
+                _updateables.Add(updateable);
+
+            IDraw drawable = obj as IDraw;
+            if (drawable != null)
+                _drawables.Add(drawable);
+
+        }
+
+        /// <summary>
+        /// Remove the current component from the active list
+        /// </summary>
+        internal void RemoveActiveComponent(object obj)
+        {
+            IUpdate updateable = obj as IUpdate;
+            if (updateable != null)
+                _updateables.Remove(updateable);
+
+            IDraw drawable = obj as IDraw;
+            if (drawable != null)
+                _drawables.Remove(drawable);
+
         }
 
 

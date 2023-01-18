@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FNAEngine2D.ColliderSample
 {
-    public class Ball : GameObject
+    public class Ball : GameObject, IUpdate
     {
         /// <summary>
         /// Rigid body that will handle movement
@@ -49,7 +49,7 @@ namespace FNAEngine2D.ColliderSample
         /// <summary>
         /// Update each frame
         /// </summary>
-        protected override void Update()
+        public void Update()
         {
             if (_rigidBody.Collision != null)
             {

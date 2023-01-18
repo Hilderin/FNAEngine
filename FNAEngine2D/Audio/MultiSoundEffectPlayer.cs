@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace FNAEngine2D.GameObjects
+namespace FNAEngine2D.Audio
 {
     /// <summary>
     /// Multi sound effect player render from a enum
     /// </summary>
-    public class MultiSoundEffectPlayer<T> : GameObject where T : System.Enum
+    public class MultiSoundEffectPlayer<T> : Component where T : System.Enum
     {
         /// <summary>
         /// Textures

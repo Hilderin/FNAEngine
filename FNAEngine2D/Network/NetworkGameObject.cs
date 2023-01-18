@@ -85,17 +85,17 @@ namespace FNAEngine2D.Network
             get { return _server; }
         }
 
-        /// <summary>
-        /// Override of the DoDraw
-        /// </summary>
-        internal override void DoDraw()
-        {
-            //No drawing on the client...
-            if (!this.IsClient)
-                return;
+        ///// <summary>
+        ///// Override of the DoDraw
+        ///// </summary>
+        //internal override void DoDraw()
+        //{
+        //    //No drawing on the client...
+        //    if (!this.IsClient)
+        //        return;
 
-            base.DoDraw();
-        }
+        //    base.DoDraw();
+        //}
 
         /// <summary>
         /// Destruction of an object
