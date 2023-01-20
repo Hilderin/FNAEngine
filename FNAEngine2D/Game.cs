@@ -870,6 +870,10 @@ namespace FNAEngine2D
         /// </summary>
         internal void AddUpdateable(IUpdate updateable)
         {
+
+            if (_updateables.Contains(updateable))
+                return;
+
             _updateables.Add(updateable);
         }
 
@@ -878,6 +882,9 @@ namespace FNAEngine2D
         /// </summary>
         internal void AddDrawable(IDraw drawable)
         {
+            if (_drawablesDestroyed.Contains(drawable))
+                return;
+
             _drawables.Add(drawable);
         }
 

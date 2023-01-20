@@ -26,6 +26,11 @@ namespace FNAEngine2D
         public bool IsMouseVisible { get; private set; }
 
         /// <summary>
+        /// New objects that the mouse is over
+        /// </summary>
+        private List<IMouseEventHandler> _newOverGameObjects = new List<IMouseEventHandler>();
+
+        /// <summary>
         /// Liste des derniers games objects où on était par dessus
         /// </summary>
         private List<IMouseEventHandler> _lastOverGameObjects = new List<IMouseEventHandler>();
@@ -78,11 +83,13 @@ namespace FNAEngine2D
         /// </summary>
         internal void RemoveGameObject(GameObject gameObject)
         {
-            if (gameObject is IMouseEventHandler)
+            IMouseEventHandler mouseHandler = gameObject as IMouseEventHandler;
+            if (mouseHandler != null)
             {
-                _lastOverGameObjects.Remove((IMouseEventHandler)gameObject);
-                _mouseLeftDownObjects.Remove((IMouseEventHandler)gameObject);
-                _mouseRightDownObjects.Remove((IMouseEventHandler)gameObject);
+                _newOverGameObjects.Remove(mouseHandler);
+                _lastOverGameObjects.Remove(mouseHandler);
+                _mouseLeftDownObjects.Remove(mouseHandler);
+                _mouseRightDownObjects.Remove(mouseHandler);
             }
 
             ////Also remove for childrens...
@@ -102,33 +109,34 @@ namespace FNAEngine2D
             //We will need the mouse position...
             Vector2 mousePosition = _game.Input.GetMousePosition();
 
-            List<IMouseEventHandler> newOverGameObjects = new List<IMouseEventHandler>(_lastOverGameObjects.Count);
+            //List<IMouseEventHandler> _newOverGameObjects = new List<IMouseEventHandler>(_lastOverGameObjects.Count);
+            _newOverGameObjects.Clear();
 
-            ProcessGameObject(_game.RootGameObject, mousePosition, newOverGameObjects);
+            SearchNewOverGameObjects(_game.RootGameObject, mousePosition);
 
-            if (newOverGameObjects.Count > 0 || _lastOverGameObjects.Count > 0)
+            if (_newOverGameObjects.Count > 0 || _lastOverGameObjects.Count > 0)
             {
                 //Have something to do...
 
                 //Process the enters....
-                if (newOverGameObjects.Count > 0)
+                if (_newOverGameObjects.Count > 0)
                 {
-                    for (int index = 0; index < newOverGameObjects.Count; index++)
+                    for (int index = 0; index < _newOverGameObjects.Count; index++)
                     {
-                        if (!_lastOverGameObjects.Contains(newOverGameObjects[index]))
+                        if (!_lastOverGameObjects.Contains(_newOverGameObjects[index]))
                         {
                             //Enter...
-                            newOverGameObjects[index].HandleMouseEvent(MouseAction.Enter);
+                            _newOverGameObjects[index].HandleMouseEvent(MouseAction.Enter);
 
                             if (_game.Input.IsMouseLeftDown())
                             {
-                                newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
-                                _mouseLeftDownObjects.Add(newOverGameObjects[index]);
+                                _newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonDown);
+                                _mouseLeftDownObjects.Add(_newOverGameObjects[index]);
                             }
                             if (_game.Input.IsMouseRightDown())
                             {
-                                newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
-                                _mouseRightDownObjects.Add(newOverGameObjects[index]);
+                                _newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonDown);
+                                _mouseRightDownObjects.Add(_newOverGameObjects[index]);
                             }
                         }
                     }
@@ -139,7 +147,7 @@ namespace FNAEngine2D
                 {
                     for (int index = 0; index < _lastOverGameObjects.Count; index++)
                     {
-                        if (!newOverGameObjects.Contains(_lastOverGameObjects[index]))
+                        if (!_newOverGameObjects.Contains(_lastOverGameObjects[index]))
                         {
                             //Leave...
                             _lastOverGameObjects[index].HandleMouseEvent(MouseAction.Leave);
@@ -164,10 +172,10 @@ namespace FNAEngine2D
                 //Left Clicked... ??
                 if (_game.Input.IsMouseLeftClicked())
                 {
-                    for (int index = 0; index < newOverGameObjects.Count; index++)
+                    for (int index = 0; index < _newOverGameObjects.Count; index++)
                     {
                         //Up...
-                        newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonUp);
+                        _newOverGameObjects[index].HandleMouseEvent(MouseAction.LeftButtonUp);
                     }
 
                     for (int index = 0; index < _mouseLeftDownObjects.Count; index++)
@@ -180,10 +188,10 @@ namespace FNAEngine2D
                 //Right Clicked... ??
                 if (_game.Input.IsMouseRightClicked())
                 {
-                    for (int index = 0; index < newOverGameObjects.Count; index++)
+                    for (int index = 0; index < _newOverGameObjects.Count; index++)
                     {
                         //Up...
-                        newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonUp);
+                        _newOverGameObjects[index].HandleMouseEvent(MouseAction.RightButtonUp);
                     }
 
                     for (int index = 0; index < _mouseRightDownObjects.Count; index++)
@@ -195,7 +203,7 @@ namespace FNAEngine2D
 
 
                 //Keep last...
-                _lastOverGameObjects = newOverGameObjects;
+                _lastOverGameObjects = _newOverGameObjects;
             }
 
         }
@@ -203,7 +211,7 @@ namespace FNAEngine2D
         /// <summary>
         /// Process the game objects
         /// </summary>
-        private void ProcessGameObject(GameObject gameObject, Vector2 mousePosition, List<IMouseEventHandler> newOverGameObjects)
+        private void SearchNewOverGameObjects(GameObject gameObject, Vector2 mousePosition)
         {
             if (gameObject is IMouseEventHandler)
             {
@@ -211,11 +219,11 @@ namespace FNAEngine2D
                 
                 if (VectorHelper.Intersects(mousePosition + camera.Location.Substract(camera.ViewLocation), gameObject.Bounds))
                 {
-                    newOverGameObjects.Add((IMouseEventHandler)gameObject);
+                    _newOverGameObjects.Add((IMouseEventHandler)gameObject);
                 }
             }
 
-            gameObject.ForEachChild(o => ProcessGameObject(o, mousePosition, newOverGameObjects));
+            gameObject.ForEachChild(o => SearchNewOverGameObjects(o, mousePosition));
         }
 
 

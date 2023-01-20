@@ -1262,7 +1262,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnEnabled()
         {
-            if (!_loaded)
+            //If the parent is disabled, then, we are not changing our state
+            if (!_loaded || !_enabledParent)
                 return;
 
             //Ensure the object is updatable and drawable
@@ -1271,6 +1272,13 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnEnabled());
             OnEnabled();
+
+            ForEachChild(c =>
+            {
+                c._enabledParent = true;
+                if (c._enabledSelf)
+                    c.DoOnEnabled();
+            });
         }
 
         /// <summary>
@@ -1286,7 +1294,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnDisabled()
         {
-            if (!_loaded)
+            //If the parent is disabled, then, we are not changing our state
+            if (!_loaded || !_enabledParent)
                 return;
 
             //Ensure the object is not updatable and drawable
@@ -1295,7 +1304,36 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnDisabled());
             OnDisabled();
+
+            ForEachChild(c =>
+            {
+                c.DoOnDisabledParent();
+            });
         }
+
+        /// <summary>
+        /// Execute the OnDisabled
+        /// </summary>
+        internal void DoOnDisabledParent()
+        {
+            _enabledParent = false;
+
+            if (_enabledSelf)
+            {
+                //Ensure the object is not updatable and drawable
+                RemoveActiveUpdateable();
+                RemoveActiveDrawable();
+
+                ForEachComponent(c => c.DoOnDisabled());
+                OnDisabled();
+
+                ForEachChild(c =>
+                {
+                    c.DoOnDisabledParent();
+                });
+            }
+        }
+
 
         /// <summary>
         /// Called when the game object is Paused
@@ -1310,7 +1348,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnPaused()
         {
-            if (!_loaded)
+            //Si the parent is already paused, we are not changing our state
+            if (!_loaded || _pausedParent)
                 return;
 
             //Ensure the object is not updatable
@@ -1318,6 +1357,36 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnPaused());
             OnPaused();
+
+
+            ForEachChild(c =>
+            {
+                c.DoOnPausedParent();
+            });
+        }
+
+        /// <summary>
+        /// Execute the OnPaused
+        /// </summary>
+        internal void DoOnPausedParent()
+        {
+            _pausedParent = true;
+
+            //We the object was already paused, it's not changing it's state or the state of his children
+            if (!_pausedSelf)
+            {
+                //Ensure the object is not updatable
+                RemoveActiveUpdateable();
+
+                ForEachComponent(c => c.DoOnPaused());
+                OnPaused();
+
+
+                ForEachChild(c =>
+                {
+                    c.DoOnPausedParent();
+                });
+            }
         }
 
         /// <summary>
@@ -1333,7 +1402,7 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnUnpaused()
         {
-            if (!_loaded)
+            if (!_loaded || _pausedParent)
                 return;
 
             //Ensure the object is updatable and drawable
@@ -1341,7 +1410,15 @@ namespace FNAEngine2D
 
             ForEachComponent(c => c.DoOnUnpaused());
             OnUnpaused();
+
+            ForEachChild(c =>
+            {
+                c._pausedParent = false;
+                if(!_pausedSelf)
+                    c.DoOnUnpaused();
+            });
         }
+
 
         /// <summary>
         /// Called when the game object is Showed
@@ -1356,7 +1433,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnShowed()
         {
-            if (!_loaded)
+            //If the parent is hidden, then, we are not changing our state
+            if (!_loaded || !_visibleParent)
                 return;
 
 
@@ -1387,7 +1465,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnHided()
         {
-            if (!_loaded)
+            //If the parent was already hidden, then, we are not changing our state
+            if (!_loaded || !_visibleParent)
                 return;
 
             //Ensure the object is not drawable
@@ -1956,8 +2035,7 @@ namespace FNAEngine2D
             {
                 _visibleSelf = false;
 
-                if (_visibleParent)
-                    DoOnHided();
+                DoOnHided();
             }
         }
 
@@ -1970,8 +2048,7 @@ namespace FNAEngine2D
             {
                 _visibleSelf = true;
 
-                if (_visibleParent)
-                    DoOnShowed();
+                DoOnShowed();
             }
         }
 

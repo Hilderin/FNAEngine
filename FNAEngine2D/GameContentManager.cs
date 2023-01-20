@@ -54,12 +54,12 @@ namespace FNAEngine2D
         /// </summary>
         private GameObject Apply(GameObject gameObject, string assetName, bool fromRefresh)
         {
-            var content = _game.ContentManager.GetContent<GameContent>(assetName);
+            
 
             //We all in a container to facilitate the update...
             GameContentContainer container = GetContainer(gameObject, assetName);
 
-            ReplaceContent(container, content.Data);
+            
 
             //if (!fromRefresh)
             //    AddGameObjectUsage(gameObject, assetName);
@@ -76,10 +76,16 @@ namespace FNAEngine2D
             GameContentContainer container = gameObject.Find<GameContentContainer>(o => o.AssetName == assetName);
 
             if (container != null)
+            {
+                var content = _game.ContentManager.GetContent<GameContent>(assetName);
+                ReplaceContent(container, content.Data);
                 return container;
-
-            //Not found, we must add it...
-            return gameObject.Add(new GameContentContainer() { AssetName = assetName });
+            }
+            else
+            {
+                //Not found, we must add it...
+                return gameObject.Add(new GameContentContainer() { AssetName = assetName });
+            }
         }
 
 
