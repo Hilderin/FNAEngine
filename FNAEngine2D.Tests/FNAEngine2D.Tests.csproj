@@ -47,6 +47,7 @@
     <Compile Include="Collisions\CollisionHelperTest.cs" />
     <Compile Include="Communication\SocketChannelTest.cs" />
     <Compile Include="DataStreaming\BinReaderWriterTest.cs" />
+    <Compile Include="GameObjectHierarchyTest.cs" />
     <Compile Include="Physics\ForceTest.cs" />
     <Compile Include="PathFinding\AStartTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

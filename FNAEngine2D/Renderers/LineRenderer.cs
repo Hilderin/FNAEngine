@@ -25,36 +25,38 @@ namespace FNAEngine2D.Renderers
         /// </summary>
         private float _rotation;
 
-        public Vector2 _startPosition { get; set; }
-        public Vector2 _stopPosition { get; set; }
+        public Vector2 _offsetStartPosition { get; set; }
+        public Vector2 _offsetStopPosition { get; set; }
 
         /// <summary>
-        /// Start location
+        /// Offset start location
+        /// Offset from the location of the parent GameObject
         /// </summary>
-        public Vector2 StartPosition
+        public Vector2 OffsetStartPosition
         {
-            get { return _startPosition; }
+            get { return _offsetStartPosition; }
             set
             {
-                if (_startPosition != value)
+                if (_offsetStartPosition != value)
                 {
-                    _startPosition = value;
+                    _offsetStartPosition = value;
                     RecalculateScale();
                 }
             }
         }
 
         /// <summary>
-        /// Stop location
+        /// Offset Stop location
+        /// Offset from the location of the parent GameObject
         /// </summary>
-        public Vector2 StopPosition
+        public Vector2 OffsetStopPosition
         {
-            get { return _stopPosition; }
+            get { return _offsetStopPosition; }
             set
             {
-                if (_stopPosition != value)
+                if (_offsetStopPosition != value)
                 {
-                    _stopPosition = value;
+                    _offsetStopPosition = value;
                     RecalculateScale();
                 }
             }
@@ -85,10 +87,10 @@ namespace FNAEngine2D.Renderers
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public LineRenderer(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
+        public LineRenderer(Vector2 offsetStartPosition, Vector2 offsetStopPosition, Color color, float lineWidth)
         {
-            _startPosition = startPosition;
-            _startPosition = stopPosition - startPosition;
+            _offsetStartPosition = offsetStartPosition;
+            _offsetStopPosition = offsetStopPosition;
             this.Color = color;
             this.LineWidth = lineWidth;
         }
@@ -106,14 +108,6 @@ namespace FNAEngine2D.Renderers
             RecalculateScale();
         }
 
-        ///// <summary>
-        ///// On resize...
-        ///// </summary>
-        //protected override void OnResized()
-        //{
-        //    RecalculateScale();
-        //}
-
 
 
         /// <summary>
@@ -121,7 +115,7 @@ namespace FNAEngine2D.Renderers
         /// </summary>
         public void Draw()
         {
-            DrawingContext.Draw(_texture.Data, _startPosition, null, this.Color, _rotation, Vector2.Zero, _scale, SpriteEffects.None, this.GameObject.Depth);
+            DrawingContext.Draw(_texture.Data, this.GameObject.Location + _offsetStartPosition, null, this.Color, _rotation, Vector2.Zero, _scale, SpriteEffects.None, this.GameObject.Depth);
         }
 
         /// <summary>
@@ -129,7 +123,7 @@ namespace FNAEngine2D.Renderers
         /// </summary>
         private void RecalculateScale()
         {
-            Vector2 size = _stopPosition - _startPosition;
+            Vector2 size = _offsetStopPosition - _offsetStartPosition;
             float distance = size.Length();
 
             _scale = new Vector2(this.LineWidth, distance);

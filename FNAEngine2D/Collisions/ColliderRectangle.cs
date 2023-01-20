@@ -37,7 +37,7 @@ namespace FNAEngine2D.Collisions
         /// </summary>
         public ColliderRectangle(Rectangle bounds)
         {
-            this.GameObject = new GameObject();
+            this.GameObject = new EmptyGameObject();
             this.GameObject.Bounds = bounds;
             this.Location = new Vector2(bounds.X, bounds.Y);
             this.Size = new Vector2(bounds.Width, bounds.Height);

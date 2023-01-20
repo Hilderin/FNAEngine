@@ -98,7 +98,7 @@ namespace FNAEngine2D.Collisions
         /// </summary>
         public ColliderCircle(Vector2 location, Vector2 centerOffset, float radius)
         {
-            this.GameObject = new GameObject();
+            this.GameObject = new EmptyGameObject();
             this.GameObject.Location = location;
             this.Location = location;
             this.MovingLocation = location;

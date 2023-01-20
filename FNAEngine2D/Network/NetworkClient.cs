@@ -76,7 +76,7 @@ namespace FNAEngine2D.Network
             Logguer.Info("New NetworkClient " + this.ID);
 
             //Creation of the communication channel
-            if (this.GameObject.Game.RootGameObject.Find(go => go.GetComponent<NetworkServer>() != null) != null)
+            if (this.GameObject.Game.RootGameObject.FindComponent<NetworkServer>() != null)
                 _channel = new InProcessChannel();
             else
                 _channel = new SocketChannel(this.PortNumber);

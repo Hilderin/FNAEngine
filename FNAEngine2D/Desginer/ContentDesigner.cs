@@ -129,7 +129,7 @@ namespace FNAEngine2D.Desginer
         {
             try
             {
-                if (_currentContainer == null || _currentContainer.RootGameObject == null)
+                if (_currentContainer == null || _currentContainer.Game == null || _currentContainer.Game.RootGameObject == null)
                     return;
 
                 if (_selectedGameObjectType != null)
@@ -144,7 +144,7 @@ namespace FNAEngine2D.Desginer
 
                             _previewAddObject = (GameObject)Activator.CreateInstance(_selectedGameObjectType);
 
-                            _currentContainer.RootGameObject.Add(_previewAddObject);
+                            _currentContainer.Game.RootGameObject.Add(_previewAddObject);
 
                         }
 
@@ -167,7 +167,7 @@ namespace FNAEngine2D.Desginer
                         if (_previewEditObject == null)
                         {
                             _previewEditObject = _previewTextureBox;
-                            _currentContainer.RootGameObject.Add(_previewEditObject);
+                            _currentContainer.Game.RootGameObject.Add(_previewEditObject);
 
                         }
 
@@ -235,9 +235,9 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void HideAddPreview()
         {
-            if (_previewAddObject != null && _currentContainer != null && _currentContainer.RootGameObject != null)
+            if (_previewAddObject != null && _currentContainer != null && _currentContainer.Game != null && _currentContainer.Game.RootGameObject != null)
             {
-                _currentContainer.RootGameObject.Remove(_previewAddObject);
+                _currentContainer.Game.RootGameObject.Remove(_previewAddObject);
             }
 
             _previewAddObject = null;
@@ -248,9 +248,9 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         private void HideEditPreview()
         {
-            if (_previewEditObject != null && _currentContainer != null && _currentContainer.RootGameObject != null)
+            if (_previewEditObject != null && _currentContainer != null && _currentContainer.Game != null && _currentContainer.Game.RootGameObject != null)
             {
-                _currentContainer.RootGameObject.Remove(_previewEditObject);
+                _currentContainer.Game.RootGameObject.Remove(_previewEditObject);
             }
 
             _previewEditObject = null;

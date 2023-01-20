@@ -21,7 +21,7 @@ namespace FNAEngine2D.Tests.Physics
             using (Game game = new Game())
             {
                 game.NbPixelPerMeter = 10;
-                GameObject gameObject = new GameObject();
+                GameObject gameObject = new EmptyGameObject();
 
                 Force force = new Force(new Vector2(10, 0), 1, gameObject);
 
@@ -48,7 +48,7 @@ namespace FNAEngine2D.Tests.Physics
             using (Game game = new Game())
             {
                 game.NbPixelPerMeter = 10;
-                GameObject gameObject = new GameObject();
+                GameObject gameObject = new EmptyGameObject();
 
                 Vector2 target = new Vector2(10, 0);
                 Force force = new Force(target, 1, gameObject);
@@ -87,7 +87,7 @@ namespace FNAEngine2D.Tests.Physics
             using (Game game = new Game())
             {
                 game.NbPixelPerMeter = 10;
-                GameObject gameObject = new GameObject();
+                GameObject gameObject = new EmptyGameObject();
 
                 Vector2 target = new Vector2(-10, 0);
                 Force force = new Force(target, 1, gameObject);

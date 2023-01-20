@@ -72,7 +72,7 @@ namespace FNAEngine2D.Tests
         {
             using (Game game = new Game())
             {
-                game.RunOneFrame();
+                game.RunUnitTestOneFrame();
 
                 using (MemoryStream ms = new MemoryStream(Resources.Base))
                 {

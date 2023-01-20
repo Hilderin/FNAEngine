@@ -42,11 +42,10 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         public LineRender(Vector2 startPosition, Vector2 stopPosition, Color color, float lineWidth)
         {
-            _lineRenderer = new LineRenderer(startPosition, stopPosition, color, lineWidth);
             this.Location = startPosition;
             this.Size = stopPosition - startPosition;
-            //this.Color = color;
-            //this.LineWidth = lineWidth;
+
+            _lineRenderer = new LineRenderer(Vector2.Zero, this.Size, color, lineWidth);
         }
 
         /// <summary>
@@ -62,16 +61,7 @@ namespace FNAEngine2D.GameObjects
         /// </summary>
         protected override void OnResized()
         {
-            _lineRenderer.StopPosition = this.Location + this.Size;
-        }
-
-        /// <summary>
-        /// On moved...
-        /// </summary>
-        protected override void OnMoved()
-        {
-            _lineRenderer.StartPosition = this.Location;
-            _lineRenderer.StopPosition = this.Location + this.Size;
+            _lineRenderer.OffsetStopPosition = this.Size;
         }
 
     }

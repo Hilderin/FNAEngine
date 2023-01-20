@@ -182,7 +182,7 @@ namespace FNAEngine2D.Desginer
 
                 UpdatePreviewTileSet();
 
-                _gameObject.RootGameObject.Add(_previewObject);
+                _gameObject.Game.RootGameObject.Add(_previewObject);
 
             }
 
@@ -201,9 +201,9 @@ namespace FNAEngine2D.Desginer
         /// </summary>
         public void HidePreview()
         {
-            if (_previewObject != null && _gameObject != null && _gameObject.RootGameObject != null)
+            if (_previewObject != null && _gameObject != null && _gameObject.Game != null && _gameObject.Game.RootGameObject != null)
             {
-                _gameObject.RootGameObject.Remove(_previewObject);
+                _gameObject.Game.RootGameObject.Remove(_previewObject);
             }
 
             _previewObject = null;
@@ -377,9 +377,9 @@ namespace FNAEngine2D.Desginer
         private void TileSetEditorForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             //Removing the preview object
-            if (_previewObject != null && _gameObject != null && _gameObject.RootGameObject != null)
+            if (_previewObject != null && _gameObject != null && _gameObject.Game != null && _gameObject.Game.RootGameObject != null)
             {
-                _gameObject.RootGameObject.Remove(_previewObject);
+                _gameObject.Game.RootGameObject.Remove(_previewObject);
             }
 
             _editModeService.HideTileSetEditor();

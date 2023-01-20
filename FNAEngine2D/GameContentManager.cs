@@ -17,15 +17,15 @@ namespace FNAEngine2D
     /// </summary>
     public class GameContentManager
     {
-        /// <summary>
-        /// Game objects per asset names
-        /// </summary>
-        private Dictionary<string, List<GameObject>> _gameObjectsPerAssetName = new Dictionary<string, List<GameObject>>();
+        ///// <summary>
+        ///// Game objects per asset names
+        ///// </summary>
+        //private Dictionary<string, List<GameObject>> _gameObjectsPerAssetName = new Dictionary<string, List<GameObject>>();
 
-        /// <summary>
-        /// Game objects to reload
-        /// </summary>
-        private Dictionary<GameObject, List<string>> _gameObjectsToReload = new Dictionary<GameObject, List<string>>();
+        ///// <summary>
+        ///// Game objects to reload
+        ///// </summary>
+        //private Dictionary<GameObject, List<string>> _gameObjectsToReload = new Dictionary<GameObject, List<string>>();
 
         /// <summary>
         /// Game
@@ -61,8 +61,8 @@ namespace FNAEngine2D
 
             ReplaceContent(container, content.Data);
 
-            if (!fromRefresh)
-                AddGameObjectUsage(gameObject, assetName);
+            //if (!fromRefresh)
+            //    AddGameObjectUsage(gameObject, assetName);
 
             return container;
 
@@ -143,55 +143,55 @@ namespace FNAEngine2D
         }
 
 
-        /// <summary>
-        /// Update game object if needed
-        /// </summary>
-        internal void ReloadModifiedContent(GameObject gameObject)
-        {
+        ///// <summary>
+        ///// Update game object if needed
+        ///// </summary>
+        //internal void ReloadModifiedContent(GameObject gameObject)
+        //{
 
-            if (GameManager.DevelopmentMode)
-            {
+        //    if (GameManager.DevelopmentMode)
+        //    {
 
-                try
-                {
-                    if (_gameObjectsToReload.Count == 0)
-                        return;
+        //        try
+        //        {
+        //            if (_gameObjectsToReload.Count == 0)
+        //                return;
 
-                    if (_gameObjectsToReload.TryGetValue(gameObject, out List<string> assetNames))
-                    {
-                        foreach (string assetName in assetNames)
-                        {
-                            Apply(gameObject, assetName, true);
-                        }
-                    }
+        //            if (_gameObjectsToReload.TryGetValue(gameObject, out List<string> assetNames))
+        //            {
+        //                foreach (string assetName in assetNames)
+        //                {
+        //                    Apply(gameObject, assetName, true);
+        //                }
+        //            }
 
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show("Error: " + ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        }
 
-                _gameObjectsToReload.Remove(gameObject);
-            }
+        //        _gameObjectsToReload.Remove(gameObject);
+        //    }
 
-        }
+        //}
 
-        /// <summary>
-        /// Add a gameobject in the usage list
-        /// </summary>
-        private void AddGameObjectUsage(GameObject gameObject, string assetName)
-        {
-            List<GameObject> gameObjects;
+        ///// <summary>
+        ///// Add a gameobject in the usage list
+        ///// </summary>
+        //private void AddGameObjectUsage(GameObject gameObject, string assetName)
+        //{
+        //    List<GameObject> gameObjects;
 
-            if (!_gameObjectsPerAssetName.TryGetValue(assetName, out gameObjects))
-            {
-                gameObjects = new List<GameObject>();
-                _gameObjectsPerAssetName[assetName] = gameObjects;
-            }
+        //    if (!_gameObjectsPerAssetName.TryGetValue(assetName, out gameObjects))
+        //    {
+        //        gameObjects = new List<GameObject>();
+        //        _gameObjectsPerAssetName[assetName] = gameObjects;
+        //    }
 
-            gameObjects.Add(gameObject);
+        //    gameObjects.Add(gameObject);
 
-        }
+        //}
 
         /// <summary>
         /// Create the game object...
@@ -317,28 +317,28 @@ namespace FNAEngine2D
 
 
 
-        /// <summary>
-        /// Changement du content
-        /// </summary>
-        private void ContentManager_ContentChanged(string assetName)
-        {
-            lock (_gameObjectsPerAssetName)
-            {
-                if (_gameObjectsPerAssetName.TryGetValue(assetName, out List<GameObject> gameObjects))
-                {
-                    foreach (GameObject gameObject in gameObjects)
-                    {
-                        List<string> assetNames;
-                        if (!_gameObjectsToReload.TryGetValue(gameObject, out assetNames))
-                        {
-                            assetNames = new List<string>();
-                            _gameObjectsToReload[gameObject] = assetNames;
-                        }
-                        if(!assetNames.Contains(assetName))
-                            assetNames.Add(assetName);
-                    }
-                }
-            }
-        }
+        ///// <summary>
+        ///// Changement du content
+        ///// </summary>
+        //private void ContentManager_ContentChanged(string assetName)
+        //{
+        //    lock (_gameObjectsPerAssetName)
+        //    {
+        //        if (_gameObjectsPerAssetName.TryGetValue(assetName, out List<GameObject> gameObjects))
+        //        {
+        //            foreach (GameObject gameObject in gameObjects)
+        //            {
+        //                List<string> assetNames;
+        //                if (!_gameObjectsToReload.TryGetValue(gameObject, out assetNames))
+        //                {
+        //                    assetNames = new List<string>();
+        //                    _gameObjectsToReload[gameObject] = assetNames;
+        //                }
+        //                if(!assetNames.Contains(assetName))
+        //                    assetNames.Add(assetName);
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

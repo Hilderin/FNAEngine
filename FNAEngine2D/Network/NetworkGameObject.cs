@@ -97,6 +97,16 @@ namespace FNAEngine2D.Network
         //    base.DoDraw();
         //}
 
+
+        /// <summary>
+        /// Loading
+        /// </summary>
+        protected override void Load()
+        {
+            
+        }
+
+
         /// <summary>
         /// Destruction of an object
         /// </summary>

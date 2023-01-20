@@ -22,12 +22,24 @@ namespace FNAEngine2D
     /// <summary>
     /// RenderObject
     /// </summary>
-    public class GameObject
+    public abstract class GameObject
     {
         /// <summary>
         /// Indicate if the component is present in the active list
         /// </summary>
-        private bool _presentInActiveList = false;
+        private bool _presentInActiveUpdateList = false;
+        private bool _presentInActiveDrawList = false;
+
+        /// <summary>
+        /// Updatable object if the component implements IUpdate
+        /// </summary>
+        private IUpdate _updateable;
+
+        /// <summary>
+        /// Drawable object if the component implements IDraw
+        /// </summary>
+        private IDraw _drawable;
+
 
         /// <summary>
         /// Link the the Internal game
@@ -42,12 +54,47 @@ namespace FNAEngine2D
         /// <summary>
         /// Add children autorized
         /// </summary>
-        internal bool _addAuthorized = false;
+        private bool _addAuthorized = false;
 
         /// <summary>
         /// Visible
         /// </summary>
-        private bool _visible = true;
+        private bool _visibleSelf = true;
+
+        /// <summary>
+        /// Visible
+        /// </summary>
+        private bool _visibleParent = false;
+
+        /// <summary>
+        /// Enabled
+        /// </summary>
+        private bool _enabledSelf = true;
+
+        /// <summary>
+        /// Enabled
+        /// </summary>
+        private bool _enabledParent = false;
+
+        /// <summary>
+        /// Paused
+        /// </summary>
+        private bool _pausedSelf = false;
+
+        /// <summary>
+        /// Paused
+        /// </summary>
+        private bool _pausedParent = false;
+
+        /// <summary>
+        /// Indicate if the GameObject is on the hierarchy of the RootGameObject. True if added in a child or is the RootGameObject itself.
+        /// </summary>
+        private bool _isOnScene = false;
+
+        /// <summary>
+        /// Parent
+        /// </summary>
+        private GameObject _parent;
 
         /// <summary>
         /// Avons-nous un collider?
@@ -85,10 +132,6 @@ namespace FNAEngine2D
         /// </summary>
         private float _depth = 0f;
 
-        /// <summary>
-        /// Enabled
-        /// </summary>
-        private bool _enabled = true;
 
         /// <summary>
         /// Components
@@ -100,19 +143,41 @@ namespace FNAEngine2D
         /// </summary>
         private List<Component> _componentsList = new List<Component>();
 
-        /// <summary>
-        /// RootGameObject
-        /// </summary>
-        [Browsable(false)]
-        [JsonIgnore]
-        public GameObject RootGameObject;
+        ///// <summary>
+        ///// RootGameObject
+        ///// </summary>
+        //[Browsable(false)]
+        //[JsonIgnore]
+        //public GameObject RootGameObject;
 
         /// <summary>
         /// Parent GameObject
         /// </summary>
         [Browsable(false)]
         [JsonIgnore]
-        public GameObject Parent;
+        public GameObject Parent
+        {
+            get { return _parent; }
+            set
+            {
+                if (_parent != value)
+                {
+                    _parent = value;
+                    if (_parent != null)
+                    {
+                        _enabledParent = _parent.Enabled;
+                        _visibleParent = _parent.Visible;
+                        _pausedParent = _parent.Paused;
+                    }
+                    else
+                    {
+                        _enabledParent = false;
+                        _visibleParent = false;
+                        _pausedParent = false;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Name of the object
@@ -173,19 +238,20 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.
+        /// Indicate if GameObject itself is enabled. If disable, GameObject is not updated or drew.
+        /// When disabling a GameObject, all children will be disabled but still EnabledSelf true.
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(true)]
         [Description("Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.")]
-        public bool Enabled
+        public bool EnabledSelf
         {
-            get { return _enabled; }
+            get { return _enabledSelf; }
             set
             {
-                if (_enabled != value)
+                if (_enabledSelf != value)
                 {
-                    _enabled = value;
+                    _enabledSelf = value;
 
                     if (value)
                     {
@@ -200,12 +266,52 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Indicate if GameObject is paused. If paused, GameObject is not updated.
+        /// Indicate if GameObject is enabled globally (selft and parents). If disable, GameObject is not updated or drew.
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool Enabled
+        {
+            get { return _enabledSelf && _enabledParent; }
+        }
+
+        /// <summary>
+        /// Indicate if GameObject is itselft paused. If paused, GameObject is not updated.
+        /// When paused a GameObject, all children will be paused but still PausedSelf false.
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(false)]
         [Description("Indicate if GameObject is paused. If paused, GameObject is not updated.")]
-        public bool Paused { get; set; }
+        public bool PausedSelf
+        {
+            get { return _pausedSelf; }
+            set
+            {
+                if (_pausedSelf != value)
+                {
+                    _pausedSelf = value;
+
+                    if (value)
+                    {
+                        DoOnPaused();
+                    }
+                    else
+                    {
+                        DoOnUnpaused();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Indicate if GameObject is paused globally (selft and parents). If paused, GameObject is not updated.
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool Paused
+        {
+            get { return _pausedSelf && _pausedParent; }
+        }
 
         /// <summary>
         /// Visibity of the object
@@ -213,12 +319,12 @@ namespace FNAEngine2D
         [Category("Behavior")]
         [DefaultValue(true)]
         [Description("Indicate if GameObject is visible. If not visible, GameObject is not drew.")]
-        public bool Visible
+        public bool VisibleSelf
         {
-            get { return _visible; }
+            get { return _visibleSelf; }
             set
             {
-                if (_visible != value)
+                if (_visibleSelf != value)
                 {
                     if (value)
                         Show();
@@ -226,6 +332,27 @@ namespace FNAEngine2D
                         Hide();
                 }
             }
+        }
+
+        /// <summary>
+        /// Indicate if GameObject is visible globally (selft and parents). If not visible, GameObject is not drew but is updated.
+        /// When disabling a GameObject, all children will be disabled but still EnabledSelf true.
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool Visible
+        {
+            get { return _visibleSelf && _visibleParent; }
+        }
+
+        /// <summary>
+        /// Indicate if the GameObject is on the hierarchy of the RootGameObject. True if added in a child or is the RootGameObject itself.
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool IsOnScene
+        {
+            get { return _isOnScene; }
         }
 
 
@@ -560,6 +687,8 @@ namespace FNAEngine2D
         /// </summary>
         public GameObject()
         {
+            _updateable = this as IUpdate;
+            _drawable = this as IDraw;
         }
 
 
@@ -599,10 +728,9 @@ namespace FNAEngine2D
                 throw new InvalidOperationException("Add or Insert not authorized before Load method.");
 
             gameObject.Parent = this;
-            gameObject.RootGameObject = this.RootGameObject;
+            //gameObject.RootGameObject = this.RootGameObject;
 
-            if (_game == null)
-                _game = Game.Current;
+            _game = Game.Current;
 
             //Propagate the layermask...
             if (gameObject.LayerMask == Layers.Layer1 && this.LayerMask != Layers.Layer1)
@@ -640,7 +768,7 @@ namespace FNAEngine2D
         public void Remove(GameObject gameObject)
         {
             gameObject.Parent = null;
-            gameObject.RootGameObject = null;
+            //gameObject.RootGameObject = null;
 
             ////Remove de colliders for the gameobject and all children...
             //RemoveColliders(gameObject);
@@ -660,7 +788,7 @@ namespace FNAEngine2D
             GameObject gameObject = _childrens[index];
 
             gameObject.Parent = null;
-            gameObject.RootGameObject = null;
+            //gameObject.RootGameObject = null;
 
             gameObject.DoOnRemoved();
 
@@ -958,6 +1086,33 @@ namespace FNAEngine2D
             }
         }
 
+
+
+        /// <summary>
+        /// Find a Component by type only anywhere on the object or his children
+        /// </summary>
+        public T FindComponent<T>() where T : Component
+        {
+            T component = GetComponent<T>();
+
+            if (component != null)
+                return component;
+
+
+            if (_childrens.Count > 0)
+            {
+                for (int index = 0; index < _childrens.Count; index++)
+                {
+                    component = _childrens[index].GetComponent<T>();
+                    if (component != null)
+                        return component;
+                }
+            }
+
+            return null;
+
+        }
+
         /// <summary>
         /// Execute an action for each GameObjet in childrens
         /// </summary>
@@ -1003,16 +1158,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Loading content
         /// </summary>
-        protected virtual void Load()
-        {
+        protected abstract void Load();
 
-        }
 
         /// <summary>
         /// Execute the loading of the GameObject
         /// </summary>
         public void DoLoad()
         {
+            if (this == _game.RootGameObject)
+            {
+                _addAuthorized = true;
+                _visibleParent = true;
+                _enabledParent = true;
+                _pausedParent = false;
+            }
+
             this.Load();
 
             //Call OnRemove for components...
@@ -1087,34 +1248,6 @@ namespace FNAEngine2D
         //}
 
 
-        /// <summary>
-        /// Execute the OnAdded
-        /// </summary>
-        internal void DoOnAdded(bool processChildren)
-        {
-            if (processChildren)
-            {
-                //And the children because they are not really removed but we will want to known if the parent is removed.
-                ForEachChild(o => o.DoOnAdded(true));
-            }
-
-            AddActiveComponent();
-
-            //Call OnAdded for components...
-            ForEachComponent(o => o.DoOnAdded());
-
-            //Little event OnAdded...
-            this.OnAdded();
-        }
-
-        /// <summary>
-        /// Called when the game object is added in another game object as a child
-        /// </summary>
-        protected virtual void OnAdded()
-        {
-
-        }
-
 
         /// <summary>
         /// Called when the game object is enabled
@@ -1129,7 +1262,12 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnEnabled()
         {
-            AddActiveComponent();
+            if (!_loaded)
+                return;
+
+            //Ensure the object is updatable and drawable
+            AddActiveUpdateable();
+            AddActiveDrawable();
 
             ForEachComponent(c => c.DoOnEnabled());
             OnEnabled();
@@ -1148,19 +1286,189 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnDisabled()
         {
-            RemoveActiveComponent();
+            if (!_loaded)
+                return;
+
+            //Ensure the object is not updatable and drawable
+            RemoveActiveUpdateable();
+            RemoveActiveDrawable();
 
             ForEachComponent(c => c.DoOnDisabled());
             OnDisabled();
         }
 
+        /// <summary>
+        /// Called when the game object is Paused
+        /// </summary>
+        protected virtual void OnPaused()
+        {
 
+        }
+
+        /// <summary>
+        /// Execute the OnPaused
+        /// </summary>
+        internal void DoOnPaused()
+        {
+            if (!_loaded)
+                return;
+
+            //Ensure the object is not updatable
+            RemoveActiveUpdateable();
+
+            ForEachComponent(c => c.DoOnPaused());
+            OnPaused();
+        }
+
+        /// <summary>
+        /// Called when the game object is Unpaused
+        /// </summary>
+        protected virtual void OnUnpaused()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnUnpaused
+        /// </summary>
+        internal void DoOnUnpaused()
+        {
+            if (!_loaded)
+                return;
+
+            //Ensure the object is updatable and drawable
+            AddActiveUpdateable();
+
+            ForEachComponent(c => c.DoOnUnpaused());
+            OnUnpaused();
+        }
+
+        /// <summary>
+        /// Called when the game object is Showed
+        /// </summary>
+        protected virtual void OnShowed()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnShowed
+        /// </summary>
+        internal void DoOnShowed()
+        {
+            if (!_loaded)
+                return;
+
+
+            //Ensure the object is drawable
+            AddActiveDrawable();
+
+            ForEachComponent(c => c.DoOnShowed());
+            OnShowed();
+
+            ForEachChild(c =>
+            {
+                c._visibleParent = true;
+                if (c._visibleSelf)
+                    c.DoOnShowed();
+            });
+        }
+
+        /// <summary>
+        /// Called when the game object is Hided
+        /// </summary>
+        protected virtual void OnHided()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnHided
+        /// </summary>
+        internal void DoOnHided()
+        {
+            if (!_loaded)
+                return;
+
+            //Ensure the object is not drawable
+            RemoveActiveDrawable();
+
+            ForEachComponent(c => c.DoOnHided());
+            OnHided();
+
+            ForEachChild(c =>
+            {
+                c.DoOnHidedParent();
+            });
+        }
+
+        /// <summary>
+        /// Execute the OnHided when the visibility of the parent change
+        /// </summary>
+        internal void DoOnHidedParent()
+        {
+            _visibleParent = false;
+
+            if (_visibleSelf)
+            {
+                //Ensure the object is not drawable
+                RemoveActiveDrawable();
+
+                ForEachComponent(c => c.DoOnHided());
+                OnHided();
+            }
+
+            ForEachChild(c =>
+            {
+                c.DoOnHidedParent();
+            });
+        }
+
+
+
+        /// <summary>
+        /// Execute the OnAdded
+        /// </summary>
+        internal void DoOnAdded(bool processChildren)
+        {
+            _isOnScene = true;
+
+            //Ensure the object is updatable and drawable
+            AddActiveUpdateable();
+            AddActiveDrawable();
+
+            if (processChildren)
+            {
+                //And the children because they are not really removed but we will want to known if the parent is removed.
+                ForEachChild(o => o.DoOnAdded(true));
+            }
+
+
+
+            //Call OnAdded for components...
+            ForEachComponent(o => o.DoOnAdded());
+
+            //Little event OnAdded...
+            this.OnAdded();
+        }
+
+        /// <summary>
+        /// Called when the game object is added in another game object as a child
+        /// </summary>
+        protected virtual void OnAdded()
+        {
+
+        }
         /// <summary>
         /// Execute the OnRemoved
         /// </summary>
         internal void DoOnRemoved()
         {
-            RemoveActiveComponent();
+            _isOnScene = false;
+
+            //Ensure the object is not updatable and not drawable
+            RemoveActiveUpdateable();
+            RemoveActiveDrawable();
 
             //And the children because they are not really removed but we will want to known if the parent is removed.
             ForEachChild(o => o.DoOnRemoved());
@@ -1187,6 +1495,9 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnResized()
         {
+            if (!_loaded)
+                return;
+
             OnResized();
         }
 
@@ -1203,6 +1514,9 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnMoved()
         {
+            if (!_loaded)
+                return;
+
             OnMoved();
         }
 
@@ -1217,26 +1531,75 @@ namespace FNAEngine2D
         /// <summary>
         /// Add the current component to the active list
         /// </summary>
-        private void AddActiveComponent()
+        private void AddActiveUpdateable()
         {
-            if (!_presentInActiveList)
-            {
-                _game.AddActiveComponent(this);
 
-                _presentInActiveList = true;
+            if (_updateable != null)
+            {
+                if (!_presentInActiveUpdateList)
+                {
+                    if (this.Enabled && !this.Paused)
+                    {
+                        _game.AddUpdateable(_updateable);
+                        _presentInActiveUpdateList = true;
+                    }
+                }
+            }
+
+            //if (processChildren)
+            //    ForEachChild(c => c.AddActiveUpdateable(true));
+
+        }
+
+        /// <summary>
+        /// Add the current component to the active list
+        /// </summary>
+        private void AddActiveDrawable()
+        {
+            if (_drawable != null)
+            {
+                if (!_presentInActiveDrawList)
+                {
+                    if (this.Enabled && this.Visible)
+                    {
+                        _game.AddDrawable(_drawable);
+                        _presentInActiveDrawList = true;
+                    }
+                }
+            }
+
+            //if (processChildren)
+            //    ForEachChild(c => c.AddActiveUpdateable(true));
+
+        }
+
+        /// <summary>
+        /// Remove the current component from the active list
+        /// </summary>
+        private void RemoveActiveUpdateable()
+        {
+            if (_updateable == null)
+                return;
+
+            if (_presentInActiveUpdateList)
+            {
+                _game.RemoveUpdateable(_updateable);
+                _presentInActiveUpdateList = false;
             }
         }
 
         /// <summary>
         /// Remove the current component from the active list
         /// </summary>
-        private void RemoveActiveComponent()
+        private void RemoveActiveDrawable()
         {
-            if (_presentInActiveList)
-            {
-                _game.RemoveActiveComponent(this);
+            if (_drawable == null)
+                return;
 
-                _presentInActiveList = false;
+            if (_presentInActiveDrawList)
+            {
+                _game.RemoveDrawable(_drawable);
+                _presentInActiveDrawList = false;
             }
         }
 
@@ -1266,7 +1629,8 @@ namespace FNAEngine2D
 
             _location.X += offsetX;
 
-            OnMoved();
+            if (_loaded)
+                OnMoved();
 
             ForEachChild(o => o.TranslateX(offsetX));
 
@@ -1286,7 +1650,8 @@ namespace FNAEngine2D
 
             _location.Y += offsetY;
 
-            OnMoved();
+            if (_loaded)
+                OnMoved();
 
             ForEachChild(o => o.TranslateY(offsetY));
 
@@ -1311,7 +1676,8 @@ namespace FNAEngine2D
             _location.X += offsetX;
             _location.Y += offsetY;
 
-            OnMoved();
+            if (_loaded)
+                OnMoved();
 
             ForEachChild(o => o.Translate(offsetX, offsetY));
 
@@ -1365,7 +1731,8 @@ namespace FNAEngine2D
 
             _size.X += offsetX;
 
-            OnResized();
+            if (_loaded)
+                OnResized();
 
             ForEachChild(o => o.ResizeWidth(offsetX));
 
@@ -1387,7 +1754,8 @@ namespace FNAEngine2D
 
             _size.Y += offsetY;
 
-            OnResized();
+            if (_loaded)
+                OnResized();
 
             ForEachChild(o => o.ResizeHeight(offsetY));
 
@@ -1413,7 +1781,8 @@ namespace FNAEngine2D
             _size.X += offsetX;
             _size.Y += offsetY;
 
-            OnResized();
+            if (_loaded)
+                OnResized();
 
             ForEachChild(o => o.Resize(offsetX, offsetY));
 
@@ -1548,7 +1917,7 @@ namespace FNAEngine2D
             return container.GetCollision(collider, types);
         }
 
-        
+
         /// <summary>
         /// Permet d'obtenir la première collision
         /// </summary>
@@ -1583,7 +1952,13 @@ namespace FNAEngine2D
         /// </summary>
         public virtual void Hide()
         {
-            _visible = false;
+            if (_visibleSelf)
+            {
+                _visibleSelf = false;
+
+                if (_visibleParent)
+                    DoOnHided();
+            }
         }
 
         /// <summary>
@@ -1591,7 +1966,13 @@ namespace FNAEngine2D
         /// </summary>
         public virtual void Show()
         {
-            _visible = true;
+            if (!_visibleSelf)
+            {
+                _visibleSelf = true;
+
+                if (_visibleParent)
+                    DoOnShowed();
+            }
         }
 
 

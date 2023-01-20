@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +17,18 @@ namespace FNAEngine2D
         /// <summary>
         /// Indicate if the component is present in the active list
         /// </summary>
-        private bool _presentInActiveList = false;
+        private bool _presentInActiveUpdateList = false;
+        private bool _presentInActiveDrawList = false;
+
+        /// <summary>
+        /// Updatable object if the component implements IUpdate
+        /// </summary>
+        private IUpdate _updateable;
+
+        /// <summary>
+        /// Drawable object if the component implements IDraw
+        /// </summary>
+        private IDraw _drawable;
 
         /// <summary>
         /// GameObject
@@ -61,6 +73,8 @@ namespace FNAEngine2D
         /// </summary>
         public Component()
         {
+            _updateable = this as IUpdate;
+            _drawable = this as IDraw;
         }
 
         ///// <summary>
@@ -124,7 +138,10 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnAdded()
         {
-            AddActiveComponent();
+            
+            AddActiveUpdateable();
+            AddActiveDrawable();
+            
 
             OnAdded();
         }
@@ -142,7 +159,8 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnRemoved()
         {
-            RemoveActiveComponent();
+            RemoveActiveUpdateable();
+            RemoveActiveDrawable();
 
             OnRemoved();
         }
@@ -200,7 +218,9 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnEnabled()
         {
-            AddActiveComponent();
+            AddActiveUpdateable();
+            AddActiveDrawable();
+
             OnEnabled();
         }
 
@@ -217,35 +237,152 @@ namespace FNAEngine2D
         /// </summary>
         internal void DoOnDisabled()
         {
-            RemoveActiveComponent();
+            RemoveActiveUpdateable();
+            RemoveActiveDrawable();
+
             OnDisabled();
+        }
+
+        /// <summary>
+        /// Called when the game object is Paused
+        /// </summary>
+        protected virtual void OnPaused()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnPaused
+        /// </summary>
+        internal void DoOnPaused()
+        {
+            RemoveActiveUpdateable();
+            OnPaused();
+        }
+
+        /// <summary>
+        /// Called when the game object is Unpaused
+        /// </summary>
+        protected virtual void OnUnpaused()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnUnpaused
+        /// </summary>
+        internal void DoOnUnpaused()
+        {
+            AddActiveUpdateable();
+            OnUnpaused();
+        }
+
+
+        /// <summary>
+        /// Called when the game object is Showed
+        /// </summary>
+        protected virtual void OnShowed()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnShowed
+        /// </summary>
+        internal void DoOnShowed()
+        {
+            AddActiveDrawable();
+
+            OnShowed();
+        }
+
+        /// <summary>
+        /// Called when the game object is Hided
+        /// </summary>
+        protected virtual void OnHided()
+        {
+
+        }
+
+        /// <summary>
+        /// Execute the OnHided
+        /// </summary>
+        internal void DoOnHided()
+        {
+            RemoveActiveDrawable();
+
+            OnHided();
+        }
+
+
+        /// <summary>
+        /// Add the current component to the active list
+        /// </summary>
+        private void AddActiveUpdateable()
+        {
+            if (_updateable == null)
+                return;
+
+            if (!_presentInActiveUpdateList)
+            {
+                if (this.GameObject.Enabled && !this.GameObject.Paused)
+                {
+                    this.GameObject.Game.AddUpdateable(_updateable);
+                    _presentInActiveUpdateList = true;
+                }
+            }
+
         }
 
         /// <summary>
         /// Add the current component to the active list
         /// </summary>
-        private void AddActiveComponent()
+        private void AddActiveDrawable()
         {
-            if (!_presentInActiveList)
-            {
-                this.GameObject.Game.AddActiveComponent(this);
+            if (_drawable == null)
+                return;
 
-                _presentInActiveList = true;
+            if (!_presentInActiveDrawList)
+            {
+                if (this.GameObject.Enabled && this.GameObject.Visible)
+                {
+                    this.GameObject.Game.AddDrawable(_drawable);
+                    _presentInActiveDrawList = true;
+                }
             }
         }
 
         /// <summary>
         /// Remove the current component from the active list
         /// </summary>
-        private void RemoveActiveComponent()
+        private void RemoveActiveUpdateable()
         {
-            if (_presentInActiveList)
-            {
-                this.GameObject.Game.RemoveActiveComponent(this);
+            if (_updateable == null)
+                return;
 
-                _presentInActiveList = false;
+            if (_presentInActiveUpdateList)
+            {
+                this.GameObject.Game.RemoveUpdateable(_updateable);
+                _presentInActiveUpdateList = false;
             }
         }
+
+        /// <summary>
+        /// Remove the current component from the active list
+        /// </summary>
+        private void RemoveActiveDrawable()
+        {
+            if (_drawable == null)
+                return;
+
+            if (_presentInActiveDrawList)
+            {
+                this.GameObject.Game.RemoveDrawable(_drawable);
+                _presentInActiveDrawList = false;
+            }
+        }
+
+
 
 
         /// <summary>

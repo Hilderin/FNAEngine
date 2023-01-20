@@ -98,7 +98,7 @@ namespace FNAEngine2D.Particules
                 _emissionData.Texture = GetContent<Texture2D>(ContentManager.TEXTURE_PARTICULE);
 
             int nbParticules = GameMath.RandomInt(_emissionData.EmitCountMin, _emissionData.EmitCountMax);
-            for (int i = 0; i <= nbParticules; i++)
+            for (int i = 0; i < nbParticules; i++)
             {
                 EmitParticule();
             }
@@ -118,7 +118,7 @@ namespace FNAEngine2D.Particules
 
             //Add in the root object so the particule does not move with the emitter and if we disable the emitter
             //the particules continue to update, etc...
-            this.RootGameObject.Add(new Particule(this.Location, particuleData, _emissionData));
+            this.Game.RootGameObject.Add(new Particule(this.Location, particuleData, _emissionData));
         }
 
     }

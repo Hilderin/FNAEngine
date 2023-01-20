@@ -62,6 +62,14 @@ namespace FNAEngine2D.Particules
         }
 
         /// <summary>
+        /// Loading
+        /// </summary>
+        protected override void Load()
+        {
+
+        }
+
+        /// <summary>
         /// Update the particule
         /// </summary>
         public void Update()

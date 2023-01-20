@@ -118,12 +118,22 @@ namespace FNAEngine2D
         /// <summary>
         /// Updatables elements
         /// </summary>
-        internal List<IUpdate> _updateables = new List<IUpdate>();
+        private List<IUpdate> _updateables = new List<IUpdate>();
+
+        /// <summary>
+        /// Updatables elements to remove
+        /// </summary>
+        private List<IUpdate> _updateablesDestroyed = new List<IUpdate>();
 
         /// <summary>
         /// Drawables elements
         /// </summary>
-        internal List<IDraw> _drawables = new List<IDraw>();
+        private List<IDraw> _drawables = new List<IDraw>();
+
+        /// <summary>
+        /// Drawables elements to remove
+        /// </summary>
+        private List<IDraw> _drawablesDestroyed = new List<IDraw>();
 
 
 
@@ -181,37 +191,41 @@ namespace FNAEngine2D
             get { return _rootGameObject; }
             set
             {
-                if (_rootGameObject != value)
-                {
-                    //Removing the old one, in case we are changing the root game object...
-                    if (_rootGameObject != null)
-                    {
-                        _rootGameObject.ForEachChild(o => o.DoOnRemoved());
-                        _rootGameObject.DoOnRemoved();
-                    }
+                if (_loadContentDone)
+                    throw new InvalidOperationException("Impossible to change the root game object once the game has been started.");
 
-                    _rootGameObject = value;
+                _rootGameObject = value;
 
-                    //LoadContent alread done, we will do it ourself here...
-                    if (_loadContentDone)
-                    {
-                        if (!_rootGameObject._loaded)
-                        {
-                            _rootGameObject._addAuthorized = true;
-                            _rootGameObject.DoLoad();
-                            _rootGameObject.DoOnAdded(false);
-                        }
-                        else
-                        {
-                            //Already loaded so we will reexecute all the OnAdded
-                            _rootGameObject.DoOnAdded(true);
-                        }
-                    }
+                //if (_rootGameObject != value)
+                //{
+                //    //Removing the old one, in case we are changing the root game object...
+                //    if (_rootGameObject != null)
+                //    {
+                //        _rootGameObject.ForEachChild(o => o.DoOnRemoved());
+                //        _rootGameObject.DoOnRemoved();
+                //    }
 
-                    //This game objet will be the root
-                    value.RootGameObject = value;
+                //    _rootGameObject = value;
 
-                }
+                //    //LoadContent alread done, we will do it ourself here...
+                //    if (_loadContentDone)
+                //    {
+                //        if (!_rootGameObject._loaded)
+                //        {
+                //            _rootGameObject.DoLoad();
+                //            _rootGameObject.DoOnAdded(false);
+                //        }
+                //        else
+                //        {
+                //            //Already loaded so we will reexecute all the OnAdded
+                //            _rootGameObject.DoOnAdded(true);
+                //        }
+                //    }
+
+                //    //This game objet will be the root
+                //    value.RootGameObject = value;
+
+                //}
 
             }
         }
@@ -541,6 +555,41 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Run for unit test only 
+        /// </summary>
+        public void RunUnitTestOneFrame()
+        {  
+            do
+            {
+                RunOneFrame();
+
+                //We will wait if the loading has not been done, we needs to wait for the graphicdevice to be created.
+                if (_loadContentDone)
+                    return;
+
+                System.Threading.Thread.Sleep(10);
+            }
+            while (true);
+        }
+
+
+        /// <summary>
+        /// Get the current updates
+        /// </summary>
+        public IUpdate[] GetUpdateables()
+        {
+            return _updateables.ToArray();
+        }
+
+        /// <summary>
+        /// Get the current drawables
+        /// </summary>
+        public IDraw[] GetDrawables()
+        {
+            return _drawables.ToArray();
+        }
+
+        /// <summary>
         /// Tick the server
         /// </summary>
         private void TickServer()
@@ -611,7 +660,6 @@ namespace FNAEngine2D
             {
                 //Be sure to have a game object in here...
                 _rootGameObject.Game = this;
-                _rootGameObject._addAuthorized = true;
                 _rootGameObject.DoLoad();
                 _rootGameObject.DoOnAdded(false);
             }
@@ -700,6 +748,17 @@ namespace FNAEngine2D
             else
             {
                 //Call du update du current game...
+
+                //We remove updatables beforce the loop and not when in the loop to be sure that the _updateables list
+                //will not shrink on object destruction in the .Update()
+                if (_updateablesDestroyed.Count > 0)
+                {
+                    for (int index = 0; index < _updateablesDestroyed.Count; index++)
+                        _updateables.Remove(_updateablesDestroyed[index]);
+                    _updateablesDestroyed.Clear();
+                }
+
+                //Updates...
                 for (int index = 0; index < _updateables.Count; index++)
                     _updateables[index].Update();
             }
@@ -723,6 +782,14 @@ namespace FNAEngine2D
         {
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
             _graphicsDevice.Clear(this.BackgroundColor);
+
+            //Removing drawables...
+            if (_drawablesDestroyed.Count > 0)
+            {
+                for (int index = 0; index < _drawablesDestroyed.Count; index++)
+                    _drawables.Remove(_drawablesDestroyed[index]);
+                _drawablesDestroyed.Clear();
+            }
 
             //Render...
             if (_rootGameObject != null && _rootGameObject.Visible)
@@ -801,31 +868,35 @@ namespace FNAEngine2D
         /// <summary>
         /// Add the current component to the active list
         /// </summary>
-        internal void AddActiveComponent(object obj)
+        internal void AddUpdateable(IUpdate updateable)
         {
-            IUpdate updateable = obj as IUpdate;
-            if (updateable != null)
-                _updateables.Add(updateable);
+            _updateables.Add(updateable);
+        }
 
-            IDraw drawable = obj as IDraw;
-            if (drawable != null)
-                _drawables.Add(drawable);
-
+        /// <summary>
+        /// Add the current component to the active list
+        /// </summary>
+        internal void AddDrawable(IDraw drawable)
+        {
+            _drawables.Add(drawable);
         }
 
         /// <summary>
         /// Remove the current component from the active list
         /// </summary>
-        internal void RemoveActiveComponent(object obj)
+        internal void RemoveUpdateable(IUpdate updateable)
         {
-            IUpdate updateable = obj as IUpdate;
-            if (updateable != null)
-                _updateables.Remove(updateable);
+            //_updateables.Remove(updateable);
+            _updateablesDestroyed.Add(updateable);
+        }
 
-            IDraw drawable = obj as IDraw;
-            if (drawable != null)
-                _drawables.Remove(drawable);
-
+        /// <summary>
+        /// Remove the current component from the active list
+        /// </summary>
+        internal void RemoveDrawable(IDraw drawable)
+        {
+            //_drawables.Remove(drawable);
+            _drawablesDestroyed.Add(drawable);
         }
 
 

@@ -67,6 +67,7 @@
     <Compile Include="Asperite\PixelFormats\RGBAPixel.cs" />
     <Compile Include="Collisions\ColliderRectangle.cs" />
     <Compile Include="Collisions\ColliderCircle.cs" />
+    <Compile Include="EmptyGameObject.cs" />
     <Compile Include="Renderers\LineRenderer.cs" />
     <Compile Include="Renderers\MultiTextureRenderer.cs" />
     <Compile Include="Renderers\TextureRenderer.cs" />
