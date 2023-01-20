@@ -38,6 +38,13 @@ namespace FNAEngine2D
         public GameObject GameObject { get; set; }
 
         /// <summary>
+        /// LayerMask from the game object
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public Layers LayerMask { get { return this.GameObject.LayerMask; } }
+
+        /// <summary>
         /// Drawing context
         /// </summary>
         [Browsable(false)]

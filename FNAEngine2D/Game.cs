@@ -860,7 +860,11 @@ namespace FNAEngine2D
             //Drawing children...
             //_rootGameObject.DoDraw();
             for (int index = 0; index < _drawables.Count; index++)
-                _drawables[index].Draw();
+            {
+                //Check if object must be renderer by the camera...
+                if ((camera.LayerMask & _drawables[index].LayerMask) != 0)
+                    _drawables[index].Draw();
+            }
 
             _drawingContext.End();
         }

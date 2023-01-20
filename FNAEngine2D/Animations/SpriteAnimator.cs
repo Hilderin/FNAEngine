@@ -295,6 +295,9 @@ namespace FNAEngine2D.Animations
                 case StartPosition.CenterBottom:
                     _location = VectorHelper.CenterBottom(this.GameObject.Location, this.GameObject.Size, _width, _height);
                     break;
+                case StartPosition.CenterMiddle:
+                    _location = VectorHelper.CenterMiddle(this.GameObject.Location, this.GameObject.Size, _width, _height);
+                    break;
                 default:
                     //Top left...
                     _location = this.GameObject.Location;
@@ -318,13 +321,12 @@ namespace FNAEngine2D.Animations
         /// </summary>
         private void UpdateInternal(float elapsedGameTimeMilliseconds)
         {
-            if (_stopped)
+            if (_stopped || _spriteAnimation == null)
                 return;
 
             //Little validations...
             SpriteAnimation spriteAnimation = _spriteAnimation.Data;
            
-
             if (spriteAnimation == null || spriteAnimation.Frames.Length == 0 || spriteAnimation.Sprite == null || spriteAnimation.Sprite.Texture == null)
             {
                 _currentFrame = -1;

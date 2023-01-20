@@ -8,6 +8,14 @@ namespace FNAEngine2D
 {
     public interface IDraw
     {
+        /// <summary>
+        /// Layermask to determine the layers on which the IDraw should be drew
+        /// </summary>
+        Layers LayerMask { get; }
+
+        /// <summary>
+        /// Do the drawing
+        /// </summary>
         void Draw();
     }
 }

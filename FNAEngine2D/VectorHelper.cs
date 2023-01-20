@@ -57,6 +57,14 @@ namespace FNAEngine2D
         }
 
         /// <summary>
+        /// Get the location centered and middle with the parent
+        /// </summary>
+        public static Vector2 CenterMiddle(Vector2 parentLocation, Vector2 parentSize, float width, float height)
+        {
+            return new Vector2(parentLocation.X + (parentSize.X / 2) - (width / 2), parentLocation.Y + (parentSize.Y / 2) - (height / 2));
+        }
+
+        /// <summary>
         /// Permet de faire une rotation sur un point d'origine
         /// </summary>
         public static Vector2 Rotate(Vector2 toRotate, Vector2 origin, float radians)

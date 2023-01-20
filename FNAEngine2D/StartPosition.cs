@@ -12,6 +12,8 @@ namespace FNAEngine2D
     public enum StartPosition
     {
         TopLeft,
-        CenterBottom
+        CenterMiddle,
+        CenterBottom,
+        
     }
 }
