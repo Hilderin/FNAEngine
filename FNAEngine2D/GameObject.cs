@@ -238,12 +238,12 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Indicate if GameObject itself is enabled. If disable, GameObject is not updated or drew.
+        /// Indicate if GameObject itself is enabled. If disable, GameObject is not updated or drawn.
         /// When disabling a GameObject, all children will be disabled but still EnabledSelf true.
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(true)]
-        [Description("Indicate if GameObject is enabled. If disable, GameObject is not updated or drew.")]
+        [Description("Indicate if GameObject is enabled. If disable, GameObject is not updated or drawn.")]
         public bool EnabledSelf
         {
             get { return _enabledSelf; }
@@ -266,7 +266,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Indicate if GameObject is enabled globally (selft and parents). If disable, GameObject is not updated or drew.
+        /// Indicate if GameObject is enabled globally (selft and parents). If disable, GameObject is not updated or drawn.
         /// </summary>
         [Browsable(false)]
         [JsonIgnore]
@@ -318,7 +318,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(true)]
-        [Description("Indicate if GameObject is visible. If not visible, GameObject is not drew.")]
+        [Description("Indicate if GameObject is visible. If not visible, GameObject is not drawn.")]
         public bool VisibleSelf
         {
             get { return _visibleSelf; }
@@ -335,7 +335,7 @@ namespace FNAEngine2D
         }
 
         /// <summary>
-        /// Indicate if GameObject is visible globally (selft and parents). If not visible, GameObject is not drew but is updated.
+        /// Indicate if GameObject is visible globally (selft and parents). If not visible, GameObject is not drawn but is updated.
         /// When disabling a GameObject, all children will be disabled but still EnabledSelf true.
         /// </summary>
         [Browsable(false)]
@@ -531,7 +531,7 @@ namespace FNAEngine2D
         /// </summary>
         [Category("Behavior")]
         [DefaultValue(Layers.Layer1)]
-        [Description("Layer on which the GameObject should be drew.")]
+        [Description("Layer on which the GameObject should be drawn.")]
         public Layers LayerMask
         {
             get { return _layerMask; }

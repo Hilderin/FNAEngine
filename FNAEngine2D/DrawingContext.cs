@@ -84,7 +84,7 @@ namespace FNAEngine2D
                 return;
 
 
-            //Add to the queue of be drew...
+            //Add to the queue of be drawn...
             _drawIndex++;
             if (_drawIndex == _bufferLength)
             {
@@ -131,7 +131,7 @@ namespace FNAEngine2D
                     return;
             }
 
-            //Add to the queue of be drew...
+            //Add to the queue of be drawn...
             _drawIndex++;
             if (_drawIndex == _bufferLength)
             {
@@ -168,7 +168,7 @@ namespace FNAEngine2D
             if (!_camera.IsDisplayed(position, text.Width, text.Height))
                 return;
 
-            //Add to the queue of be drew...
+            //Add to the queue of be drawn...
             _drawIndex++;
             if (_drawIndex == _bufferLength)
             {
