@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace FNAEngine2D.Network.Commands
 {
-    public class SpawnObjectCommand: IClientCommand
+    public class SpawnObjectCommand: ClientCommand
     {
         ///// <summary>
         ///// Content data for the game object to spawn
@@ -18,7 +18,7 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Serialize
         /// </summary>
-        public void Serialize(BinWriter writer)
+        public override void Serialize(BinWriter writer)
         {
             writer.Write(NetworkObjectHelper.GetObjectNumber(this.GameObject.GetType()));
             writer.Write(this.GameObject.ID);
@@ -31,7 +31,7 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Deserialize
         /// </summary>
-        public void Deserialize(BinReader reader)
+        public override void Deserialize(BinReader reader)
         {
             ushort objectNumber = reader.ReadUInt16();
 
@@ -48,7 +48,7 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Execute the command
         /// </summary>
-        public virtual void ExecuteClient(NetworkClient client)
+        public override void ExecuteClient(NetworkClient client)
         {
             //client.AddGameObject((NetworkGameObject)client.GameContentManager.CreateGameObject(this.Content));
             client.AddGameObject(this.GameObject);

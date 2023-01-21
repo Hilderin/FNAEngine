@@ -80,6 +80,7 @@ namespace FNAEngine2D.GameObjects
         protected override void Load()
         {
             AddComponent(_textureRenderer);
+
         }
 
     }

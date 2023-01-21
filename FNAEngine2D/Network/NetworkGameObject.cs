@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
+using System.Runtime.Remoting.Channels;
 
 namespace FNAEngine2D.Network
 {
@@ -12,12 +13,12 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// NetworkClient object
         /// </summary>
-        private NetworkClient _client = NetworkClient.Current;
+        internal NetworkClient _client = NetworkClient.Current;
 
         /// <summary>
         /// NetworkServer object
         /// </summary>
-        private NetworkServer _server = NetworkServer.Current;
+        internal NetworkServer _server = NetworkServer.Current;
 
 
         /// <summary>
@@ -25,6 +26,16 @@ namespace FNAEngine2D.Network
         /// </summary>
         [Browsable(false)]
         public Guid ID { get; set; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Indicate if we are not in a multiplayer game
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public bool IsStandalone
+        {
+            get { return _client == null && _server == null; }
+        }
 
         /// <summary>
         /// Indicate if we are the client
@@ -65,25 +76,25 @@ namespace FNAEngine2D.Network
         [JsonIgnore]
         public bool IsLocalPlayer { get; set; }
 
-        /// <summary>
-        /// NetworkClient object
-        /// </summary>
-        [Browsable(false)]
-        [JsonIgnore]
-        public NetworkClient Client
-        {
-            get { return _client; }
-        }
+        ///// <summary>
+        ///// NetworkClient object
+        ///// </summary>
+        //[Browsable(false)]
+        //[JsonIgnore]
+        //public NetworkClient Client
+        //{
+        //    get { return _client; }
+        //}
 
-        /// <summary>
-        /// NetworkServer object
-        /// </summary>
-        [Browsable(false)]
-        [JsonIgnore]
-        public NetworkServer Server
-        {
-            get { return _server; }
-        }
+        ///// <summary>
+        ///// NetworkServer object
+        ///// </summary>
+        //[Browsable(false)]
+        //[JsonIgnore]
+        //public NetworkServer Server
+        //{
+        //    get { return _server; }
+        //}
 
         ///// <summary>
         ///// Override of the DoDraw
@@ -106,6 +117,73 @@ namespace FNAEngine2D.Network
             
         }
 
+
+        /// <summary>
+        /// Send a command to the server
+        /// </summary>
+        public void SendCommandServer(IServerCommand command)
+        {
+            Logguer.Info("Command sent to server: " + command.ToString());
+
+            if (_client != null)
+                _client.SendCommand(command);
+            else
+                command.ExecuteServer(new ServerCommandArgs(Guid.Empty, this));
+
+        }
+
+
+        /// <summary>
+        /// Send a command to the client
+        /// </summary>
+        public void SendCommandClient(ClientCommand command, Guid connectionID)
+        {
+            Logguer.Info("Command sent to client: " + command.ToString());
+
+            if (_server != null)
+                _server.SendCommand(command, connectionID);
+            else if (_client != null)
+                throw new InvalidOperationException("Cannot send command to client from the client.");
+
+        }
+
+        /// <summary>
+        /// Spawn a game object on the server and on all clients
+        /// </summary>
+        public void SpawnObject(NetworkGameObject gameObject)
+        {
+            if (_server != null)
+                _server.SpawnObject(gameObject);
+            else
+                Add(gameObject);
+        }
+
+        /// <summary>
+        /// Spawn a game object on the server and on all clients
+        /// </summary>
+        public void SpawnObject(NetworkGameObject gameObject, Guid localPlayerConnectionID)
+        {
+            if (_server != null)
+                _server.SpawnObject(gameObject, localPlayerConnectionID);
+            else
+                Add(gameObject);
+        }
+
+        /// <summary>
+        /// Send a command to all clients
+        /// </summary>
+        public void SendCommandToAllClients(IClientCommand command)
+        {
+            if (_server != null)
+                //We are the server!
+                _server.SendCommandToAllClients(command);
+            else if (_client != null)
+                //We are the client...
+                throw new InvalidOperationException("Cannot send command to all clients from client side.");
+
+            //In standalone mode, we do nothing!
+
+        }
 
         /// <summary>
         /// Destruction of an object

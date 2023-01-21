@@ -75,6 +75,12 @@ namespace FNAEngine2D.Renderers
             {
                 _texture = GetContent<Texture2D>(this.TextureName);
 
+                if (this.GameObject.Width == 0 && this.GameObject.Height == 0)
+                {
+                    this.GameObject.Width = _texture.Data.Width;
+                    this.GameObject.Height = _texture.Data.Height;
+                }
+
                 RecalculateScale();
             }
         }

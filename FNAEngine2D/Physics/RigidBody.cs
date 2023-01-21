@@ -94,6 +94,8 @@ namespace FNAEngine2D.Physics
         /// </summary>
         public RigidBody()
         {
+            //Needs to be done before anything else
+            this.UpdateOrder = -1000000;
         }
 
         /// <summary>
@@ -147,7 +149,7 @@ namespace FNAEngine2D.Physics
                 if (nextPosition != this.GameObject.Location)
                 {
                     //if(_networkGameObject != null && _networkGameObject.IsClient && _networkGameObject.IsLocalPlayer)
-                    //    Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
+                        Console.WriteLine(this.GameObject + " movement: " + nextPosition + ", delta: " + (nextPosition - this.GameObject.Location));
                     this.GameObject.TranslateTo(nextPosition);
                 }
             }
@@ -192,12 +194,12 @@ namespace FNAEngine2D.Physics
                     if (_networkGameObject.IsServer)
                     {
                         //Sending movement to all clients...
-                        _networkGameObject.Server.SendCommandToAllClients(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
+                        _networkGameObject.SendCommandToAllClients(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
                     }
-                    else if (_networkGameObject.IsLocalPlayer)
+                    else if (_networkGameObject.IsLocalPlayer && _networkGameObject.IsClient)
                     {
                         //Sending movement to server...
-                        _networkGameObject.Client.SendCommand(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
+                        _networkGameObject.SendCommandServer(new MovementCommand() { ID = _networkGameObject.ID, Movement = movement, StartPosition = this.GameObject.Location });
                     }
                 }
 

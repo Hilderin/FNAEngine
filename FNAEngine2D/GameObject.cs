@@ -680,7 +680,12 @@ namespace FNAEngine2D
         [JsonIgnore]
         public float NbPixelPerMeter { get { return _game.NbPixelPerMeter; } }
 
-
+        /// <summary>
+        /// UpdateOrder when this game object is an IUpdate
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public float UpdateOrder { get; set; }
 
         /// <summary>
         /// Empty constructor

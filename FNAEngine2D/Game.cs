@@ -59,6 +59,11 @@ namespace FNAEngine2D
         private Stopwatch _internalTimer = Stopwatch.StartNew();
 
         /// <summary>
+        /// Indicate if we are drawing
+        /// </summary>
+        private bool _inDrawing = false;
+
+        /// <summary>
         /// Real size of the screen
         /// </summary>
         private Point _screenSize;
@@ -121,6 +126,11 @@ namespace FNAEngine2D
         private List<IUpdate> _updateables = new List<IUpdate>();
 
         /// <summary>
+        /// Updatables elements to add
+        /// </summary>
+        private List<IUpdate> _updateablesAdded = new List<IUpdate>();
+
+        /// <summary>
         /// Updatables elements to remove
         /// </summary>
         private List<IUpdate> _updateablesDestroyed = new List<IUpdate>();
@@ -129,13 +139,6 @@ namespace FNAEngine2D
         /// Drawables elements
         /// </summary>
         private List<IDraw> _drawables = new List<IDraw>();
-
-        /// <summary>
-        /// Drawables elements to remove
-        /// </summary>
-        private List<IDraw> _drawablesDestroyed = new List<IDraw>();
-
-
 
         /// <summary>
         /// Singleton instance
@@ -749,6 +752,8 @@ namespace FNAEngine2D
             {
                 //Call du update du current game...
 
+                //--------
+                //Removing.....
                 //We remove updatables beforce the loop and not when in the loop to be sure that the _updateables list
                 //will not shrink on object destruction in the .Update()
                 if (_updateablesDestroyed.Count > 0)
@@ -758,9 +763,31 @@ namespace FNAEngine2D
                     _updateablesDestroyed.Clear();
                 }
 
-                //Updates...
+                //--------
+                //Normal updates...
                 for (int index = 0; index < _updateables.Count; index++)
                     _updateables[index].Update();
+
+                //--------
+                //Sometimes when updating, some objects are added, we will Update them, otherwise for one frame they will
+                //never been updated before drawing which can be bad.
+                if (_updateablesAdded.Count > 0)
+                {
+                    int nextIndex = 0;
+                    while (nextIndex < _updateablesAdded.Count)
+                    {
+                        
+                        for (int index = nextIndex; index < _updateablesAdded.Count; index++)
+                        {
+                            InsertUpdateable(_updateablesAdded[index]);
+                            _updateablesAdded[index].Update();
+                        }
+
+                        nextIndex = _updateablesAdded.Count;
+
+                    }
+                    _updateablesAdded.Clear();
+                }
             }
         }
 
@@ -780,22 +807,25 @@ namespace FNAEngine2D
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
+            _inDrawing = true;
+
             //This will clear what's on the screen each frame, if we don't clear the screen will look like a mess:
             _graphicsDevice.Clear(this.BackgroundColor);
 
-            //Removing drawables...
-            if (_drawablesDestroyed.Count > 0)
-            {
-                for (int index = 0; index < _drawablesDestroyed.Count; index++)
-                    _drawables.Remove(_drawablesDestroyed[index]);
-                _drawablesDestroyed.Clear();
-            }
+            ////Removing drawables...
+            //if (_drawablesDestroyed.Count > 0)
+            //{
+            //    for (int index = 0; index < _drawablesDestroyed.Count; index++)
+            //        _drawables.Remove(_drawablesDestroyed[index]);
+            //    _drawablesDestroyed.Clear();
+            //}
 
             //Render...
             if (_rootGameObject != null && _rootGameObject.Visible)
             {
 
                 //Starting up sprite batches...
+                //Console.WriteLine("camera: " + _mainCamera.Location + " " + _mainCamera.ViewLocation);
                 RenderCamera(_mainCamera);
 
 
@@ -821,6 +851,8 @@ namespace FNAEngine2D
             //Each tick in the DateTime.Ticks value represents one 100-nanosecond interval. Each tick in the ElapsedTicks value represents the time interval equal to 1 second divided by the Frequency.
             _gameTimeService.LastFrameTimeMilliseconds = ((decimal)_internalTimer.ElapsedTicks / Stopwatch.Frequency) * 1000;
             _gameTimeService.LastFrameDrawTimeMilliseconds = _gameTimeService.LastFrameTimeMilliseconds - _gameTimeService.LastFrameUpdateTimeMilliseconds;
+
+            _inDrawing = false;
 
         }
 
@@ -875,8 +907,41 @@ namespace FNAEngine2D
         internal void AddUpdateable(IUpdate updateable)
         {
 
-            if (_updateables.Contains(updateable))
+            if (_updateablesDestroyed.Contains(updateable))
+            {
+                _updateablesDestroyed.Remove(updateable);
                 return;
+            }
+
+            _updateablesAdded.Add(updateable);
+
+            ////We will insert it at the right place based on UpdateOrder...
+            //for (int i = 0; i < _updateables.Count; i += 1)
+            //{
+            //    if (updateable.UpdateOrder < _updateables[i].UpdateOrder)
+            //    {
+            //        _updateables.Insert(i, updateable);
+            //        return;
+            //    }
+            //}
+
+            //_updateables.Add(updateable);
+        }
+
+        /// <summary>
+        /// Add the current component to the active list
+        /// </summary>
+        internal void InsertUpdateable(IUpdate updateable)
+        {
+            //We will insert it at the right place based on UpdateOrder...
+            for (int i = 0; i < _updateables.Count; i += 1)
+            {
+                if (updateable.UpdateOrder < _updateables[i].UpdateOrder)
+                {
+                    _updateables.Insert(i, updateable);
+                    return;
+                }
+            }
 
             _updateables.Add(updateable);
         }
@@ -886,8 +951,11 @@ namespace FNAEngine2D
         /// </summary>
         internal void AddDrawable(IDraw drawable)
         {
-            if (_drawablesDestroyed.Contains(drawable))
-                return;
+            if (_inDrawing)
+                throw new InvalidOperationException("Cannot modify drawables during drawing.");
+
+            //if (_drawablesDestroyed.Contains(drawable))
+            //    return;
 
             _drawables.Add(drawable);
         }
@@ -906,8 +974,10 @@ namespace FNAEngine2D
         /// </summary>
         internal void RemoveDrawable(IDraw drawable)
         {
-            //_drawables.Remove(drawable);
-            _drawablesDestroyed.Add(drawable);
+            if (_inDrawing)
+                throw new InvalidOperationException("Cannot modify drawables during drawing.");
+
+            _drawables.Remove(drawable);
         }
 
 

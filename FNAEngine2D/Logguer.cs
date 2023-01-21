@@ -48,6 +48,14 @@ namespace FNAEngine2D
         /// <summary>
         /// Log an error
         /// </summary>
+        public static void Error(string detail)
+        {
+            Console.WriteLine(GetPrefixLog() + " " + detail);
+        }
+
+        /// <summary>
+        /// Log an error
+        /// </summary>
         public static void Error(string detail, Exception ex)
         {
             Console.WriteLine(GetPrefixLog() + " " + detail + " - " + ex.ToString());

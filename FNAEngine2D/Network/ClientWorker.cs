@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.CodeDom;
 
 namespace FNAEngine2D.Network
 {
@@ -29,7 +30,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Communication channel
         /// </summary>
-        private CommunicationChannel _clientChannel;
+        private ICommunicationChannel _clientChannel;
 
         /// <summary>
         /// Dictionary of the game objects sent to the client
@@ -47,9 +48,19 @@ namespace FNAEngine2D.Network
         private Queue<NetworkGameObject> _objectsToRemove = new Queue<NetworkGameObject>();
 
         /// <summary>
+        /// Default server command args that we will reuse
+        /// </summary>
+        private ServerCommandArgs _serverCommandArgs;
+
+        /// <summary>
         /// GameLoop
         /// </summary>
         private GameLoop _gameLoop;
+
+        /// <summary>
+        /// Connection ID
+        /// </summary>
+        public Guid ConnectionID { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Id du client
@@ -84,15 +95,17 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Channel of communication
         /// </summary>
-        public CommunicationChannel Channel { get { return _clientChannel; } }
+        public ICommunicationChannel Channel { get { return _clientChannel; } }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public ClientWorker(CommunicationChannel clientChannel, NetworkServer server)
+        public ClientWorker(ICommunicationChannel clientChannel, NetworkServer server)
         {
             _clientChannel = clientChannel;
             _clientChannel.OnError = ex => LogError("SocketError", ex);
+
+            _serverCommandArgs = new ServerCommandArgs(this.ConnectionID);
 
             _server = server;
             _gameLoop = new GameLoop(Update);
@@ -174,6 +187,9 @@ namespace FNAEngine2D.Network
 
                 this.IsReady = true;
 
+                //Sending the Connection ID to the client...
+                SendCommand(new NewConnectionCommand() { ConnectionID = this.ConnectionID });
+
                 //Managing the client...                
                 _gameLoop.RunLoop();
 
@@ -199,12 +215,31 @@ namespace FNAEngine2D.Network
             //Process input command...
             while (_clientChannel.Available)
             {
-                IServerCommand cmd = _clientChannel.Read<IServerCommand>();
+                ServerCommand cmd = _clientChannel.Read<ServerCommand>();
                 if (cmd != null)
                 {
                     try
                     {
-                        cmd.ExecuteServer(this);
+                        NetworkGameObject gameObject;
+                        if (cmd.ID != Guid.Empty)
+                        {
+                            gameObject = (NetworkGameObject)_server.GameObject.Game.RootGameObject.Find(o => o is NetworkGameObject && ((NetworkGameObject)o).ID == cmd.ID);
+                            if (gameObject == null)
+                            {
+                                LogError("GameObject not found: " + cmd.ID);
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            //Directly on the server..
+                            gameObject = (NetworkGameObject)_server.GameObject;
+                        }
+
+
+                        _serverCommandArgs.GameObject = gameObject;
+                        cmd.ExecuteServer(_serverCommandArgs);
+
                         LogInfo("Command executed: " + cmd.ToString());
                     }
                     catch (Exception ex)
@@ -256,7 +291,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Get the command for a gameobject
         /// </summary>
-        private IClientCommand GetSpawnCommand(NetworkGameObject gameObject, bool isLocalPlayer)
+        private ClientCommand GetSpawnCommand(NetworkGameObject gameObject, bool isLocalPlayer)
         {
             if (isLocalPlayer)
                 return new SpawnPlayerObjectCommand() { GameObject = gameObject };
@@ -376,6 +411,14 @@ namespace FNAEngine2D.Network
         public void LogInfo(string info)
         {
             Logguer.Info(GetPrefixLog() + " " + info);
+        }
+
+        /// <summary>
+        /// Log error
+        /// </summary>
+        public void LogError(string detail)
+        {
+            Logguer.Error(GetPrefixLog() + " ERROR: " + detail);
         }
 
         /// <summary>

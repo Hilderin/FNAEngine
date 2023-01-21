@@ -137,14 +137,14 @@ namespace FNAEngine2D.Tests.Communication
 
     }
 
-    public class TestCommandSocket: ICommand
+    public class TestCommandSocket: ClientCommand
     {
         public string Data { get; set; }
 
         /// <summary>
         /// Serialize
         /// </summary>
-        public void Serialize(BinWriter writer)
+        public override void Serialize(BinWriter writer)
         {
             writer.Write(Data);
         }
@@ -152,9 +152,14 @@ namespace FNAEngine2D.Tests.Communication
         /// <summary>
         /// Deserialize
         /// </summary>
-        public void Deserialize(BinReader reader)
+        public override void Deserialize(BinReader reader)
         {
             this.Data = reader.ReadString();
+        }
+
+        public override void ExecuteClient(NetworkClient client)
+        {
+            
         }
     }
 }

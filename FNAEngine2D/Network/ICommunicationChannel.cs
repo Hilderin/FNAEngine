@@ -22,7 +22,7 @@ namespace FNAEngine2D.Network
 
 
 
-    public interface CommunicationChannel
+    public interface ICommunicationChannel
     {
         /// <summary>
         /// Indicate the state of the channel

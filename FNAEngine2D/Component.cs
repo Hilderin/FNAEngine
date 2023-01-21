@@ -76,6 +76,13 @@ namespace FNAEngine2D
         public float NbPixelPerMeter { get { return this.GameObject.NbPixelPerMeter; } }
 
         /// <summary>
+        /// UpdateOrder when this component is an IUpdate
+        /// </summary>
+        [Browsable(false)]
+        [JsonIgnore]
+        public float UpdateOrder { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public Component()

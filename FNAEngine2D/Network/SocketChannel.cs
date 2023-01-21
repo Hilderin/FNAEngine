@@ -21,7 +21,7 @@ namespace FNAEngine2D.Network
     /// <summary>
     /// Socket communication channel
     /// </summary>
-    public class SocketChannel : CommunicationChannel
+    public class SocketChannel : ICommunicationChannel
     {
         /// <summary>
         /// Buffer size
@@ -267,10 +267,7 @@ namespace FNAEngine2D.Network
         public T Read<T>() where T: ICommand
         {
             object obj = ReadObject();
-
-            if (obj == null)
-                return default(T);
-
+                        
             if (!(obj is T))
                 throw new InvalidCastException("Invalid command type received. Expected: " + typeof(T).FullName + ", Received: " + obj.GetType().FullName);
 

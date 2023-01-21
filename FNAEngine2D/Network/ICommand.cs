@@ -11,6 +11,6 @@ namespace FNAEngine2D.Network
     /// </summary>
     public interface ICommand: INetworkSerializable
     {
-        
+        Guid ID { get; set; }
     }
 }

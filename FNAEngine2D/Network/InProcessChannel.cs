@@ -10,7 +10,7 @@ namespace FNAEngine2D.Network
     /// <summary>
     /// In process communication channel
     /// </summary>
-    public class InProcessChannel : CommunicationChannel
+    public class InProcessChannel : ICommunicationChannel
     {
         /// <summary>
         /// Queue of objects to send
@@ -136,11 +136,11 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Send the object
         /// </summary>
-        public void Send(ICommand data)
+        public void Send(ICommand command)
         {
             lock (_sendQueue)
             {
-                _sendQueue.Enqueue(data);
+                _sendQueue.Enqueue(command);
             }
         }
 

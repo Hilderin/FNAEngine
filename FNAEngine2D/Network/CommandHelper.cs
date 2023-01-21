@@ -69,6 +69,8 @@ namespace FNAEngine2D.Network
 
             BinWriter binWriter = new BinWriter(buffer, offset + HEADER_SIZE);
 
+            binWriter.Write(command.ID);
+
             command.Serialize(binWriter);
 
             return binWriter.Position;
@@ -110,7 +112,10 @@ namespace FNAEngine2D.Network
 
             ICommand command = (ICommand)Activator.CreateInstance(_commandsPerNumber[commandNumber]);
 
-            command.Deserialize(new BinReader(buffer, offset + HEADER_SIZE));
+            BinReader binReader = new BinReader(buffer, offset + HEADER_SIZE);
+
+            command.ID = binReader.ReadGuid();
+            command.Deserialize(binReader);
 
             return command;
 

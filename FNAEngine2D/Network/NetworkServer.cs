@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -32,7 +33,7 @@ namespace FNAEngine2D.Network
     /// <summary>
     /// Server
     /// </summary>
-    public class NetworkServer: Component
+    public class NetworkServer: Component, IUpdate
     {
         /// <summary>
         /// Socket server
@@ -117,6 +118,10 @@ namespace FNAEngine2D.Network
         /// </summary>
         protected override void Load()
         {
+            if (!(this.GameObject is NetworkGameObject))
+                throw new InvalidOperationException("The component NetworkServer must me attach to a NetwordGameObject.");
+
+            ((NetworkGameObject)this.GameObject)._server = this;
         }
 
         /// <summary>
@@ -295,7 +300,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Spawn a game object on the server and on all clients
         /// </summary>
-        public void SpawnObject(NetworkGameObject gameObject, ClientWorker localWorker = null)
+        public void SpawnObject(NetworkGameObject gameObject, Guid? localPlayerConnectionID = null)
         {
             
             lock (_gameObjects)
@@ -315,7 +320,7 @@ namespace FNAEngine2D.Network
             //Add in clients...
             foreach (ClientWorker clientWorker in _clients)
             {
-                clientWorker.AssureGameObjectPresent(gameObject, localWorker == clientWorker);
+                clientWorker.AssureGameObjectPresent(gameObject, localPlayerConnectionID != null && localPlayerConnectionID == clientWorker.ConnectionID);
 
             }
         }
@@ -349,14 +354,58 @@ namespace FNAEngine2D.Network
         }
 
         /// <summary>
+        /// Send a command a specify client
+        /// </summary>
+        public void SendCommand(ClientCommand command, Guid connectionID)
+        {
+            ClientWorker clientWorker = _clients.FirstOrDefault(c => c.ConnectionID == connectionID);
+
+            if (clientWorker != null)
+            {
+                clientWorker.SendCommand(command);
+            }
+            else
+            {
+                //Client not found for this game object
+                throw new InvalidOperationException("Cannot find the ClientWorker for game object id: " + connectionID);
+            }
+        }
+
+        /// <summary>
         /// Send a command to all clients
         /// </summary>
-        public void SendCommandToAllClients(IClientCommand command, ClientWorker clientToSkip = null)
+        public void SendCommandToAllClients(IClientCommand command)
+        {
+            foreach (ClientWorker clientWorker in _clients)
+            {
+                //Only if worker is ready and if it's not an in process channel, meaning we are working in Host mode or in Standalone mode
+                if (clientWorker.IsReady && !(clientWorker.Channel is InProcessChannel))
+                    clientWorker.SendCommand(command);
+            }
+        }
+
+        /// <summary>
+        /// Send a command to all clients
+        /// </summary>
+        public void SendCommandToAllClients(IClientCommand command, ClientWorker clientToSkip)
         {
             foreach (ClientWorker clientWorker in _clients)
             {
                 //Only if worker is ready and if it's not an in process channel, meaning we are working in Host mode or in Standalone mode
                 if(clientWorker.IsReady && clientWorker != clientToSkip && !(clientWorker.Channel is InProcessChannel))
+                    clientWorker.SendCommand(command);
+            }
+        }
+
+        /// <summary>
+        /// Send a command to all clients
+        /// </summary>
+        public void SendCommandToAllClients(ClientCommand command, NetworkGameObject gameObjectToSkip)
+        {
+            foreach (ClientWorker clientWorker in _clients)
+            {
+                //Only if worker is ready and if it's not an in process channel, meaning we are working in Host mode or in Standalone mode
+                if (clientWorker.IsReady && clientWorker.Player != gameObjectToSkip && !(clientWorker.Channel is InProcessChannel))
                     clientWorker.SendCommand(command);
             }
         }
@@ -392,7 +441,7 @@ namespace FNAEngine2D.Network
                 while (true)
                 {
                     //New channels??
-                    CommunicationChannel clientChannel = GetNewClientChannel();
+                    ICommunicationChannel clientChannel = GetNewClientChannel();
                     if (clientChannel == null)
                         return;
 
@@ -420,7 +469,7 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Get the next client CommunicationChannel
         /// </summary>
-        public CommunicationChannel GetNewClientChannel()
+        public ICommunicationChannel GetNewClientChannel()
         {
             if (_socketServer.NewChannels.TryDequeue(out var clientChannel))
                 return clientChannel;

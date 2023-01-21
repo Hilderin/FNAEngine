@@ -5,14 +5,8 @@ using System.ComponentModel;
 
 namespace FNAEngine2D.Network.Commands
 {
-    public class MovementCommand: IClientCommand, IServerCommand
+    public class MovementCommand: ClientServerCommand
     {
-        /// <summary>
-        /// Game object id to move
-        /// </summary>
-        [DefaultValue(null)]
-        public Guid? ID { get; set; } = null;
-
         /// <summary>
         /// Movement to do
         /// </summary>
@@ -28,9 +22,9 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Serialize
         /// </summary>
-        public void Serialize(BinWriter writer)
+        public override void Serialize(BinWriter writer)
         {
-            writer.Write(this.ID);
+            //writer.Write(this.ID);
             writer.Write(this.Movement);
             writer.Write(this.StartPosition);
         }
@@ -38,9 +32,9 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Deserialize
         /// </summary>
-        public void Deserialize(BinReader reader)
+        public override void Deserialize(BinReader reader)
         {
-            this.ID = reader.ReadNullableGuid();
+            //this.ID = reader.ReadNullableGuid();
             this.Movement = reader.ReadVector2();
             this.StartPosition = reader.ReadVector2();
         }
@@ -50,12 +44,12 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Execute
         /// </summary>
-        public void ExecuteClient(NetworkClient client)
+        public override void ExecuteClient(NetworkClient client)
         {
-            if (this.ID == null)
+            if (this.ID == Guid.Empty)
                 return;
 
-            var gameObject = client.GetGameObject(this.ID.Value);
+            var gameObject = client.GetGameObject(this.ID);
 
             if (gameObject != null)
             {
@@ -69,21 +63,18 @@ namespace FNAEngine2D.Network.Commands
         /// <summary>
         /// Movement of a player
         /// </summary>
-        public void ExecuteServer(ClientWorker cw)
+        public override void ExecuteServer(ServerCommandArgs args)
         {
-            if (cw.Player != null)
+            RigidBody rigidBody = args.GameObject.GetComponent<RigidBody>();
+
+            if (rigidBody != null)
             {
-                RigidBody rigidBody = cw.Player.GetComponent<RigidBody>();
+                rigidBody.SetNextMovement(this.Movement, this.StartPosition);
 
-                if (rigidBody != null)
-                {
-                    rigidBody.SetNextMovement(this.Movement, this.StartPosition);
+                //Resending commands...
+                args.GameObject.SendCommandToAllClients(new MovementCommand() { ID = args.GameObject.ID, Movement = this.Movement, StartPosition = this.StartPosition });
 
-                    //Resending commands...
-                    cw.SendCommandToAllClients(new MovementCommand() { ID = cw.Player.ID, Movement = this.Movement, StartPosition = this.StartPosition });
-
-                    //clientWorker.LogInfo(clientWorker.Character.CharacterName + " moved: " + this.Movement.ToString() + " from " + this.StartPosition);
-                }
+                //clientWorker.LogInfo(clientWorker.Character.CharacterName + " moved: " + this.Movement.ToString() + " from " + this.StartPosition);
             }
         }
 

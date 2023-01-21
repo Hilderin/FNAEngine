@@ -10,12 +10,12 @@ namespace FNAEngine2D.Network
     /// <summary>
     /// NetworkClient
     /// </summary>
-    public class NetworkClient : Component
+    public class NetworkClient : Component, IUpdate
     {
         /// <summary>
         /// Unique id of the client
         /// </summary>
-        public Guid ID { get; private set; } = Guid.NewGuid();
+        public Guid ConnectionID { get; set; }
         
         /// <summary>
         /// Dictionary of game objects
@@ -25,12 +25,12 @@ namespace FNAEngine2D.Network
         /// <summary>
         /// Communication channel
         /// </summary>
-        private CommunicationChannel _channel;
+        private ICommunicationChannel _channel;
 
-        /// <summary>
-        /// Should invoke connected
-        /// </summary>
-        private bool _shouldInvokeConnected = false;
+        ///// <summary>
+        ///// Should invoke connected
+        ///// </summary>
+        //private bool _shouldInvokeConnected = false;
 
         /// <summary>
         /// Current Network client
@@ -73,14 +73,17 @@ namespace FNAEngine2D.Network
         /// </summary>
         protected override void Load()
         {
-            Logguer.Info("New NetworkClient " + this.ID);
+            if (!(this.GameObject is NetworkGameObject))
+                throw new InvalidOperationException("The component NetworkClient must me attach to a NetwordGameObject.");
+
+            ((NetworkGameObject)this.GameObject)._client = this;
 
             //Creation of the communication channel
             if (this.GameObject.Game.RootGameObject.FindComponent<NetworkServer>() != null)
                 _channel = new InProcessChannel();
             else
                 _channel = new SocketChannel(this.PortNumber);
-            _channel.OnError = ex => Logguer.Error(this.ID.ToString() + " SocketError", ex);
+            _channel.OnError = ex => Logguer.Error(this.ConnectionID.ToString() + " SocketError", ex);
 
 
         }
@@ -102,7 +105,7 @@ namespace FNAEngine2D.Network
         /// </summary>
         protected override void OnRemoved()
         {
-            _shouldInvokeConnected = false;
+            //_shouldInvokeConnected = false;
 
             _channel.Disconnect();
             
@@ -116,23 +119,23 @@ namespace FNAEngine2D.Network
         /// </summary>
         public void Update()
         {
-            //Newly connected?
-            if (_shouldInvokeConnected)
-            {
-                _shouldInvokeConnected = false;
-                if (OnConnected != null)
-                    OnConnected();
-            }
+            ////Newly connected?
+            //if (_shouldInvokeConnected)
+            //{
+            //    _shouldInvokeConnected = false;
+            //    if (OnConnected != null)
+            //        OnConnected();
+            //}
 
 
             //Process received commands...
             while (_channel.Available)
             {
-                IClientCommand cmd = _channel.Read<IClientCommand>();
+                ClientCommand cmd = _channel.Read<ClientCommand>();
                 if (cmd != null)
                 {
                     cmd.ExecuteClient(this);
-                    Logguer.Info("Command executed: " + cmd.ToString() + " NetworkClient: " + this.ID);
+                    Logguer.Info("Command executed: " + cmd.ToString() + " NetworkClient: " + this.ConnectionID);
 
                 }
             }
@@ -189,7 +192,7 @@ namespace FNAEngine2D.Network
         {
             Logguer.Info("Client connected!");
 
-            _shouldInvokeConnected = true;
+            //_shouldInvokeConnected = true;
         }
 
     }

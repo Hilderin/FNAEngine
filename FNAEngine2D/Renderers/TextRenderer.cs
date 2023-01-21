@@ -58,32 +58,32 @@ namespace FNAEngine2D.Renderers
         /// </summary>
         private bool _pixelPerfect = false;
 
-        ///// <summary>
-        ///// Offset
-        ///// </summary>
-        //private Vector2 _offset;
+        /// <summary>
+        /// Offset
+        /// </summary>
+        private Vector2 _offsetLocation;
 
         ///// <summary>
         ///// Size
         ///// </summary>
         //private Vector2 _size;
 
-        ///// <summary>
-        ///// Offset
-        ///// </summary>
-        //[Category("Layout")]
-        //public Vector2 Offset
-        //{
-        //    get { return _offset; }
-        //    set
-        //    {
-        //        if (_offset != value)
-        //        {
-        //            _offset = value;
-        //            _locationSizeUpdated = true;
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// Offset
+        /// </summary>
+        [Category("Layout")]
+        public Vector2 OffsetLocation
+        {
+            get { return _offsetLocation; }
+            set
+            {
+                if (_offsetLocation != value)
+                {
+                    _offsetLocation = value;
+                    _locationSizeUpdated = true;
+                }
+            }
+        }
 
         ///// <summary>
         ///// Size
@@ -262,6 +262,15 @@ namespace FNAEngine2D.Renderers
         }
 
         /// <summary>
+        /// Renderer de texture
+        /// </summary>
+        public TextRenderer(string text, string fontName, int fontSize, Color color, Vector2 offsetLocation, TextHorizontalAlignment horizontalAlignment, TextVerticalAlignment verticalAlignment, bool pixelPerfect) : this(text, fontName, fontSize, color, horizontalAlignment, verticalAlignment)
+        {
+            _offsetLocation = offsetLocation;
+            PixelPerfect = true;
+        }
+
+        /// <summary>
         /// Chargement du contenu
         /// </summary>
         protected override void Load()
@@ -337,6 +346,8 @@ namespace FNAEngine2D.Renderers
             if (_font == null || _textCache == null)
                 return;
 
+
+            Console.WriteLine("draw: " + _textLocation);
             DrawingContext.DrawString(_textCache, _textLocation, this.Color, this.Rotation, this.RotationOrigin, Vector2.One, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, this.GameObject.Depth);
         }
 
@@ -381,6 +392,9 @@ namespace FNAEngine2D.Renderers
                     y = this.GameObject.Location.Y;
                     break;
             }
+
+            x += _offsetLocation.X;
+            y += _offsetLocation.Y;
 
             if (PixelPerfect)
             {

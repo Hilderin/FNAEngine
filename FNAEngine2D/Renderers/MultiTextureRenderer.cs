@@ -16,7 +16,7 @@ namespace FNAEngine2D.Renderers
     /// <summary>
     /// Multi texture render from a enum
     /// </summary>
-    public class MultiTextureRenderer<T> : Component where T : System.Enum
+    public class MultiTextureRenderer<T> : Component, IDraw where T : System.Enum
     {
         /// <summary>
         /// Textures
@@ -80,6 +80,7 @@ namespace FNAEngine2D.Renderers
         public void Draw()
         {
             TextureInfo textureInfo = _textures[this.CurrentValue];
+
             DrawingContext.Draw(textureInfo.Texture.Data, this.GameObject.Location, null, this.Color, 0f, Vector2.Zero, textureInfo.Scale, SpriteEffects.None, this.GameObject.Depth);
         }
 

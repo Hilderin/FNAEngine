@@ -1,13 +1,16 @@
-﻿namespace FNAEngine2D.Network
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FNAEngine2D.Network
 {
-    /// <summary>
-    /// Interface for a command executable on the server
-    /// </summary>
-    public interface IServerCommand: ICommand
+    public interface IServerCommand : ICommand
     {
         /// <summary>
         /// Execute the command
         /// </summary>
-        void ExecuteServer(ClientWorker cw);
+        void ExecuteServer(ServerCommandArgs args);
     }
 }

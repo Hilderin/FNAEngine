@@ -1,16 +1,24 @@
-﻿using System;
-using System.Reflection;
+﻿using FNAEngine2D.Physics;
+using Microsoft.Xna.Framework;
+using System;
+using System.ComponentModel;
 
 namespace FNAEngine2D.Network.Commands
 {
-    public class UnspawnObjectCommand : ClientCommand
+    public class NewConnectionCommand : ClientCommand
     {
+        /// <summary>
+        /// Connection id
+        /// </summary>
+        public Guid ConnectionID { get; set; }
+
+
         /// <summary>
         /// Serialize
         /// </summary>
         public override void Serialize(BinWriter writer)
         {
-            
+            writer.Write(this.ConnectionID);
         }
 
         /// <summary>
@@ -18,23 +26,29 @@ namespace FNAEngine2D.Network.Commands
         /// </summary>
         public override void Deserialize(BinReader reader)
         {
-            
+            this.ConnectionID = reader.ReadGuid();
         }
 
+
+
         /// <summary>
-        /// Execute the command
+        /// Execute
         /// </summary>
         public override void ExecuteClient(NetworkClient client)
         {
-            client.RemoveGameObject(this.ID);
+            client.ConnectionID = this.ConnectionID;
+
+            if (client.OnConnected != null)
+                client.OnConnected();
         }
+
 
         /// <summary>
         /// Override of the ToString to help debug
         /// </summary>
         public override string ToString()
         {
-            return "UnspawnObjectCommand - " + this.ID;
+            return "NewConnectionCommand - ConnectionID: " + this.ConnectionID;
         }
     }
 }
